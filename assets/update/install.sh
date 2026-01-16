@@ -1432,7 +1432,18 @@ cleanup_on_error() {
     tput cnorm >/dev/null 2>&1 || true
     tput sgr0 >/dev/null 2>&1 || true
     
+    # Проверяем нужна ли очистка
+    # Очищаем если: есть ошибка, установка начата, или есть что удалять
+    local needs_cleanup=false
+    
     if [ $exit_code -ne 0 ] || [ "$INSTALL_STARTED" = true ]; then
+        needs_cleanup=true
+    elif [ -d "$PROJECT_DIR" ] && [ "$PROJECT_DIR" != "/" ] && [ -n "$(ls -A "$PROJECT_DIR" 2>/dev/null)" ]; then
+        # Если папка проекта существует и не пуста - нужна очистка
+        needs_cleanup=true
+    fi
+    
+    if [ "$needs_cleanup" = true ]; then
         echo
         echo -e "${RED}════════════════════════════════════════${NC}"
         echo -e "${RED}  ⚠️ УСТАНОВКА ПРЕРВАНА ИЛИ ОШИБКА${NC}"
@@ -1510,7 +1521,8 @@ cleanup_on_error() {
 
 # Установка trap для обработки ошибок, прерываний и выхода
 trap cleanup_on_error EXIT
-trap 'INSTALL_STARTED=true; cleanup_on_error' INT TERM ERR
+trap 'INSTALL_STARTED=true; exit 130' INT TERM
+trap 'INSTALL_STARTED=true; exit 1' ERR
 
 # Автоматически даем права на выполнение самому себе
 chmod +x "$0" 2>/dev/null || true
@@ -1801,9 +1813,6 @@ EOF
 ) &
 show_spinner "Проверка установленных компонентов"
 
-# Отмечаем, что установка началась - теперь при ошибке нужно очищать
-INSTALL_STARTED=true
-
 # 2. Подготовка целевой директории
 (
   # Создаем целевую директорию
@@ -1883,6 +1892,9 @@ fi
   fi
 ) &
 show_spinner "Инициализация конфигурации"
+
+# Отмечаем что установка началась - теперь нужна очистка при ошибке
+INSTALL_STARTED=true
 
 # 6. Автоопределение реверс-прокси
 if [ -d "/opt/remnawave/caddy" ]; then
