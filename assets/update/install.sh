@@ -1438,25 +1438,52 @@ cleanup_on_error() {
         echo -e "${RED}  ⚠️ УСТАНОВКА ПРЕРВАНА ИЛИ ОШИБКА${NC}"
         echo -e "${RED}════════════════════════════════════════${NC}"
         echo
-        echo -e "${WHITE}🧹 Выполняю очистку...${NC}"
+        echo -e "${WHITE}🧹 Выполняю полную очистку...${NC}"
+        echo
+        
+        # Останавливаем Docker контейнеры если они запущены
+        if command -v docker &> /dev/null && [ -d "$PROJECT_DIR" ]; then
+            echo -e "${YELLOW}⏹ Останавливаю Docker контейнеры...${NC}"
+            cd "$PROJECT_DIR" 2>/dev/null && {
+                docker compose down -v 2>/dev/null || true
+                docker compose rm -f -v 2>/dev/null || true
+            }
+            echo -e "${GREEN}✓ Docker контейнеры остановлены${NC}"
+        fi
         
         # Удаляем исходную папку с клоном репозитория
         if [ -n "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/opt/tg-sell-bot" ] && [ "$SOURCE_DIR" != "/" ] && [ -d "$SOURCE_DIR" ]; then
+            echo -e "${YELLOW}🗑 Удаляю клон репозитория: $SOURCE_DIR${NC}"
             rm -rf "$SOURCE_DIR" 2>/dev/null || true
             echo -e "${GREEN}✓ Удален клон репозитория${NC}"
         fi
         
+        # Удаляем временную папку клонирования
+        if [ -n "$CLONE_DIR" ] && [ -d "$CLONE_DIR" ]; then
+            echo -e "${YELLOW}🗑 Удаляю временную папку: $CLONE_DIR${NC}"
+            cd /opt 2>/dev/null || true
+            rm -rf "$CLONE_DIR" 2>/dev/null || true
+            echo -e "${GREEN}✓ Удалена временная папка${NC}"
+        fi
+        
+        # Удаляем все папки из CLEANUP_DIRS
+        if [ ${#CLEANUP_DIRS[@]} -gt 0 ]; then
+            for cleanup_dir in "${CLEANUP_DIRS[@]}"; do
+                if [ -n "$cleanup_dir" ] && [ "$cleanup_dir" != "/" ] && [ -d "$cleanup_dir" ]; then
+                    echo -e "${YELLOW}🗑 Удаляю: $cleanup_dir${NC}"
+                    rm -rf "$cleanup_dir" 2>/dev/null || true
+                    echo -e "${GREEN}✓ Удалено: $cleanup_dir${NC}"
+                fi
+            done
+        fi
+        
         # Удаляем целевую папку если установка не завершена
         if [ "$INSTALL_STARTED" = true ] && [ -d "$PROJECT_DIR" ]; then
-            # Сохраняем .env если он существует и был заполнен
-            ENV_BACKUP=""
-            if [ -f "$ENV_FILE" ]; then
-                ENV_BACKUP=$(cat "$ENV_FILE" 2>/dev/null || true)
-            fi
+            echo -e "${YELLOW}🗑 Удаляю папку проекта: $PROJECT_DIR${NC}"
             
             # Останавливаем контейнеры если они запущены
             if command -v docker &> /dev/null; then
-                cd "$PROJECT_DIR" 2>/dev/null && docker compose down 2>/dev/null || true
+                cd "$PROJECT_DIR" 2>/dev/null && docker compose down -v 2>/dev/null || true
             fi
             
             # Удаляем проектную папку
@@ -1464,16 +1491,18 @@ cleanup_on_error() {
             echo -e "${GREEN}✓ Удалена папка проекта${NC}"
         fi
         
+        # Удаляем временные файлы
+        if [ -n "$TEMP_REPO" ] && [ "$TEMP_REPO" != "/" ] && [ -d "$TEMP_REPO" ]; then
+            echo -e "${YELLOW}🗑 Удаляю временные файлы: $TEMP_REPO${NC}"
+            rm -rf "$TEMP_REPO" 2>/dev/null || true
+            echo -e "${GREEN}✓ Удалены временные файлы${NC}"
+        fi
+        
+        echo
         echo -e "${GREEN}✅ Очистка завершена${NC}"
         echo
         echo -e "${YELLOW}ℹ Попробуйте запустить установку снова${NC}"
         echo
-    fi
-    
-    # Удаляем временную папку клонирования если она была создана
-    if [ -n "$CLONE_DIR" ] && [ -d "$CLONE_DIR" ]; then
-        cd /opt 2>/dev/null || true
-        rm -rf "$CLONE_DIR" 2>/dev/null || true
     fi
     
     exit $exit_code
@@ -1481,7 +1510,7 @@ cleanup_on_error() {
 
 # Установка trap для обработки ошибок, прерываний и выхода
 trap cleanup_on_error EXIT
-trap 'INSTALL_STARTED=false; exit 130' INT TERM
+trap 'INSTALL_STARTED=true; cleanup_on_error' INT TERM ERR
 
 # Автоматически даем права на выполнение самому себе
 chmod +x "$0" 2>/dev/null || true
@@ -1515,6 +1544,7 @@ if [ "$1" != "--install" ] && [ ! -d "/tmp/tg-bot-install-$$" ]; then
     # Если скрипт запущен с флагом установки, создаем временную папку и переклонируемся туда
     if [ "$1" = "--install" ]; then
         CLONE_DIR=$(mktemp -d /tmp/tg-bot-install-XXXXXX)
+        CLEANUP_DIRS+=("$CLONE_DIR")
         trap "cd /opt 2>/dev/null || true; rm -rf '$CLONE_DIR' 2>/dev/null || true" EXIT
         git clone -b "$REPO_BRANCH" --depth 1 "$REPO_URL" "$CLONE_DIR" >/dev/null 2>&1
         cd "$CLONE_DIR"
@@ -1523,6 +1553,7 @@ if [ "$1" != "--install" ] && [ ! -d "/tmp/tg-bot-install-$$" ]; then
 else
     # Это повторный запуск из временной папки
     CLONE_DIR="/tmp/tg-bot-install-$2"
+    CLEANUP_DIRS+=("$CLONE_DIR")
     INSTALL_MODE="$3"
     if [ "$INSTALL_MODE" = "prod" ] || [ "$INSTALL_MODE" = "-p" ]; then
         INSTALL_MODE="prod"
@@ -1566,12 +1597,108 @@ log_warning() {
 
 # Спиннер прогресса установки
 
-# Безопасный ввод
+# Безопасный ввод с валидацией и повторными попытками
 safe_read() {
   local prompt="$1"
   local varname="$2"
   echo -ne "$prompt"
   IFS= read -r "$varname" || { echo; exit 1; }
+}
+
+# Валидация ввода с 3 попытками
+safe_read_with_validation() {
+  local prompt="$1"
+  local varname="$2"
+  local validation_func="$3"
+  local max_attempts=3
+  local attempt=1
+  local input=""
+  local is_valid=false
+  
+  while [ $attempt -le $max_attempts ]; do
+    echo -ne "$prompt"
+    IFS= read -r input || { echo; exit 1; }
+    
+    # Проверка что input не пустой
+    if [ -z "$input" ]; then
+      echo -e "${RED}✗ Ошибка: Значение не может быть пустым!${NC}"
+      attempt=$((attempt + 1))
+      if [ $attempt -le $max_attempts ]; then
+        echo -e "${YELLOW}⚠ Попытка $attempt из $max_attempts${NC}"
+        echo ""
+      fi
+      continue
+    fi
+    
+    # Если передана функция валидации - проверяем
+    if [ -n "$validation_func" ] && command -v "$validation_func" >/dev/null 2>&1; then
+      if $validation_func "$input"; then
+        is_valid=true
+        break
+      else
+        attempt=$((attempt + 1))
+        if [ $attempt -le $max_attempts ]; then
+          echo -e "${YELLOW}⚠ Попытка $attempt из $max_attempts${NC}"
+          echo ""
+        fi
+      fi
+    else
+      # Нет функции валидации - принимаем любое непустое значение
+      is_valid=true
+      break
+    fi
+  done
+  
+  if [ "$is_valid" = false ]; then
+    echo ""
+    echo -e "${RED}════════════════════════════════════════${NC}"
+    echo -e "${RED}  ⚠️ ПРЕВЫШЕНО КОЛИЧЕСТВО ПОПЫТОК${NC}"
+    echo -e "${RED}════════════════════════════════════════${NC}"
+    echo ""
+    echo -e "${WHITE}Вы исчерпали все попытки ввода корректных данных.${NC}"
+    echo -e "${WHITE}Установка прервана. Выполняю очистку...${NC}"
+    echo ""
+    INSTALL_STARTED=true
+    exit 1
+  fi
+  
+  eval "$varname=\"\$input\""
+}
+
+# Функции валидации
+validate_bot_token() {
+  local token="$1"
+  # Токен Telegram бота имеет формат: XXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  if [[ $token =~ ^[0-9]+:[A-Za-z0-9_-]{35}$ ]]; then
+    return 0
+  else
+    echo -e "${RED}✗ Ошибка: Неверный формат токена бота!${NC}"
+    echo -e "${YELLOW}  Формат: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz1234567${NC}"
+    return 1
+  fi
+}
+
+validate_telegram_id() {
+  local id="$1"
+  # Telegram ID - это число
+  if [[ $id =~ ^[0-9]+$ ]]; then
+    return 0
+  else
+    echo -e "${RED}✗ Ошибка: Telegram ID должен содержать только цифры!${NC}"
+    return 1
+  fi
+}
+
+validate_remnawave_token() {
+  local token="$1"
+  # Базовая проверка - не пустое значение и минимальная длина
+  if [ ${#token} -ge 10 ]; then
+    return 0
+  else
+    echo -e "${RED}✗ Ошибка: Токен Remnawave слишком короткий!${NC}"
+    echo -e "${YELLOW}  Минимальная длина: 10 символов${NC}"
+    return 1
+  fi
 }
 
 read_input() {
@@ -1693,6 +1820,9 @@ INSTALL_STARTED=true
 ) &
 show_spinner "Подготовка целевой директории"
 
+# Добавляем созданные директории в массив для очистки при ошибке
+CLEANUP_DIRS+=("$PROJECT_DIR")
+
 # 3. Определение, откуда копировать файлы
 # Если скрипт запущен не из целевой директории, значит мы в клонированной папке
 SCRIPT_PATH="$(realpath "$0")"
@@ -1705,6 +1835,10 @@ if [ "$SOURCE_DIR" = "/opt/tg-sell-bot" ]; then
 else
     # Скрипт в клонированной папке - копируем файлы
     COPY_FILES=true
+    # Добавляем SOURCE_DIR в CLEANUP_DIRS если это не целевая директория
+    if [ "$SOURCE_DIR" != "$PROJECT_DIR" ] && [ "$SOURCE_DIR" != "/" ]; then
+        CLEANUP_DIRS+=("$SOURCE_DIR")
+    fi
     SOURCE_FILES=(
         "docker-compose.yml"
         "Dockerfile"
@@ -1781,19 +1915,11 @@ update_env_var "$ENV_FILE" "APP_DOMAIN" "$APP_DOMAIN"
 
 # BOT_TOKEN
 echo ""
-safe_read "${YELLOW}➜ Введите Токен телеграм бота:${NC} " BOT_TOKEN
-if [ -z "$BOT_TOKEN" ]; then
-    print_error "BOT_TOKEN не может быть пустым!"
-    exit 1
-fi
+safe_read_with_validation "${YELLOW}➜ Введите Токен телеграм бота:${NC} " BOT_TOKEN "validate_bot_token"
 update_env_var "$ENV_FILE" "BOT_TOKEN" "$BOT_TOKEN"
 
 # BOT_DEV_ID
-safe_read "${YELLOW}➜ Введите телеграм ID разработчика:${NC} " BOT_DEV_ID
-if [ -z "$BOT_DEV_ID" ]; then
-    print_error "BOT_DEV_ID не может быть пустым!"
-    exit 1
-fi
+safe_read_with_validation "${YELLOW}➜ Введите телеграм ID разработчика:${NC} " BOT_DEV_ID "validate_telegram_id"
 update_env_var "$ENV_FILE" "BOT_DEV_ID" "$BOT_DEV_ID"
 
 # BOT_SUPPORT_USERNAME
@@ -1802,11 +1928,7 @@ echo
 update_env_var "$ENV_FILE" "BOT_SUPPORT_USERNAME" "$BOT_SUPPORT_USERNAME"
 
 # REMNAWAVE_TOKEN
-safe_read "${YELLOW}➜ Введите API Токен Remnawave:${NC} " REMNAWAVE_TOKEN
-if [ -z "$REMNAWAVE_TOKEN" ]; then
-    print_error "REMNAWAVE_TOKEN не может быть пустым!"
-    exit 1
-fi
+safe_read_with_validation "${YELLOW}➜ Введите API Токен Remnawave:${NC} " REMNAWAVE_TOKEN "validate_remnawave_token"
 update_env_var "$ENV_FILE" "REMNAWAVE_TOKEN" "$REMNAWAVE_TOKEN"
 
 echo ""
