@@ -1,0 +1,43 @@
+2026-01-16 03:37:59.393 | INFO     | taskiq.cli.utils:66 | Importing tasks from module src.infrastructure.taskiq.tasks
+2026-01-16 03:38:04.812 | INFO     | taskiq.cli.scheduler.run:404 | Starting scheduler.
+2026-01-16 03:38:04.854 | INFO     | taskiq.cli.scheduler.run:406 | Startup completed.
+2026-01-16 03:38:15.956 | DEBUG    | src.bot.middlewares.base:42 | ErrorMiddleware set as OUTER for: error
+2026-01-16 03:38:15.956 | DEBUG    | src.bot.middlewares.base:42 | AccessMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.956 | DEBUG    | src.bot.middlewares.base:42 | AccessMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.957 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.957 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.957 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.959 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.959 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.959 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.959 | DEBUG    | src.bot.middlewares.base:42 | RulesMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.959 | DEBUG    | src.bot.middlewares.base:42 | RulesMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.959 | DEBUG    | src.bot.middlewares.base:42 | ChannelMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.960 | DEBUG    | src.bot.middlewares.base:42 | ChannelMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.960 | DEBUG    | src.bot.middlewares.base:42 | ThrottlingMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.960 | DEBUG    | src.bot.middlewares.base:42 | ThrottlingMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.960 | DEBUG    | src.bot.middlewares.base:33 | GarbageMiddleware set as INNER for: message
+2026-01-16 03:38:15.961 | DEBUG    | src.bot.middlewares.base:42 | ErrorMiddleware set as OUTER for: error
+2026-01-16 03:38:15.961 | DEBUG    | src.bot.middlewares.base:42 | AccessMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.961 | DEBUG    | src.bot.middlewares.base:42 | AccessMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.961 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.961 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.961 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | UserMiddleware set as OUTER for: message, callback_query, error, aiogd_update, my_chat_member, pre_checkout_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | RulesMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | RulesMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | ChannelMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | ChannelMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | ThrottlingMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:42 | ThrottlingMiddleware set as OUTER for: message, callback_query
+2026-01-16 03:38:15.962 | DEBUG    | src.bot.middlewares.base:33 | GarbageMiddleware set as INNER for: message
+2026-01-16 03:38:15.968 | INFO     | taskiq.cli.utils:66 | Importing tasks from module src.infrastructure.taskiq.tasks
+2026-01-16 03:38:15.969 | INFO     | taskiq.cli.utils:66 | Importing tasks from module src.infrastructure.taskiq.tasks
+2026-01-16 03:38:16.002 | INFO     | taskiq.receiver.receiver:334 | Listening started.
+2026-01-16 03:38:16.006 | INFO     | taskiq.receiver.receiver:334 | Listening started.
+2026-01-16 03:38:32.624 | INFO     | taskiq.receiver.receiver:452 | The runner is stopped.
+2026-01-16 03:38:32.631 | INFO     | taskiq.receiver.receiver:452 | The runner is stopped.
+2026-01-16 03:38:32.636 | WARNING  | taskiq.cli.worker.run:44 | Shutting down the broker.
+2026-01-16 03:38:32.635 | WARNING  | taskiq.cli.worker.run:44 | Shutting down the broker.
