@@ -31,6 +31,7 @@ btn-settings-transfers = 💸 Переводы
 btn-settings-notifications = 🔔 Уведомления
 btn-settings-access = 🔓 Режим доступа
 btn-settings-referral = 👥 Реф. система
+btn-settings-promocodes = 🏷️ Промокоды
 btn-settings-community = 👥 Сообщество
 btn-settings-community-set-url = 📝 Назначить группу
 btn-settings-tos = 📜 Соглашение

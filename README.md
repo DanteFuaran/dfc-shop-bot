@@ -61,7 +61,7 @@ ___
 
 ### ▶️ Полная установка в один шаг
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/DanteFuaran/dfc-shop-bot/main/install-wrapper.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/DanteFuaran/dfc-shop-bot/dev/install-wrapper.sh)
 ```
 
 ### 📦 Что делает скрипт установки

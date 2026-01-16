@@ -151,14 +151,6 @@ menu = Window(
         ),
         when=F["has_subscription"],
     ),
-    # [Промокод] - для всех пользователей
-    Row(
-        Button(
-            text=I18nFormat("btn-menu-promocode"),
-            id="promocode",
-            on_click=on_promocode,
-        ),
-    ),
     # [Сообщество][Помощь]
     Row(
         Url(

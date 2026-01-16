@@ -5,7 +5,7 @@ from aiogram_dialog.widgets.kbd import Button, Column, Row, Start, SwitchTo
 from aiogram_dialog.widgets.text import Format
 from magic_filter import F
 
-from src.bot.states import DashboardSettings, RemnashopNotifications, DashboardAccess, RemnashopReferral, RemnashopGateways
+from src.bot.states import DashboardSettings, RemnashopNotifications, DashboardAccess, RemnashopReferral, RemnashopGateways, DashboardPromocodes
 from src.bot.widgets import Banner, I18nFormat, IgnoreUpdate
 from src.core.enums import BannerName
 
@@ -238,6 +238,13 @@ settings_main = Window(
             ),
             id="toggle_referral",
             on_click=on_toggle_referral,
+        ),
+    ),
+    Row(
+        Start(
+            text=I18nFormat("btn-settings-promocodes"),
+            id="promocodes",
+            state=DashboardPromocodes.MAIN,
         ),
     ),
     Row(
