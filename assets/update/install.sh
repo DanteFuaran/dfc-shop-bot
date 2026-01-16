@@ -1719,39 +1719,37 @@ if [ "$SOURCE_DIR" = "/opt/dfc-shop-bot" ]; then
     # Скрипт уже в целевой директории - ничего не копируем
     COPY_FILES=false
 else
-    # Скрипт в клонированной папке - копируем файлы
+    # Скрипт в клонированной папке - копируем только конфигурационные файлы
     COPY_FILES=true
+    # Только конфигурационные файлы - БЕЗ исходников (src, scripts останутся во временной папке)
     SOURCE_FILES=(
         "docker-compose.yml"
-        "Dockerfile"
         ".env.example"
-        "Makefile"
-        "pyproject.toml"
-        "uv.lock"
-        ".deployignore"
-        "README.md"
     )
 fi
 
-# 4. Копирование файлов если нужно
+# 4. Копирование конфигурационных файлов если нужно
 if [ "$COPY_FILES" = true ]; then
     (
-      # Копируем основные файлы
+      # Копируем только конфигурационные файлы
       for file in "${SOURCE_FILES[@]}"; do
           if [ -f "$SOURCE_DIR/$file" ]; then
               cp "$SOURCE_DIR/$file" "$PROJECT_DIR/"
           fi
       done
       
-      # Копируем директории (src, scripts и assets)
-      for dir in "src" "scripts" "assets"; do
-          if [ -d "$SOURCE_DIR/$dir" ]; then
-              rm -rf "$PROJECT_DIR/$dir" 2>/dev/null || true
-              cp -r "$SOURCE_DIR/$dir" "$PROJECT_DIR/"
-          fi
-      done
+      # Копируем только assets (для кастомизации баннеров пользователем)
+      if [ -d "$SOURCE_DIR/assets" ]; then
+          rm -rf "$PROJECT_DIR/assets" 2>/dev/null || true
+          cp -r "$SOURCE_DIR/assets" "$PROJECT_DIR/"
+      fi
+      
+      # Копируем install.sh в assets/update для команды dfc-shop-bot
+      mkdir -p "$PROJECT_DIR/assets/update"
+      cp "$SOURCE_DIR/install.sh" "$PROJECT_DIR/assets/update/install.sh"
+      chmod +x "$PROJECT_DIR/assets/update/install.sh"
     ) &
-    show_spinner "Копирование файлов установки"
+    show_spinner "Копирование конфигурации"
 fi
 
 # 5. Создание .env файла
@@ -1950,14 +1948,22 @@ show_spinner "Создание структуры папок"
 ) &
 show_spinner "Очистка старых данных БД"
 
-# 5. Сборка Docker образа (в фоне со спинером)
+# 5. Сборка Docker образа из временной папки (в фоне со спинером)
 (
-  cd "$PROJECT_DIR"
-  docker compose build >/dev/null 2>&1
+  # Собираем образ из SOURCE_DIR (временная папка с исходниками)
+  if [ "$COPY_FILES" = true ] && [ -d "$SOURCE_DIR" ]; then
+    cd "$SOURCE_DIR"
+    docker build -t remnashop:local \
+      --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+      --build-arg BUILD_BRANCH="$REPO_BRANCH" \
+      --build-arg BUILD_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')" \
+      --build-arg BUILD_TAG="$(cat src/__version__.py 2>/dev/null | grep -oP '(?<=")[^"]*(?=")' || echo 'unknown')" \
+      . >/dev/null 2>&1
+  fi
 ) &
-show_spinner "Сборка Docker образа"
+show_spinner "Сборка Docker образа (это может занять несколько минут)"
 
-# 6. Запуск контейнеров (в фоне со спинером)
+# 6. Запуск контейнеров из целевой папки (в фоне со спинером)
 (
   cd "$PROJECT_DIR"
   docker compose up -d >/dev/null 2>&1
@@ -1978,17 +1984,8 @@ if [ -d "/opt/remnawave/caddy" ]; then
   show_spinner "Настройка и перезапуск Caddy"
 fi
 
-# 9. Очистка ненужных файлов в целевой директории
-rm -rf "$PROJECT_DIR"/src 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/scripts 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/docs 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/.git 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/.venv 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/__pycache__ 2>/dev/null || true
-rm -f "$PROJECT_DIR"/{.gitignore,.dockerignore,.env.example,.python-version,.editorconfig} 2>/dev/null || true
-rm -f "$PROJECT_DIR"/{Makefile,pyproject.toml,uv.lock} 2>/dev/null || true
-rm -f "$PROJECT_DIR"/install.sh 2>/dev/null || true
-rm -f "$PROJECT_DIR"/{README.md,INSTALL_RU.md,BACKUP_RESTORE_GUIDE.md,CHANGES_SUMMARY.md,DETAILED_EXPLANATION.md,INVITE_FIX.md} 2>/dev/null || true
+# 9. Очистка .env.example после создания .env
+rm -f "$PROJECT_DIR/.env.example" 2>/dev/null || true
 
 # ============================================================
 # ЗАВЕРШЕНИЕ УСТАНОВКИ
