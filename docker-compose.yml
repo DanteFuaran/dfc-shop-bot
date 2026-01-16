@@ -55,9 +55,7 @@ services:
     
 
   remnashop:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # Образ собирается при установке, здесь только используем готовый
     image: remnashop:local
     container_name: "remnashop"
     hostname: remnashop

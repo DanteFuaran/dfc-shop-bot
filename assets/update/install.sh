@@ -1528,17 +1528,16 @@ trap 'INSTALL_STARTED=true; exit 1' ERR
 # Автоматически даем права на выполнение самому себе
 chmod +x "$0" 2>/dev/null || true
 
-# Показать курсор
+# Показать курсор (скроем в cleanup_on_error)
 tput civis >/dev/null 2>&1 || true
 
-# Показать курсор при выходе
-trap 'tput cnorm >/dev/null 2>&1 || true; tput sgr0 >/dev/null 2>&1 || true' EXIT
+# НЕ перезаписываем trap EXIT - используем cleanup_on_error для восстановления курсора
 
 # Режим установки: dev или prod
 INSTALL_MODE="dev"
 
 # Если это первый запуск (не из временной папки), клонируем репозиторий в /tmp
-if [ "$1" != "--install" ] && [ ! -d "/tmp/tg-bot-install-$$" ]; then
+if [ "$1" != "--install" ] && [ ! -d "/tmp/dfc-shop-bot-install-$$" ]; then
     # Проверяем режим если скрипт вызван без аргументов --install
     if [ "$1" != "--prod" ] && [ "$1" != "-p" ]; then
         check_mode "$1"
@@ -1556,16 +1555,16 @@ if [ "$1" != "--install" ] && [ ! -d "/tmp/tg-bot-install-$$" ]; then
     
     # Если скрипт запущен с флагом установки, создаем временную папку и переклонируемся туда
     if [ "$1" = "--install" ]; then
-        CLONE_DIR=$(mktemp -d /tmp/tg-bot-install-XXXXXX)
+        CLONE_DIR=$(mktemp -d /tmp/dfc-shop-bot-install-XXXXXX)
         CLEANUP_DIRS+=("$CLONE_DIR")
-        trap "cd /opt 2>/dev/null || true; rm -rf '$CLONE_DIR' 2>/dev/null || true" EXIT
+        # НЕ перезаписываем trap - используем общий cleanup_on_error
         git clone -b "$REPO_BRANCH" --depth 1 "$REPO_URL" "$CLONE_DIR" >/dev/null 2>&1
         cd "$CLONE_DIR"
         exec "$CLONE_DIR/install.sh" --install "$$"
     fi
 else
     # Это повторный запуск из временной папки
-    CLONE_DIR="/tmp/tg-bot-install-$2"
+    CLONE_DIR="/tmp/dfc-shop-bot-install-$2"
     CLEANUP_DIRS+=("$CLONE_DIR")
     INSTALL_MODE="$3"
     if [ "$INSTALL_MODE" = "prod" ] || [ "$INSTALL_MODE" = "-p" ]; then
@@ -1852,37 +1851,43 @@ else
     if [ "$SOURCE_DIR" != "$PROJECT_DIR" ] && [ "$SOURCE_DIR" != "/" ]; then
         CLEANUP_DIRS+=("$SOURCE_DIR")
     fi
+    # Только минимально необходимые файлы для запуска
+    # Код (src, scripts, pyproject.toml и т.д.) будет скопирован в Docker образ при сборке
     SOURCE_FILES=(
         "docker-compose.yml"
-        "Dockerfile"
         ".env.example"
-        "Makefile"
-        "pyproject.toml"
-        "uv.lock"
-        ".deployignore"
-        "README.md"
     )
 fi
 
-# 4. Копирование файлов если нужно
+# 4. Сборка Docker образа из временной папки (код останется внутри образа)
 if [ "$COPY_FILES" = true ]; then
     (
-      # Копируем основные файлы
+      # Копируем только docker-compose и .env.example
       for file in "${SOURCE_FILES[@]}"; do
           if [ -f "$SOURCE_DIR/$file" ]; then
               cp "$SOURCE_DIR/$file" "$PROJECT_DIR/"
           fi
       done
       
-      # Копируем директории (src, scripts и assets)
-      for dir in "src" "scripts" "assets"; do
-          if [ -d "$SOURCE_DIR/$dir" ]; then
-              rm -rf "$PROJECT_DIR/$dir" 2>/dev/null || true
-              cp -r "$SOURCE_DIR/$dir" "$PROJECT_DIR/"
-          fi
-      done
+      # Копируем только assets (для кастомизации пользователем)
+      if [ -d "$SOURCE_DIR/assets" ]; then
+          rm -rf "$PROJECT_DIR/assets" 2>/dev/null || true
+          cp -r "$SOURCE_DIR/assets" "$PROJECT_DIR/"
+      fi
     ) &
-    show_spinner "Копирование файлов установки"
+    show_spinner "Копирование файлов конфигурации"
+    
+    # Собираем Docker образ из SOURCE_DIR (там есть src, scripts, Dockerfile и т.д.)
+    (
+      cd "$SOURCE_DIR"
+      docker build -t remnashop:local \
+        --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        --build-arg BUILD_BRANCH="$REPO_BRANCH" \
+        --build-arg BUILD_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')" \
+        --build-arg BUILD_TAG="$(cat src/__version__.py 2>/dev/null | grep -oP '(?<=").*(?=")' || echo 'unknown')" \
+        . >/dev/null 2>&1
+    ) &
+    show_spinner "Сборка Docker образа (это может занять несколько минут)"
 fi
 
 # 5. Создание .env файла
@@ -2069,21 +2074,16 @@ show_spinner "Создание структуры папок"
 ) &
 show_spinner "Очистка старых данных БД"
 
-# 5. Сборка Docker образа (в фоне со спинером)
-(
-  cd "$PROJECT_DIR"
-  docker compose build >/dev/null 2>&1
-) &
-show_spinner "Сборка Docker образа"
+# Docker образ уже собран ранее при копировании файлов
 
-# 6. Запуск контейнеров (в фоне со спинером)
+# 5. Запуск контейнеров (в фоне со спинером)
 (
   cd "$PROJECT_DIR"
   docker compose up -d >/dev/null 2>&1
 ) &
 show_spinner "Запуск сервисов"
 
-# 7. Инициализация БД (в фоне со спинером)
+# 6. Инициализация БД (в фоне со спинером)
 (
   sleep 20
 ) &
@@ -2097,17 +2097,8 @@ if [ -d "/opt/remnawave/caddy" ]; then
   show_spinner "Настройка и перезапуск Caddy"
 fi
 
-# 9. Очистка ненужных файлов в целевой директории
-rm -rf "$PROJECT_DIR"/src 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/scripts 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/docs 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/.git 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/.venv 2>/dev/null || true
-rm -rf "$PROJECT_DIR"/__pycache__ 2>/dev/null || true
-rm -f "$PROJECT_DIR"/{.gitignore,.dockerignore,.env.example,.python-version,.editorconfig} 2>/dev/null || true
-rm -f "$PROJECT_DIR"/{Makefile,pyproject.toml,uv.lock} 2>/dev/null || true
-rm -f "$PROJECT_DIR"/install.sh 2>/dev/null || true
-rm -f "$PROJECT_DIR"/{README.md,INSTALL_RU.md,BACKUP_RESTORE_GUIDE.md,CHANGES_SUMMARY.md,DETAILED_EXPLANATION.md,INVITE_FIX.md} 2>/dev/null || true
+# 9. Очистка - удаляем .env.example после создания .env
+rm -f "$PROJECT_DIR/.env.example" 2>/dev/null || true
 
 # ============================================================
 # ЗАВЕРШЕНИЕ УСТАНОВКИ
