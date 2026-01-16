@@ -8,9 +8,10 @@ CLEANUP_DIRS=()
 TEMP_REPO=""
 SCRIPT_CWD="$(cd "$(dirname "$0")" && pwd)"
 CLONE_DIR=""
+INTERRUPTED=false
 
 # Переменные путей
-PROJECT_DIR="/opt/tg-sell-bot"
+PROJECT_DIR="/opt/dfc-shop-bot"
 ENV_FILE="$PROJECT_DIR/.env"
 REPO_DIR="/opt/tg-bot"
 REMNAWAVE_DIR="/opt/remnawave"
@@ -328,8 +329,8 @@ show_simple_menu() {
             fi
             
             # Удаляем исходную папку клона если это была временная установка
-            # (не целевая /opt/tg-sell-bot и не основной каталог /opt/tg-bot)
-            if [ -n "$SCRIPT_CWD" ] && [ "$SCRIPT_CWD" != "/opt/tg-sell-bot" ] && [ "$SCRIPT_CWD" != "/opt/tg-bot" ] && [ "$SCRIPT_CWD" != "/" ]; then
+            # (не целевая /opt/dfc-shop-bot и не основной каталог /opt/tg-bot)
+            if [ -n "$SCRIPT_CWD" ] && [ "$SCRIPT_CWD" != "/opt/dfc-shop-bot" ] && [ "$SCRIPT_CWD" != "/opt/tg-bot" ] && [ "$SCRIPT_CWD" != "/" ]; then
                 if [ -d "$SCRIPT_CWD" ]; then
                     cd /opt 2>/dev/null || true
                     rm -rf "$SCRIPT_CWD" 2>/dev/null || true
@@ -349,7 +350,7 @@ show_simple_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 TG-SELL-BOT INSTALLER${NC}"
+        echo -e "${GREEN}   🚀 DFC-SHOP-BOT INSTALLER${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -452,7 +453,7 @@ show_full_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 TG-SELL-BOT MANAGEMENT PANEL${NC}"
+        echo -e "${GREEN}   🚀 DFC-SHOP-BOT MANAGEMENT PANEL${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -605,7 +606,7 @@ show_full_menu() {
 manage_update_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     
@@ -668,7 +669,7 @@ manage_update_bot() {
     if [ $UPDATE_NEEDED -eq 0 ]; then
         clear
         echo -e "${BLUE}========================================${NC}"
-        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
+        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
         echo -e "${BLUE}========================================${NC}"
         echo
         if [ -n "$LOCAL_VERSION" ] && [ "$LOCAL_VERSION" != "unknown" ]; then
@@ -859,7 +860,7 @@ manage_update_bot() {
 manage_restart_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен...${NC}"
@@ -926,7 +927,7 @@ manage_restart_bot() {
 manage_restart_bot_with_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен с отображением логов...${NC}"
@@ -958,7 +959,7 @@ manage_restart_bot_with_logs() {
 manage_reinstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  ВНИМАНИЕ!${NC}"
@@ -1012,7 +1013,7 @@ manage_reinstall_bot() {
 manage_stop_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет выключен...${NC}"
@@ -1037,7 +1038,7 @@ manage_stop_bot() {
 manage_start_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет включен...${NC}"
@@ -1062,7 +1063,7 @@ manage_start_bot() {
 manage_view_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Последние 50 строк логов...${NC}"
@@ -1082,7 +1083,7 @@ manage_view_logs() {
 manage_view_logs_live() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Запуск просмотра логов...${NC}"
@@ -1382,7 +1383,7 @@ manage_cleanup_database() {
 manage_uninstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  Внимание!${NC} Это удалит весь бот и все данные!"
@@ -1411,7 +1412,7 @@ manage_uninstall_bot() {
     
     # Удаляем глобальную команду
     {
-        sudo rm -f /usr/local/bin/tg-sell-bot 2>/dev/null || true
+        sudo rm -f /usr/local/bin/dfc-shop-bot 2>/dev/null || true
     } &
     show_spinner "Удаление ярлыка команды"
     
@@ -1433,10 +1434,10 @@ cleanup_on_error() {
     tput sgr0 >/dev/null 2>&1 || true
     
     # Проверяем нужна ли очистка
-    # Очищаем если: есть ошибка, установка начата, или есть что удалять
+    # Очищаем если: было прерывание, установка начата, есть ошибка, или есть что удалять
     local needs_cleanup=false
     
-    if [ $exit_code -ne 0 ] || [ "$INSTALL_STARTED" = true ]; then
+    if [ "$INTERRUPTED" = true ] || [ "$INSTALL_STARTED" = true ] || [ $exit_code -ne 0 ]; then
         needs_cleanup=true
     elif [ -d "$PROJECT_DIR" ] && [ "$PROJECT_DIR" != "/" ] && [ -n "$(ls -A "$PROJECT_DIR" 2>/dev/null)" ]; then
         # Если папка проекта существует и не пуста - нужна очистка
@@ -1463,7 +1464,7 @@ cleanup_on_error() {
         fi
         
         # Удаляем исходную папку с клоном репозитория
-        if [ -n "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/opt/tg-sell-bot" ] && [ "$SOURCE_DIR" != "/" ] && [ -d "$SOURCE_DIR" ]; then
+        if [ -n "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/opt/dfc-shop-bot" ] && [ "$SOURCE_DIR" != "/" ] && [ -d "$SOURCE_DIR" ]; then
             echo -e "${YELLOW}🗑 Удаляю клон репозитория: $SOURCE_DIR${NC}"
             rm -rf "$SOURCE_DIR" 2>/dev/null || true
             echo -e "${GREEN}✓ Удален клон репозитория${NC}"
@@ -1521,7 +1522,7 @@ cleanup_on_error() {
 
 # Установка trap для обработки ошибок, прерываний и выхода
 trap cleanup_on_error EXIT
-trap 'INSTALL_STARTED=true; exit 130' INT TERM
+trap 'INTERRUPTED=true; INSTALL_STARTED=true; exit 130' INT TERM
 trap 'INSTALL_STARTED=true; exit 1' ERR
 
 # Автоматически даем права на выполнение самому себе
@@ -1583,7 +1584,7 @@ fi
 
 clear
 echo -e "${BLUE}========================================${NC}"
-echo -e "${GREEN}       🚀 УСТАНОВКА TG-SELL-BOT${NC}"
+echo -e "${GREEN}       🚀 УСТАНОВКА DFC-SHOP-BOT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo
 
@@ -1841,7 +1842,7 @@ SCRIPT_PATH="$(realpath "$0")"
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 SOURCE_DIR="$SCRIPT_DIR"
 
-if [ "$SOURCE_DIR" = "/opt/tg-sell-bot" ]; then
+if [ "$SOURCE_DIR" = "/opt/dfc-shop-bot" ]; then
     # Скрипт уже в целевой директории - ничего не копируем
     COPY_FILES=false
 else
@@ -2119,11 +2120,11 @@ echo -e "${BLUE}========================================${NC}"
 echo
 
 echo -e "${WHITE}✅ Бот успешно установлен по пути${NC} ${GREEN}$PROJECT_DIR${NC}"
-echo -e "${WHITE}✅ Команда вызова меню бота:${NC} ${YELLOW}tg-sell-bot${NC}"
+echo -e "${WHITE}✅ Команда вызова меню бота:${NC} ${YELLOW}dfc-shop-bot${NC}"
 echo
 
-# Удаление исходной папки если она не в /opt/tg-sell-bot
-if [ "$COPY_FILES" = true ] && [ "$SOURCE_DIR" != "/opt/tg-sell-bot" ] && [ "$SOURCE_DIR" != "/" ]; then
+# Удаление исходной папки если она не в /opt/dfc-shop-bot
+if [ "$COPY_FILES" = true ] && [ "$SOURCE_DIR" != "/opt/dfc-shop-bot" ] && [ "$SOURCE_DIR" != "/" ]; then
     cd /opt
     rm -rf "$SOURCE_DIR" 2>/dev/null || true
 fi
@@ -2131,9 +2132,9 @@ fi
 # Отмечаем успешное завершение установки
 INSTALL_STARTED=false
 
-# Создание глобальной команды tg-sell-bot
+# Создание глобальной команды dfc-shop-bot
 (
-    sudo tee /usr/local/bin/tg-sell-bot > /dev/null << 'EOF'
+    sudo tee /usr/local/bin/dfc-shop-bot > /dev/null << 'EOF'
 #!/bin/bash
 # Запускаем install.sh из папки assets/update
 if [ -f "/opt/tg-bot/assets/update/install.sh" ]; then
@@ -2143,7 +2144,7 @@ else
     exec /opt/tg-bot/install.sh
 fi
 EOF
-    sudo chmod +x /usr/local/bin/tg-sell-bot
+    sudo chmod +x /usr/local/bin/dfc-shop-bot
 ) >/dev/null 2>&1
 
 # Ожидание ввода перед возвратом в главное меню
