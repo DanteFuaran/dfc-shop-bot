@@ -8,12 +8,11 @@ CLEANUP_DIRS=()
 TEMP_REPO=""
 SCRIPT_CWD="$(cd "$(dirname "$0")" && pwd)"
 CLONE_DIR=""
-INTERRUPTED=false
 
 # Переменные путей
 PROJECT_DIR="/opt/dfc-shop-bot"
 ENV_FILE="$PROJECT_DIR/.env"
-REPO_DIR="/opt/tg-bot"
+REPO_DIR="/opt/dfc-shop-bot"
 REMNAWAVE_DIR="/opt/remnawave"
 REPO_URL="https://github.com/DanteFuaran/dfc-shop-bot.git"
 REPO_BRANCH="main"
@@ -223,10 +222,19 @@ get_version_from_file() {
     fi
 }
 
-# Функция для получения локальной версии (из src/__version__.py)
+# Функция для получения локальной версии (из assets/update/.version или src/__version__.py)
 get_local_version() {
-    # Сначала пробуем src/__version__.py (основной источник версии)
-    if [ -f "$PROJECT_DIR/src/__version__.py" ]; then
+    # Сначала пробуем assets/update/.version файл
+    if [ -f "$PROJECT_DIR/assets/update/.version" ]; then
+        cat "$PROJECT_DIR/assets/update/.version" 2>/dev/null | tr -d '\n' || echo ""
+    # Fallback на старый путь assets/setup/.version (для совместимости)
+    elif [ -f "$PROJECT_DIR/assets/setup/.version" ]; then
+        cat "$PROJECT_DIR/assets/setup/.version" 2>/dev/null | tr -d '\n' || echo ""
+    # Fallback на старый путь .version
+    elif [ -f "$PROJECT_DIR/.version" ]; then
+        cat "$PROJECT_DIR/.version" 2>/dev/null | tr -d '\n' || echo ""
+    # Fallback на src/__version__.py
+    elif [ -f "$PROJECT_DIR/src/__version__.py" ]; then
         get_version_from_file "$PROJECT_DIR/src/__version__.py"
     else
         echo ""
@@ -329,8 +337,8 @@ show_simple_menu() {
             fi
             
             # Удаляем исходную папку клона если это была временная установка
-            # (не целевая /opt/dfc-shop-bot и не основной каталог /opt/tg-bot)
-            if [ -n "$SCRIPT_CWD" ] && [ "$SCRIPT_CWD" != "/opt/dfc-shop-bot" ] && [ "$SCRIPT_CWD" != "/opt/tg-bot" ] && [ "$SCRIPT_CWD" != "/" ]; then
+            # (не целевая /opt/dfc-shop-bot и не основной каталог /opt/dfc-shop-bot)
+            if [ -n "$SCRIPT_CWD" ] && [ "$SCRIPT_CWD" != "/opt/dfc-shop-bot" ] && [ "$SCRIPT_CWD" != "/opt/dfc-shop-bot" ] && [ "$SCRIPT_CWD" != "/" ]; then
                 if [ -d "$SCRIPT_CWD" ]; then
                     cd /opt 2>/dev/null || true
                     rm -rf "$SCRIPT_CWD" 2>/dev/null || true
@@ -350,7 +358,7 @@ show_simple_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 DFC-SHOP-BOT INSTALLER${NC}"
+        echo -e "${GREEN}   🚀 TG-SELL-BOT INSTALLER${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -453,7 +461,7 @@ show_full_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 DFC-SHOP-BOT MANAGEMENT PANEL${NC}"
+        echo -e "${GREEN}   🚀 TG-SELL-BOT MANAGEMENT PANEL${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -606,7 +614,7 @@ show_full_menu() {
 manage_update_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     
@@ -669,7 +677,7 @@ manage_update_bot() {
     if [ $UPDATE_NEEDED -eq 0 ]; then
         clear
         echo -e "${BLUE}========================================${NC}"
-        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
+        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
         echo -e "${BLUE}========================================${NC}"
         echo
         if [ -n "$LOCAL_VERSION" ] && [ "$LOCAL_VERSION" != "unknown" ]; then
@@ -735,6 +743,13 @@ manage_update_bot() {
                         fi
                     fi
                 done
+                
+                # Сохраняем версию в assets/update/.version файл для корректной проверки версий
+                mkdir -p "$PROJECT_DIR/assets/update" 2>/dev/null || true
+                local new_version=$(grep -oP '__version__ = "\K[^"]+' "src/__version__.py" 2>/dev/null || echo "")
+                if [ -n "$new_version" ]; then
+                    echo "$new_version" > "$PROJECT_DIR/assets/update/.version"
+                fi
                 
                 # Копируем install.sh в папку assets/update
                 cp -f "install.sh" "$PROJECT_DIR/assets/update/install.sh" 2>/dev/null || true
@@ -860,7 +875,7 @@ manage_update_bot() {
 manage_restart_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен...${NC}"
@@ -927,7 +942,7 @@ manage_restart_bot() {
 manage_restart_bot_with_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен с отображением логов...${NC}"
@@ -959,7 +974,7 @@ manage_restart_bot_with_logs() {
 manage_reinstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  ВНИМАНИЕ!${NC}"
@@ -1013,7 +1028,7 @@ manage_reinstall_bot() {
 manage_stop_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет выключен...${NC}"
@@ -1038,7 +1053,7 @@ manage_stop_bot() {
 manage_start_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет включен...${NC}"
@@ -1063,7 +1078,7 @@ manage_start_bot() {
 manage_view_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Последние 50 строк логов...${NC}"
@@ -1083,7 +1098,7 @@ manage_view_logs() {
 manage_view_logs_live() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Запуск просмотра логов...${NC}"
@@ -1383,7 +1398,7 @@ manage_cleanup_database() {
 manage_uninstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ DFC-SHOP-BOT${NC}"
+    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ TG-SELL-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  Внимание!${NC} Это удалит весь бот и все данные!"
@@ -1433,69 +1448,31 @@ cleanup_on_error() {
     tput cnorm >/dev/null 2>&1 || true
     tput sgr0 >/dev/null 2>&1 || true
     
-    # Проверяем нужна ли очистка
-    # Очищаем если: было прерывание, установка начата, есть ошибка, или есть что удалять
-    local needs_cleanup=false
-    
-    if [ "$INTERRUPTED" = true ] || [ "$INSTALL_STARTED" = true ] || [ $exit_code -ne 0 ]; then
-        needs_cleanup=true
-    elif [ -d "$PROJECT_DIR" ] && [ "$PROJECT_DIR" != "/" ] && [ -n "$(ls -A "$PROJECT_DIR" 2>/dev/null)" ]; then
-        # Если папка проекта существует и не пуста - нужна очистка
-        needs_cleanup=true
-    fi
-    
-    if [ "$needs_cleanup" = true ]; then
+    if [ $exit_code -ne 0 ] || [ "$INSTALL_STARTED" = true ]; then
         echo
         echo -e "${RED}════════════════════════════════════════${NC}"
         echo -e "${RED}  ⚠️ УСТАНОВКА ПРЕРВАНА ИЛИ ОШИБКА${NC}"
         echo -e "${RED}════════════════════════════════════════${NC}"
         echo
-        echo -e "${WHITE}🧹 Выполняю полную очистку...${NC}"
-        echo
-        
-        # Останавливаем Docker контейнеры если они запущены
-        if command -v docker &> /dev/null && [ -d "$PROJECT_DIR" ]; then
-            echo -e "${YELLOW}⏹ Останавливаю Docker контейнеры...${NC}"
-            cd "$PROJECT_DIR" 2>/dev/null && {
-                docker compose down -v 2>/dev/null || true
-                docker compose rm -f -v 2>/dev/null || true
-            }
-            echo -e "${GREEN}✓ Docker контейнеры остановлены${NC}"
-        fi
+        echo -e "${WHITE}🧹 Выполняю очистку...${NC}"
         
         # Удаляем исходную папку с клоном репозитория
         if [ -n "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/opt/dfc-shop-bot" ] && [ "$SOURCE_DIR" != "/" ] && [ -d "$SOURCE_DIR" ]; then
-            echo -e "${YELLOW}🗑 Удаляю клон репозитория: $SOURCE_DIR${NC}"
             rm -rf "$SOURCE_DIR" 2>/dev/null || true
             echo -e "${GREEN}✓ Удален клон репозитория${NC}"
         fi
         
-        # Удаляем временную папку клонирования
-        if [ -n "$CLONE_DIR" ] && [ -d "$CLONE_DIR" ]; then
-            echo -e "${YELLOW}🗑 Удаляю временную папку: $CLONE_DIR${NC}"
-            cd /opt 2>/dev/null || true
-            rm -rf "$CLONE_DIR" 2>/dev/null || true
-            echo -e "${GREEN}✓ Удалена временная папка${NC}"
-        fi
-        
-        # Удаляем все папки из CLEANUP_DIRS
-        if [ ${#CLEANUP_DIRS[@]} -gt 0 ]; then
-            for cleanup_dir in "${CLEANUP_DIRS[@]}"; do
-                if [ -n "$cleanup_dir" ] && [ "$cleanup_dir" != "/" ] && [ -d "$cleanup_dir" ]; then
-                    echo -e "${YELLOW}🗑 Удаляю: $cleanup_dir${NC}"
-                    rm -rf "$cleanup_dir" 2>/dev/null || true
-                    echo -e "${GREEN}✓ Удалено: $cleanup_dir${NC}"
-                fi
-            done
-        fi
-        
         # Удаляем целевую папку если установка не завершена
         if [ "$INSTALL_STARTED" = true ] && [ -d "$PROJECT_DIR" ]; then
-            echo -e "${YELLOW}🗑 Удаляю папку проекта: $PROJECT_DIR${NC}"
+            # Сохраняем .env если он существует и был заполнен
+            ENV_BACKUP=""
+            if [ -f "$ENV_FILE" ]; then
+                ENV_BACKUP=$(cat "$ENV_FILE" 2>/dev/null || true)
+            fi
             
             # Останавливаем контейнеры если они запущены
             if command -v docker &> /dev/null; then
-                cd "$PROJECT_DIR" 2>/dev/null && docker compose down -v 2>/dev/null || true
+                cd "$PROJECT_DIR" 2>/dev/null && docker compose down 2>/dev/null || true
             fi
             
             # Удаляем проектную папку
@@ -1503,18 +1480,16 @@ cleanup_on_error() {
             echo -e "${GREEN}✓ Удалена папка проекта${NC}"
         fi
         
-        # Удаляем временные файлы
-        if [ -n "$TEMP_REPO" ] && [ "$TEMP_REPO" != "/" ] && [ -d "$TEMP_REPO" ]; then
-            echo -e "${YELLOW}🗑 Удаляю временные файлы: $TEMP_REPO${NC}"
-            rm -rf "$TEMP_REPO" 2>/dev/null || true
-            echo -e "${GREEN}✓ Удалены временные файлы${NC}"
-        fi
-        
-        echo
         echo -e "${GREEN}✅ Очистка завершена${NC}"
         echo
         echo -e "${YELLOW}ℹ Попробуйте запустить установку снова${NC}"
         echo
+    fi
+    
+    # Удаляем временную папку клонирования если она была создана
+    if [ -n "$CLONE_DIR" ] && [ -d "$CLONE_DIR" ]; then
+        cd /opt 2>/dev/null || true
+        rm -rf "$CLONE_DIR" 2>/dev/null || true
     fi
     
     exit $exit_code
@@ -1522,16 +1497,16 @@ cleanup_on_error() {
 
 # Установка trap для обработки ошибок, прерываний и выхода
 trap cleanup_on_error EXIT
-trap 'INTERRUPTED=true; INSTALL_STARTED=true; exit 130' INT TERM
-trap 'INSTALL_STARTED=true; exit 1' ERR
+trap 'INSTALL_STARTED=false; exit 130' INT TERM
 
 # Автоматически даем права на выполнение самому себе
 chmod +x "$0" 2>/dev/null || true
 
-# Показать курсор (скроем в cleanup_on_error)
+# Показать курсор
 tput civis >/dev/null 2>&1 || true
 
-# НЕ перезаписываем trap EXIT - используем cleanup_on_error для восстановления курсора
+# Показать курсор при выходе
+trap 'tput cnorm >/dev/null 2>&1 || true; tput sgr0 >/dev/null 2>&1 || true' EXIT
 
 # Режим установки: dev или prod
 INSTALL_MODE="dev"
@@ -1556,8 +1531,7 @@ if [ "$1" != "--install" ] && [ ! -d "/tmp/dfc-shop-bot-install-$$" ]; then
     # Если скрипт запущен с флагом установки, создаем временную папку и переклонируемся туда
     if [ "$1" = "--install" ]; then
         CLONE_DIR=$(mktemp -d /tmp/dfc-shop-bot-install-XXXXXX)
-        CLEANUP_DIRS+=("$CLONE_DIR")
-        # НЕ перезаписываем trap - используем общий cleanup_on_error
+        trap "cd /opt 2>/dev/null || true; rm -rf '$CLONE_DIR' 2>/dev/null || true" EXIT
         git clone -b "$REPO_BRANCH" --depth 1 "$REPO_URL" "$CLONE_DIR" >/dev/null 2>&1
         cd "$CLONE_DIR"
         exec "$CLONE_DIR/install.sh" --install "$$"
@@ -1565,7 +1539,6 @@ if [ "$1" != "--install" ] && [ ! -d "/tmp/dfc-shop-bot-install-$$" ]; then
 else
     # Это повторный запуск из временной папки
     CLONE_DIR="/tmp/dfc-shop-bot-install-$2"
-    CLEANUP_DIRS+=("$CLONE_DIR")
     INSTALL_MODE="$3"
     if [ "$INSTALL_MODE" = "prod" ] || [ "$INSTALL_MODE" = "-p" ]; then
         INSTALL_MODE="prod"
@@ -1583,7 +1556,7 @@ fi
 
 clear
 echo -e "${BLUE}========================================${NC}"
-echo -e "${GREEN}       🚀 УСТАНОВКА DFC-SHOP-BOT${NC}"
+echo -e "${GREEN}       🚀 УСТАНОВКА TG-SELL-BOT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo
 
@@ -1609,108 +1582,12 @@ log_warning() {
 
 # Спиннер прогресса установки
 
-# Безопасный ввод с валидацией и повторными попытками
+# Безопасный ввод
 safe_read() {
   local prompt="$1"
   local varname="$2"
   echo -ne "$prompt"
   IFS= read -r "$varname" || { echo; exit 1; }
-}
-
-# Валидация ввода с 3 попытками
-safe_read_with_validation() {
-  local prompt="$1"
-  local varname="$2"
-  local validation_func="$3"
-  local max_attempts=3
-  local attempt=1
-  local input=""
-  local is_valid=false
-  
-  while [ $attempt -le $max_attempts ]; do
-    echo -ne "$prompt"
-    IFS= read -r input || { echo; exit 1; }
-    
-    # Проверка что input не пустой
-    if [ -z "$input" ]; then
-      echo -e "${RED}✗ Ошибка: Значение не может быть пустым!${NC}"
-      attempt=$((attempt + 1))
-      if [ $attempt -le $max_attempts ]; then
-        echo -e "${YELLOW}⚠ Попытка $attempt из $max_attempts${NC}"
-        echo ""
-      fi
-      continue
-    fi
-    
-    # Если передана функция валидации - проверяем
-    if [ -n "$validation_func" ] && command -v "$validation_func" >/dev/null 2>&1; then
-      if $validation_func "$input"; then
-        is_valid=true
-        break
-      else
-        attempt=$((attempt + 1))
-        if [ $attempt -le $max_attempts ]; then
-          echo -e "${YELLOW}⚠ Попытка $attempt из $max_attempts${NC}"
-          echo ""
-        fi
-      fi
-    else
-      # Нет функции валидации - принимаем любое непустое значение
-      is_valid=true
-      break
-    fi
-  done
-  
-  if [ "$is_valid" = false ]; then
-    echo ""
-    echo -e "${RED}════════════════════════════════════════${NC}"
-    echo -e "${RED}  ⚠️ ПРЕВЫШЕНО КОЛИЧЕСТВО ПОПЫТОК${NC}"
-    echo -e "${RED}════════════════════════════════════════${NC}"
-    echo ""
-    echo -e "${WHITE}Вы исчерпали все попытки ввода корректных данных.${NC}"
-    echo -e "${WHITE}Установка прервана. Выполняю очистку...${NC}"
-    echo ""
-    INSTALL_STARTED=true
-    exit 1
-  fi
-  
-  eval "$varname=\"\$input\""
-}
-
-# Функции валидации
-validate_bot_token() {
-  local token="$1"
-  # Токен Telegram бота имеет формат: XXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  if [[ $token =~ ^[0-9]+:[A-Za-z0-9_-]{35}$ ]]; then
-    return 0
-  else
-    echo -e "${RED}✗ Ошибка: Неверный формат токена бота!${NC}"
-    echo -e "${YELLOW}  Формат: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz1234567${NC}"
-    return 1
-  fi
-}
-
-validate_telegram_id() {
-  local id="$1"
-  # Telegram ID - это число
-  if [[ $id =~ ^[0-9]+$ ]]; then
-    return 0
-  else
-    echo -e "${RED}✗ Ошибка: Telegram ID должен содержать только цифры!${NC}"
-    return 1
-  fi
-}
-
-validate_remnawave_token() {
-  local token="$1"
-  # Базовая проверка - не пустое значение и минимальная длина
-  if [ ${#token} -ge 10 ]; then
-    return 0
-  else
-    echo -e "${RED}✗ Ошибка: Токен Remnawave слишком короткий!${NC}"
-    echo -e "${YELLOW}  Минимальная длина: 10 символов${NC}"
-    return 1
-  fi
 }
 
 read_input() {
@@ -1813,6 +1690,9 @@ EOF
 ) &
 show_spinner "Проверка установленных компонентов"
 
+# Отмечаем, что установка началась - теперь при ошибке нужно очищать
+INSTALL_STARTED=true
+
 # 2. Подготовка целевой директории
 (
   # Создаем целевую директорию
@@ -1829,12 +1709,6 @@ show_spinner "Проверка установленных компонентов
 ) &
 show_spinner "Подготовка целевой директории"
 
-# Добавляем созданные директории в массив для очистки при ошибке
-CLEANUP_DIRS+=("$PROJECT_DIR")
-
-# Отмечаем что установка началась - с этого момента нужна очистка при ошибке
-INSTALL_STARTED=true
-
 # 3. Определение, откуда копировать файлы
 # Если скрипт запущен не из целевой директории, значит мы в клонированной папке
 SCRIPT_PATH="$(realpath "$0")"
@@ -1847,47 +1721,37 @@ if [ "$SOURCE_DIR" = "/opt/dfc-shop-bot" ]; then
 else
     # Скрипт в клонированной папке - копируем файлы
     COPY_FILES=true
-    # Добавляем SOURCE_DIR в CLEANUP_DIRS если это не целевая директория
-    if [ "$SOURCE_DIR" != "$PROJECT_DIR" ] && [ "$SOURCE_DIR" != "/" ]; then
-        CLEANUP_DIRS+=("$SOURCE_DIR")
-    fi
-    # Только минимально необходимые файлы для запуска
-    # Код (src, scripts, pyproject.toml и т.д.) будет скопирован в Docker образ при сборке
     SOURCE_FILES=(
         "docker-compose.yml"
+        "Dockerfile"
         ".env.example"
+        "Makefile"
+        "pyproject.toml"
+        "uv.lock"
+        ".deployignore"
+        "README.md"
     )
 fi
 
-# 4. Сборка Docker образа из временной папки (код останется внутри образа)
+# 4. Копирование файлов если нужно
 if [ "$COPY_FILES" = true ]; then
     (
-      # Копируем только docker-compose и .env.example
+      # Копируем основные файлы
       for file in "${SOURCE_FILES[@]}"; do
           if [ -f "$SOURCE_DIR/$file" ]; then
               cp "$SOURCE_DIR/$file" "$PROJECT_DIR/"
           fi
       done
       
-      # Копируем только assets (для кастомизации пользователем)
-      if [ -d "$SOURCE_DIR/assets" ]; then
-          rm -rf "$PROJECT_DIR/assets" 2>/dev/null || true
-          cp -r "$SOURCE_DIR/assets" "$PROJECT_DIR/"
-      fi
+      # Копируем директории (src, scripts и assets)
+      for dir in "src" "scripts" "assets"; do
+          if [ -d "$SOURCE_DIR/$dir" ]; then
+              rm -rf "$PROJECT_DIR/$dir" 2>/dev/null || true
+              cp -r "$SOURCE_DIR/$dir" "$PROJECT_DIR/"
+          fi
+      done
     ) &
-    show_spinner "Копирование файлов конфигурации"
-    
-    # Собираем Docker образ из SOURCE_DIR (там есть src, scripts, Dockerfile и т.д.)
-    (
-      cd "$SOURCE_DIR"
-      docker build -t remnashop:local \
-        --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-        --build-arg BUILD_BRANCH="$REPO_BRANCH" \
-        --build-arg BUILD_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')" \
-        --build-arg BUILD_TAG="$(cat src/__version__.py 2>/dev/null | grep -oP '(?<=").*(?=")' || echo 'unknown')" \
-        . >/dev/null 2>&1
-    ) &
-    show_spinner "Сборка Docker образа (это может занять несколько минут)"
+    show_spinner "Копирование файлов установки"
 fi
 
 # 5. Создание .env файла
@@ -1933,11 +1797,19 @@ update_env_var "$ENV_FILE" "APP_DOMAIN" "$APP_DOMAIN"
 
 # BOT_TOKEN
 echo ""
-safe_read_with_validation "${YELLOW}➜ Введите Токен телеграм бота:${NC} " BOT_TOKEN "validate_bot_token"
+safe_read "${YELLOW}➜ Введите Токен телеграм бота:${NC} " BOT_TOKEN
+if [ -z "$BOT_TOKEN" ]; then
+    print_error "BOT_TOKEN не может быть пустым!"
+    exit 1
+fi
 update_env_var "$ENV_FILE" "BOT_TOKEN" "$BOT_TOKEN"
 
 # BOT_DEV_ID
-safe_read_with_validation "${YELLOW}➜ Введите телеграм ID разработчика:${NC} " BOT_DEV_ID "validate_telegram_id"
+safe_read "${YELLOW}➜ Введите телеграм ID разработчика:${NC} " BOT_DEV_ID
+if [ -z "$BOT_DEV_ID" ]; then
+    print_error "BOT_DEV_ID не может быть пустым!"
+    exit 1
+fi
 update_env_var "$ENV_FILE" "BOT_DEV_ID" "$BOT_DEV_ID"
 
 # BOT_SUPPORT_USERNAME
@@ -1946,7 +1818,11 @@ echo
 update_env_var "$ENV_FILE" "BOT_SUPPORT_USERNAME" "$BOT_SUPPORT_USERNAME"
 
 # REMNAWAVE_TOKEN
-safe_read_with_validation "${YELLOW}➜ Введите API Токен Remnawave:${NC} " REMNAWAVE_TOKEN "validate_remnawave_token"
+safe_read "${YELLOW}➜ Введите API Токен Remnawave:${NC} " REMNAWAVE_TOKEN
+if [ -z "$REMNAWAVE_TOKEN" ]; then
+    print_error "REMNAWAVE_TOKEN не может быть пустым!"
+    exit 1
+fi
 update_env_var "$ENV_FILE" "REMNAWAVE_TOKEN" "$REMNAWAVE_TOKEN"
 
 echo ""
@@ -2074,16 +1950,21 @@ show_spinner "Создание структуры папок"
 ) &
 show_spinner "Очистка старых данных БД"
 
-# Docker образ уже собран ранее при копировании файлов
+# 5. Сборка Docker образа (в фоне со спинером)
+(
+  cd "$PROJECT_DIR"
+  docker compose build >/dev/null 2>&1
+) &
+show_spinner "Сборка Docker образа"
 
-# 5. Запуск контейнеров (в фоне со спинером)
+# 6. Запуск контейнеров (в фоне со спинером)
 (
   cd "$PROJECT_DIR"
   docker compose up -d >/dev/null 2>&1
 ) &
 show_spinner "Запуск сервисов"
 
-# 6. Инициализация БД (в фоне со спинером)
+# 7. Инициализация БД (в фоне со спинером)
 (
   sleep 20
 ) &
@@ -2097,8 +1978,17 @@ if [ -d "/opt/remnawave/caddy" ]; then
   show_spinner "Настройка и перезапуск Caddy"
 fi
 
-# 9. Очистка - удаляем .env.example после создания .env
-rm -f "$PROJECT_DIR/.env.example" 2>/dev/null || true
+# 9. Очистка ненужных файлов в целевой директории
+rm -rf "$PROJECT_DIR"/src 2>/dev/null || true
+rm -rf "$PROJECT_DIR"/scripts 2>/dev/null || true
+rm -rf "$PROJECT_DIR"/docs 2>/dev/null || true
+rm -rf "$PROJECT_DIR"/.git 2>/dev/null || true
+rm -rf "$PROJECT_DIR"/.venv 2>/dev/null || true
+rm -rf "$PROJECT_DIR"/__pycache__ 2>/dev/null || true
+rm -f "$PROJECT_DIR"/{.gitignore,.dockerignore,.env.example,.python-version,.editorconfig} 2>/dev/null || true
+rm -f "$PROJECT_DIR"/{Makefile,pyproject.toml,uv.lock} 2>/dev/null || true
+rm -f "$PROJECT_DIR"/install.sh 2>/dev/null || true
+rm -f "$PROJECT_DIR"/{README.md,INSTALL_RU.md,BACKUP_RESTORE_GUIDE.md,CHANGES_SUMMARY.md,DETAILED_EXPLANATION.md,INVITE_FIX.md} 2>/dev/null || true
 
 # ============================================================
 # ЗАВЕРШЕНИЕ УСТАНОВКИ
@@ -2128,11 +2018,11 @@ INSTALL_STARTED=false
     sudo tee /usr/local/bin/dfc-shop-bot > /dev/null << 'EOF'
 #!/bin/bash
 # Запускаем install.sh из папки assets/update
-if [ -f "/opt/tg-bot/assets/update/install.sh" ]; then
-    exec /opt/tg-bot/assets/update/install.sh
+if [ -f "/opt/dfc-shop-bot/assets/update/install.sh" ]; then
+    exec /opt/dfc-shop-bot/assets/update/install.sh
 else
     # Fallback на основной install.sh для обратной совместимости
-    exec /opt/tg-bot/install.sh
+    exec /opt/dfc-shop-bot/install.sh
 fi
 EOF
     sudo chmod +x /usr/local/bin/dfc-shop-bot
