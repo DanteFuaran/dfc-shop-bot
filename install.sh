@@ -1530,15 +1530,15 @@ if [ "$1" != "--install" ] && [ ! -d "/tmp/dfc-shop-bot-install-$$" ]; then
     
     # Если скрипт запущен с флагом установки, создаем временную папку и переклонируемся туда
     if [ "$1" = "--install" ]; then
-        CLONE_DIR=$(mktemp -d /tmp/dfc-shop-bot-install-XXXXXX)
+        CLONE_DIR=$(mktemp -d)
         trap "cd /opt 2>/dev/null || true; rm -rf '$CLONE_DIR' 2>/dev/null || true" EXIT
         git clone -b "$REPO_BRANCH" --depth 1 "$REPO_URL" "$CLONE_DIR" >/dev/null 2>&1
         cd "$CLONE_DIR"
-        exec "$CLONE_DIR/install.sh" --install "$$"
+        exec "$CLONE_DIR/install.sh" --install "$CLONE_DIR"
     fi
 else
     # Это повторный запуск из временной папки
-    CLONE_DIR="/tmp/dfc-shop-bot-install-$2"
+    CLONE_DIR="$2"
     INSTALL_MODE="$3"
     if [ "$INSTALL_MODE" = "prod" ] || [ "$INSTALL_MODE" = "-p" ]; then
         INSTALL_MODE="prod"
