@@ -1,5 +1,5 @@
 # Logs
-logs/
+logs/*.log
 *.log
 # Obsolete scripts (removed, use install.sh instead)
 manage.sh
