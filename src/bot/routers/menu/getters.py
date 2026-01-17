@@ -81,7 +81,7 @@ async def menu_getter(
             if invite_message.startswith("\n"):
                 invite_message = invite_message[1:]
         else:
-            invite_message = f"Join us! {ref_link}"
+            invite_message = f"\nJoin us! {ref_link}"
         
         # Get referral balance
         referral_balance = await referral_service.get_pending_rewards_amount(
@@ -494,7 +494,7 @@ async def invite_getter(
         if invite_message.startswith("\n"):
             invite_message = invite_message[1:]
     else:
-        invite_message = f"Join us! {ref_link}"
+        invite_message = f"\nJoin us! {ref_link}"
     
     # Get pending referral balance (not issued rewards)
     referral_balance = await referral_service.get_pending_rewards_amount(
