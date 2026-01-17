@@ -57,12 +57,6 @@ dashboard = Window(
             state=DashboardBroadcast.MAIN,
             mode=StartMode.RESET_STACK,
         ),
-        Start(
-            text=I18nFormat("btn-dashboard-promocodes"),
-            id="promocodes",
-            state=DashboardPromocodes.MAIN,
-            mode=StartMode.RESET_STACK,
-        ),
     ),
     Row(
         Start(
