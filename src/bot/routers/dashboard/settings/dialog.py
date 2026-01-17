@@ -1743,7 +1743,7 @@ tos_settings = Window(
     I18nFormat(
         "msg-dashboard-settings-tos",
         status=F["status_text"],
-        source=F["url_display"],
+        source=F["source"],
     ),
     Button(
         text=I18nFormat(

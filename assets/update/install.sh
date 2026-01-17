@@ -243,23 +243,44 @@ check_updates_available() {
         # Получаем локальную версию из PROJECT_DIR (production)
         LOCAL_VERSION=$(get_local_version)
         
-        # Получаем удаленную версию через GitHub raw URL
-        # Формат: https://raw.githubusercontent.com/owner/repo/branch/path/to/file
-        GITHUB_RAW_URL=$(echo "$REPO_URL" | sed 's|github.com|raw.githubusercontent.com|; s|\.git$||')
-        REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/src/__version__.py"
+        # Создаём временную папку для проверки версии
+        TEMP_CHECK_DIR=$(mktemp -d)
         
-        # Скачиваем файл версии с GitHub
-        REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
-        
-        # Сравниваем версии
-        if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
-            if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
-                echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+        # Клонируем только последний коммит нужной ветки (быстро, ~500kb)
+        if git clone -b "$REPO_BRANCH" --depth 1 --single-branch "$REPO_URL" "$TEMP_CHECK_DIR" >/dev/null 2>&1; then
+            # Получаем удаленную версию из клонированного репозитория
+            REMOTE_VERSION=$(grep -oP '__version__ = "\K[^"]+' "$TEMP_CHECK_DIR/src/__version__.py" 2>/dev/null || echo "")
+            
+            # Удаляем временную папку
+            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
+            
+            # Сравниваем версии
+            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                else
+                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                fi
             else
-                echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                echo "0|unknown" > "$UPDATE_STATUS_FILE"
             fi
         else
-            echo "0|unknown" > "$UPDATE_STATUS_FILE"
+            # Если не удалось клонировать, пробуем старый способ через raw URL
+            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
+            
+            GITHUB_RAW_URL=$(echo "$REPO_URL" | sed 's|github.com|raw.githubusercontent.com|; s|\.git$||')
+            REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/src/__version__.py"
+            REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
+            
+            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                else
+                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                fi
+            else
+                echo "0|unknown" > "$UPDATE_STATUS_FILE"
+            fi
         fi
     } &
     CHECK_UPDATE_PID=$!
@@ -315,6 +336,9 @@ show_simple_menu() {
     local options=("🚀  Установить" "❌  Выход")
     local num_options=${#options[@]}
     
+    # Ждём завершения проверки обновлений
+    wait_for_update_check
+    
     # Сохраняем текущие настройки терминала
     local original_stty=$(stty -g 2>/dev/null)
     
@@ -349,7 +373,7 @@ show_simple_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 TG-SELL-BOT INSTALLER${NC}"
+        echo -e "${GREEN}   🚀 DFC-SHOP-BOT INSTALLER${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -452,7 +476,7 @@ show_full_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 TG-SELL-BOT MANAGEMENT PANEL${NC}"
+        echo -e "${GREEN}   🚀 DFC-SHOP-BOT MANAGEMENT PANEL${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -605,7 +629,7 @@ show_full_menu() {
 manage_update_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     
@@ -668,7 +692,7 @@ manage_update_bot() {
     if [ $UPDATE_NEEDED -eq 0 ]; then
         clear
         echo -e "${BLUE}========================================${NC}"
-        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
+        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
         echo -e "${BLUE}========================================${NC}"
         echo
         if [ -n "$LOCAL_VERSION" ] && [ "$LOCAL_VERSION" != "unknown" ]; then
@@ -866,7 +890,7 @@ manage_update_bot() {
 manage_restart_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен...${NC}"
@@ -933,7 +957,7 @@ manage_restart_bot() {
 manage_restart_bot_with_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен с отображением логов...${NC}"
@@ -965,7 +989,7 @@ manage_restart_bot_with_logs() {
 manage_reinstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  ВНИМАНИЕ!${NC}"
@@ -1019,7 +1043,7 @@ manage_reinstall_bot() {
 manage_stop_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет выключен...${NC}"
@@ -1044,7 +1068,7 @@ manage_stop_bot() {
 manage_start_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет включен...${NC}"
@@ -1069,7 +1093,7 @@ manage_start_bot() {
 manage_view_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Последние 50 строк логов...${NC}"
@@ -1089,7 +1113,7 @@ manage_view_logs() {
 manage_view_logs_live() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Запуск просмотра логов...${NC}"
@@ -1389,7 +1413,7 @@ manage_cleanup_database() {
 manage_uninstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  Внимание!${NC} Это удалит весь бот и все данные!"
@@ -1539,7 +1563,7 @@ fi
 
 clear
 echo -e "${BLUE}========================================${NC}"
-echo -e "${GREEN}       🚀 УСТАНОВКА TG-SELL-BOT${NC}"
+echo -e "${GREEN}       🚀 УСТАНОВКА DFC-SHOP-BOT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo
 

@@ -16,7 +16,6 @@ from src.core.enums import (
     ReferralRewardType,
 )
 from src.core.utils.formatters import format_user_log as log
-from src.core.utils.message_payload import MessagePayload
 from src.infrastructure.database.models.dto import UserDto
 from src.services.notification import NotificationService
 from src.services.settings import SettingsService
@@ -527,13 +526,19 @@ async def on_invite_message_input(
     dialog_manager.show_mode = ShowMode.EDIT
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
-    new_message = message.text.strip() if message.text else ""
+    # Получаем текст и HTML entities
+    if message.html_text:
+        new_message = message.html_text
+    elif message.text:
+        new_message = message.text
+    else:
+        new_message = ""
     
-    if not new_message:
+    if not new_message.strip():
         await message.answer("⚠️ Сообщение не может быть пустым!")
         return
     
-    # Автоматически добавляем {space} в начало, если его там нет
+    # Автоматически добавляем {space} в начало если его нет
     if not new_message.startswith("{space}"):
         new_message = "{space}" + new_message
     
@@ -582,7 +587,7 @@ async def on_invite_message_reset(
     """Сброс сообщения приглашения на значение по умолчанию."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
-    default_message = "{space}Добро пожаловать в защищенный интернет!\n\n➡️ Подключиться: {url}"
+    default_message = "Добро пожаловать!\n\n⬇️ Подключайся ⬇️\n{url}"
     
     settings = await settings_service.get()
     settings.referral.invite_message = default_message
@@ -592,10 +597,35 @@ async def on_invite_message_reset(
 
 
 @inject
-async def on_invite_preview_close(
+async def on_invite_preview(
     callback: CallbackQuery,
     widget: Button,
     dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
 ) -> None:
-    """Закрыть предпросмотр - возврат в настройки приглашения."""
-    await dialog_manager.switch_to(RemnashopReferral.INVITE_MESSAGE)
+    """Показать предпросмотр сообщения приглашения."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    settings = await settings_service.get_referral_settings()
+    
+    invite_message_template = settings.invite_message
+    # Форматируем сообщение с примерными значениями
+    preview_message = invite_message_template.format(
+        name="VPN",
+        url=f"https://t.me/bot?start={user.referral_code}",
+        space="\n",
+    )
+    
+    # Создаем клавиатуру с кнопкой закрыть
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="❌ Закрыть", callback_data="close_preview")]
+        ]
+    )
+    
+    # Отправляем предпросмотр как отдельное сообщение с кнопкой закрыть
+    await callback.message.answer(
+        text=preview_message,
+        reply_markup=keyboard,
+        parse_mode="HTML",
+    )

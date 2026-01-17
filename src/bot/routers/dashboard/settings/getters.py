@@ -492,19 +492,22 @@ async def tos_settings_getter(
     url = current.get("url", "")
     enabled = current.get("enabled", True)
     
-    # Форматируем URL для отображения (показываем первые 50 символов)
+    # Форматируем URL для отображения (показываем полностью)
     if url:
-        url_display = url[:50] + "..." if len(url) > 50 else url
+        url_display = url
     else:
         url_display = "Не установлено"
     
     # Статус для отображения в шапке
     status_text = "🟢 Включено" if enabled else "🔴 Выключено"
     
+    # Используем url напрямую в source (без сокращения)
+    source_display = url if url else "Не установлено"
+    
     return {
         "enabled": 1 if enabled else 0,
         "url": url,
-        "url_display": url_display,
+        "source": source_display,
         "status_text": status_text,
     }
 

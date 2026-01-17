@@ -1446,16 +1446,14 @@ msg-referral-invite-message =
 msg-referral-invite-edit =
     <b>✉️ Настройка сообщения приглашения</b>
 
-    <b>✉️ Текущее сообщение:</b>
-    { $current_message }
-
     ℹ️ Доступные переменные:
     <blockquote>
     • <code>{"{url}"}</code> - реферальная ссылка
-    • <code>{"{space}"}</code> - пустая строка (перевод строки)
     </blockquote>
 
-    <i>✏️ Введите ваше приглашение</i>
+    ℹ️ Поддерживается HTML-разметка и пустые строки.
+
+    <i>✏️ Введите ваше приглашение:</i>
 
 msg-referral-invite-preview =
 
