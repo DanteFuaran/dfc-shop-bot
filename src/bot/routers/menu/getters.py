@@ -596,6 +596,7 @@ async def invite_getter(
         "is_points_reward": settings.reward.is_money,
         "has_balance": (referral_balance > 0) and is_balance_separate,  # Показываем только в режиме SEPARATE
         "is_balance_separate": 1 if is_balance_separate else 0,  # Флаг раздельного режима баланса
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         "referral_link": ref_link,
         "invite": invite_message,
         "withdraw": support_link,
@@ -726,6 +727,7 @@ async def balance_menu_getter(
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_transfers_enabled": 1 if is_transfers_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,  # Флаг раздельного режима баланса
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
     }
 
     subscription = user.current_subscription
@@ -844,6 +846,7 @@ async def balance_gateways_getter(
         "discount_remaining": discount_remaining,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
     }
     
     # Данные о текущей подписке (если есть)

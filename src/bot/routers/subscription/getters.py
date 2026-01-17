@@ -197,6 +197,9 @@ async def subscription_getter(
     is_balance_combined = await settings_service.is_balance_combined()
     is_balance_separate = not is_balance_combined
     
+    # Проверяем, включена ли реферальная система
+    is_referral_enable = await settings_service.is_referral_enable()
+    
     # Вычисляем отображаемый баланс
     display_balance = get_display_balance(user.balance, referral_balance, is_balance_combined)
     
@@ -221,6 +224,7 @@ async def subscription_getter(
         "referral_code": user.referral_code,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if is_referral_enable else 0,
         # Для кнопки "Мои устройства"
         "has_device_limit": bool(
             user.current_subscription 
@@ -334,6 +338,9 @@ async def plans_getter(
     is_balance_combined = await settings_service.is_balance_combined()
     is_balance_separate = not is_balance_combined
     
+    # Проверяем, включена ли реферальная система
+    is_referral_enable = await settings_service.is_referral_enable()
+    
     # Вычисляем отображаемый баланс
     display_balance = get_display_balance(user.balance, referral_balance, is_balance_combined)
     
@@ -351,6 +358,7 @@ async def plans_getter(
         "referral_code": user.referral_code,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if is_referral_enable else 0,
     }
 
     # Данные о текущей подписке (если есть)
@@ -540,6 +548,7 @@ async def duration_getter(
         "referral_code": user.referral_code,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные о стоимости доп. устройств
         "extra_devices_monthly_cost": extra_devices_monthly_cost,
         "has_extra_devices_cost": 1 if extra_devices_monthly_cost > 0 else 0,
@@ -813,6 +822,7 @@ async def payment_method_getter(
         "referral_code": user.referral_code,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные о стоимости доп. устройств
         "extra_devices_monthly_cost": extra_devices_monthly_cost,
         "extra_devices_cost": extra_devices_cost,
@@ -1012,6 +1022,7 @@ async def confirm_getter(
         "expire_time": expire_time,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные о стоимости доп. устройств
         # extra_devices_monthly_cost_rub - рассчитано в рублях, конвертируем
         # extra_devices_cost_rub - уже в валюте шлюза (не конвертируем)
@@ -1350,6 +1361,7 @@ async def confirm_yoomoney_getter(
         # Balance settings
         "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
         "is_balance_separate": 0 if await settings_service.is_balance_combined() else 1,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
     }
 
 
@@ -1486,6 +1498,7 @@ async def confirm_yookassa_getter(
         # Balance settings
         "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
         "is_balance_separate": 0 if await settings_service.is_balance_combined() else 1,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
     }
 
 
@@ -1541,6 +1554,7 @@ async def getter_connect(
             "referral_code": user.referral_code,
             "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
             "is_balance_separate": 1 if not await settings_service.is_balance_combined() else 0,
+            "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         }
     
     # Есть подписка - показываем её данные
@@ -1621,6 +1635,7 @@ async def getter_connect(
         "balance": user.balance,
         "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         "discount_value": discount_value,
         "discount_is_temporary": 1 if is_temporary_discount else 0,
         "discount_is_permanent": 1 if is_permanent_discount else 0,
@@ -1744,6 +1759,7 @@ async def success_payment_getter(
         "discount_remaining": discount_remaining,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Для ADD_DEVICE
         "device_count": device_count,
     }
@@ -1830,6 +1846,7 @@ async def referral_success_getter(
         "discount_remaining": discount_remaining,
         "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Subscription data (свежие данные)
         "plan_name": subscription.plan.name if subscription.plan else "Unknown",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit),
@@ -1940,6 +1957,7 @@ async def add_device_select_count_getter(
         "referral_balance": referral_balance,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные подписки
         "plan_name": subscription.plan.name if subscription else "",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit) if subscription else "",
@@ -2095,6 +2113,7 @@ async def add_device_duration_getter(
         "referral_balance": referral_balance,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные подписки
         "plan_name": subscription.plan.name if subscription else "",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit) if subscription else "",
@@ -2319,6 +2338,7 @@ async def add_device_payment_getter(
         "referral_balance": referral_balance,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные подписки
         "plan_name": subscription.plan.name if subscription else "",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit) if subscription else "",
@@ -2531,6 +2551,7 @@ async def add_device_confirm_getter(
         "referral_balance": referral_balance,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные подписки
         "plan_name": subscription.plan.name if subscription else "",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit) if subscription else "",
@@ -2789,6 +2810,7 @@ async def add_device_success_getter(
         "referral_balance": referral_balance,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные подписки
         "plan_name": subscription.plan.name if subscription else "",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit) if subscription else "",
@@ -2918,6 +2940,9 @@ async def extra_devices_list_getter(
     is_balance_combined = await settings_service.is_balance_combined()
     is_balance_separate = not is_balance_combined
     
+    # Проверяем, включена ли реферальная система
+    is_referral_enable = await settings_service.is_referral_enable()
+    
     return {
         # Список покупок
         "purchases": formatted_purchases,
@@ -2936,6 +2961,7 @@ async def extra_devices_list_getter(
         "balance": get_display_balance(user.balance, referral_balance, is_balance_combined),
         "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if is_referral_enable else 0,
         # Данные подписки
         "is_trial": 1 if subscription.is_trial else 0,
         "plan_name": subscription.plan.name if subscription.plan else "Unknown",
