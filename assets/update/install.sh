@@ -315,16 +315,6 @@ show_simple_menu() {
     local options=("🚀  Установить" "❌  Выход")
     local num_options=${#options[@]}
     
-    # Ждём завершения проверки обновлений
-    wait_for_update_check
-    
-    # Показываем сообщение об обновлении доступной версии в репозитории
-    if [ -n "$AVAILABLE_VERSION" ] && [ "$AVAILABLE_VERSION" != "unknown" ]; then
-        echo
-        echo -e "${YELLOW}ℹ️  Доступная версия в репозитории: ${GREEN}$AVAILABLE_VERSION${NC}"
-        echo
-    fi
-    
     # Сохраняем текущие настройки терминала
     local original_stty=$(stty -g 2>/dev/null)
     
@@ -444,24 +434,6 @@ show_full_menu() {
     
     # Ждём завершения проверки обновлений
     wait_for_update_check
-    
-    # Показываем сообщение об обновлении если оно доступно
-    if [ $UPDATE_AVAILABLE -eq 1 ]; then
-        echo
-        if [ -n "$AVAILABLE_VERSION" ] && [ "$AVAILABLE_VERSION" != "unknown" ]; then
-            echo -e "${YELLOW}╔════════════════════════════════════════╗${NC}"
-            echo -e "${YELLOW}║${NC}  ${GREEN}✅ Доступно обновление!${NC}"
-            echo -e "${YELLOW}║${NC}  ${DARKGRAY}Текущая версия:    $(get_local_version)${NC}"
-            echo -e "${YELLOW}║${NC}  ${GREEN}Доступная версия:  $AVAILABLE_VERSION${NC}"
-            echo -e "${YELLOW}╚════════════════════════════════════════╝${NC}"
-        else
-            echo -e "${YELLOW}╔════════════════════════════════════════╗${NC}"
-            echo -e "${YELLOW}║${NC}  ${GREEN}✅ Доступно обновление!${NC}"
-            echo -e "${YELLOW}║${NC}  ${DARKGRAY}Выберите 'Обновить' в меню ниже${NC}"
-            echo -e "${YELLOW}╚════════════════════════════════════════╝${NC}"
-        fi
-        echo
-    fi
     
     # Формируем опции меню
     local options=("🔄  Обновить" "ℹ️   Просмотр логов" "📊  Логи в реальном времени" "🔃  Перезагрузить бота" "🔃  Перезагрузить с логами" "⬆️   Включить бота" "⬇️   Выключить бота" "🔄  Переустановить" "⚙️   Изменить настройки" "🧹  Очистить данные" "🗑️   Удалить бота" "❌  Выход")
