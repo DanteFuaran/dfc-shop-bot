@@ -243,23 +243,44 @@ check_updates_available() {
         # Получаем локальную версию из PROJECT_DIR (production)
         LOCAL_VERSION=$(get_local_version)
         
-        # Получаем удаленную версию через GitHub raw URL
-        # Формат: https://raw.githubusercontent.com/owner/repo/branch/path/to/file
-        GITHUB_RAW_URL=$(echo "$REPO_URL" | sed 's|github.com|raw.githubusercontent.com|; s|\.git$||')
-        REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/src/__version__.py"
+        # Создаём временную папку для проверки версии
+        TEMP_CHECK_DIR=$(mktemp -d)
         
-        # Скачиваем файл версии с GitHub
-        REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
-        
-        # Сравниваем версии
-        if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
-            if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
-                echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+        # Клонируем только последний коммит нужной ветки (быстро, ~500kb)
+        if git clone -b "$REPO_BRANCH" --depth 1 --single-branch "$REPO_URL" "$TEMP_CHECK_DIR" >/dev/null 2>&1; then
+            # Получаем удаленную версию из клонированного репозитория
+            REMOTE_VERSION=$(grep -oP '__version__ = "\K[^"]+' "$TEMP_CHECK_DIR/src/__version__.py" 2>/dev/null || echo "")
+            
+            # Удаляем временную папку
+            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
+            
+            # Сравниваем версии
+            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                else
+                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                fi
             else
-                echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                echo "0|unknown" > "$UPDATE_STATUS_FILE"
             fi
         else
-            echo "0|unknown" > "$UPDATE_STATUS_FILE"
+            # Если не удалось клонировать, пробуем старый способ через raw URL
+            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
+            
+            GITHUB_RAW_URL=$(echo "$REPO_URL" | sed 's|github.com|raw.githubusercontent.com|; s|\.git$||')
+            REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/src/__version__.py"
+            REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
+            
+            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                else
+                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                fi
+            else
+                echo "0|unknown" > "$UPDATE_STATUS_FILE"
+            fi
         fi
     } &
     CHECK_UPDATE_PID=$!
