@@ -150,66 +150,7 @@ from .handlers import (
 settings_main = Window(
     Banner(BannerName.DASHBOARD),
     I18nFormat("msg-dashboard-settings"),
-    Row(
-        Button(
-            text=I18nFormat("btn-settings-extra-devices"),
-            id="extra_devices",
-            on_click=on_extra_devices_click,
-        ),
-        Button(
-            text=I18nFormat(
-                "btn-settings-toggle",
-                enabled=F["extra_devices_enabled"],
-            ),
-            id="toggle_extra_devices",
-            on_click=on_toggle_extra_devices,
-        ),
-    ),
-    Row(
-        Button(
-            text=I18nFormat("btn-settings-balance"),
-            id="balance",
-            on_click=on_balance_click,
-        ),
-        Button(
-            text=I18nFormat(
-                "btn-settings-toggle",
-                enabled=F["balance_enabled"],
-            ),
-            id="toggle_balance",
-            on_click=on_toggle_balance,
-        ),
-    ),
-    Row(
-        Button(
-            text=I18nFormat("btn-settings-transfers"),
-            id="transfers",
-            on_click=on_transfers_click,
-        ),
-        Button(
-            text=I18nFormat(
-                "btn-settings-toggle",
-                enabled=F["transfers_enabled"],
-            ),
-            id="toggle_transfers",
-            on_click=on_toggle_transfers,
-        ),
-    ),
-    Row(
-        Start(
-            text=I18nFormat("btn-settings-notifications"),
-            id="notifications",
-            state=RemnashopNotifications.MAIN,
-        ),
-        Button(
-            text=I18nFormat(
-                "btn-settings-toggle",
-                enabled=F["notifications_enabled"],
-            ),
-            id="toggle_notifications",
-            on_click=on_toggle_notifications,
-        ),
-    ),
+    # 1. Режим доступа
     Row(
         Start(
             text=I18nFormat("btn-settings-access"),
@@ -226,66 +167,87 @@ settings_main = Window(
             on_click=on_toggle_access,
         ),
     ),
+    # 2. Уведомления
     Row(
         Start(
-            text=I18nFormat("btn-settings-referral"),
-            id="referral",
-            state=RemnashopReferral.MAIN,
+            text=I18nFormat("btn-settings-notifications"),
+            id="notifications",
+            state=RemnashopNotifications.MAIN,
         ),
         Button(
             text=I18nFormat(
                 "btn-settings-toggle",
-                enabled=F["referral_enabled"],
+                enabled=F["notifications_enabled"],
             ),
-            id="toggle_referral",
-            on_click=on_toggle_referral,
+            id="toggle_notifications",
+            on_click=on_toggle_notifications,
         ),
     ),
-    Row(
-        Start(
-            text=I18nFormat("btn-settings-promocodes"),
-            id="promocodes",
-            state=DashboardPromocodes.MAIN,
-        ),
-        Button(
-            text=I18nFormat(
-                "btn-settings-toggle",
-                enabled=F["promocodes_enabled"],
-            ),
-            id="toggle_promocodes",
-            on_click=on_toggle_promocodes,
-        ),
-    ),
+    # 3. Финансы (авторасчёт курса)
     Row(
         Button(
-            text=I18nFormat("btn-settings-community"),
-            id="community",
-            on_click=on_community_click,
+            text=I18nFormat("btn-settings-finances"),
+            id="finances",
+            on_click=on_finances_click,
         ),
         Button(
             text=I18nFormat(
                 "btn-settings-toggle",
-                enabled=F["community_enabled"],
+                enabled=F["finances_enabled"],
             ),
-            id="toggle_community",
-            on_click=on_toggle_community,
+            id="toggle_finances",
+            on_click=on_toggle_finances_sync,
         ),
     ),
+    # 4. Баланс
     Row(
         Button(
-            text=I18nFormat("btn-settings-tos"),
-            id="tos",
-            on_click=on_tos_click,
+            text=I18nFormat("btn-settings-balance"),
+            id="balance",
+            on_click=on_balance_click,
         ),
         Button(
             text=I18nFormat(
                 "btn-settings-toggle",
-                enabled=F["tos_enabled"],
+                enabled=F["balance_enabled"],
             ),
-            id="toggle_tos",
-            on_click=on_toggle_tos,
+            id="toggle_balance",
+            on_click=on_toggle_balance,
         ),
     ),
+    # 5. Переводы
+    Row(
+        Button(
+            text=I18nFormat("btn-settings-transfers"),
+            id="transfers",
+            on_click=on_transfers_click,
+        ),
+        Button(
+            text=I18nFormat(
+                "btn-settings-toggle",
+                enabled=F["transfers_enabled"],
+            ),
+            id="toggle_transfers",
+            on_click=on_toggle_transfers,
+        ),
+    ),
+    # 6. Доп. устройства
+    Row(
+        Button(
+            text=I18nFormat("btn-settings-extra-devices"),
+            id="extra_devices",
+            on_click=on_extra_devices_click,
+        ),
+        Button(
+            text=I18nFormat(
+                "btn-settings-toggle",
+                enabled=F["extra_devices_enabled"],
+            ),
+            id="toggle_extra_devices",
+            on_click=on_toggle_extra_devices,
+        ),
+    ),
+    # 7. Глобальная скидка
     Row(
         Button(
             text=I18nFormat("btn-settings-global-discount"),
@@ -301,11 +263,68 @@ settings_main = Window(
             on_click=on_toggle_global_discount,
         ),
     ),
+    # 8. Реф.система
+    Row(
+        Start(
+            text=I18nFormat("btn-settings-referral"),
+            id="referral",
+            state=RemnashopReferral.MAIN,
+        ),
+        Button(
+            text=I18nFormat(
+                "btn-settings-toggle",
+                enabled=F["referral_enabled"],
+            ),
+            id="toggle_referral",
+            on_click=on_toggle_referral,
+        ),
+    ),
+    # 9. Промокоды
+    Row(
+        Start(
+            text=I18nFormat("btn-settings-promocodes"),
+            id="promocodes",
+            state=DashboardPromocodes.MAIN,
+        ),
+        Button(
+            text=I18nFormat(
+                "btn-settings-toggle",
+                enabled=F["promocodes_enabled"],
+            ),
+            id="toggle_promocodes",
+            on_click=on_toggle_promocodes,
+        ),
+    ),
+    # 10. Сообщество
     Row(
         Button(
-            text=I18nFormat("btn-settings-finances"),
-            id="finances",
-            on_click=on_finances_click,
+            text=I18nFormat("btn-settings-community"),
+            id="community",
+            on_click=on_community_click,
+        ),
+        Button(
+            text=I18nFormat(
+                "btn-settings-toggle",
+                enabled=F["community_enabled"],
+            ),
+            id="toggle_community",
+            on_click=on_toggle_community,
+        ),
+    ),
+    # 11. Соглашение
+    Row(
+        Button(
+            text=I18nFormat("btn-settings-tos"),
+            id="tos",
+            on_click=on_tos_click,
+        ),
+        Button(
+            text=I18nFormat(
+                "btn-settings-toggle",
+                enabled=F["tos_enabled"],
+            ),
+            id="toggle_tos",
+            on_click=on_toggle_tos,
         ),
     ),
     Row(

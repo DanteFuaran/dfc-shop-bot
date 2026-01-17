@@ -21,17 +21,17 @@ async def settings_main_getter(
     features = settings.features
     
     return {
-        "extra_devices_enabled": 1 if features.extra_devices.enabled else 0,
+        "access_enabled": 1 if settings.access_mode == AccessMode.PUBLIC else 0,
+        "notifications_enabled": 1 if features.notifications_enabled else 0,
+        "finances_enabled": 1 if features.currency_rates.auto_update else 0,
         "balance_enabled": 1 if features.balance_enabled else 0,
         "transfers_enabled": 1 if features.transfers.enabled else 0,
-        "notifications_enabled": 1 if features.notifications_enabled else 0,
-        "access_enabled": 1 if settings.access_mode == AccessMode.PUBLIC else 0,
+        "extra_devices_enabled": 1 if features.extra_devices.enabled else 0,
+        "global_discount_enabled": 1 if features.global_discount.enabled else 0,
         "referral_enabled": 1 if settings.referral.enable else 0,
         "promocodes_enabled": 1 if features.promocodes_enabled else 0,
         "community_enabled": 1 if features.community_enabled else 0,
         "tos_enabled": 1 if features.tos_enabled else 0,
-        "global_discount_enabled": 1 if features.global_discount.enabled else 0,
-        "finances_sync_enabled": 1 if features.currency_rates.auto_update else 0,
     }
 
 
