@@ -182,6 +182,21 @@ class SettingsService(BaseService):
         settings = await self.get()
         return settings.referral.enable
 
+    async def toggle_referral(self) -> bool:
+        """Toggle referral system. Returns new value."""
+        settings = await self.get()
+        new_value = not settings.referral.enable
+        settings.referral.enable = new_value
+        settings.referral = settings.referral  # Trigger change tracking
+        
+        # Также обновляем feature flag для консистентности
+        settings.features.referral_enabled = new_value
+        settings.features = settings.features
+        
+        await self.update(settings)
+        logger.debug(f"Toggled referral enabled -> '{new_value}'")
+        return new_value
+
     #
 
     async def get_feature_settings(self) -> FeatureSettingsDto:

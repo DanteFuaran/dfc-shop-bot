@@ -77,7 +77,7 @@ class ReferralRewardSettingsDto(BaseDto):
 
 
 class ReferralSettingsDto(TrackableDto):
-    enable: bool = True
+    enable: bool = False  # По умолчанию реферальная система выключена
     level: ReferralLevel = ReferralLevel.FIRST
     accrual_strategy: ReferralAccrualStrategy = ReferralAccrualStrategy.ON_EACH_PAYMENT
     reward: ReferralRewardSettingsDto = ReferralRewardSettingsDto()

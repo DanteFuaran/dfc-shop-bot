@@ -943,17 +943,7 @@ async def on_toggle_referral(
 ) -> None:
     """Toggle реферальной системы."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
-    
-    settings = await settings_service.get()
-    new_value = not settings.referral.enable
-    settings.referral.enable = new_value
-    
-    # Также обновляем feature flag
-    settings.features.referral_enabled = new_value
-    settings.features = settings.features  # Trigger change tracking
-    
-    await settings_service.update(settings)
-    
+    new_value = await settings_service.toggle_referral()
     logger.info(f"{log(user)} Toggled referral_enabled -> {new_value}")
 
 
