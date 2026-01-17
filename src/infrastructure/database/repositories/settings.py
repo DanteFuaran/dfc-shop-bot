@@ -13,4 +13,9 @@ class SettingsRepository(BaseRepository):
         return await self._get_one(Settings)
 
     async def update(self, **data: Any) -> Optional[Settings]:
-        return await self._update(Settings, **data)
+        # Всегда обновляем первую (и единственную) запись настроек
+        existing = await self._get_one(Settings)
+        if existing is None:
+            # Если настроек нет, возвращаем None и позволяем создать новые
+            return None
+        return await self._update(Settings, Settings.id == existing.id, **data)
