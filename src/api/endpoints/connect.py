@@ -62,3 +62,22 @@ async def connect_to_happ(subscription_url: str) -> RedirectResponse:
     
     happ_url = f"happ://add/{subscription_url}"
     return RedirectResponse(url=happ_url, status_code=302)
+
+
+@router.get("/subscription/{subscription_url:path}")
+async def subscription_page(subscription_url: str) -> RedirectResponse:
+    """
+    Открыть страницу подписки пользователя.
+    Редиректит на URL подписки напрямую.
+    """
+    # Проверяем что URL не пустой и имеет корректный формат
+    if not subscription_url or not subscription_url.strip():
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Subscription URL is empty")
+    
+    # Убеждаемся что URL начинается с http:// или https://
+    if not subscription_url.startswith(("http://", "https://")):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Invalid subscription URL format")
+    
+    return RedirectResponse(url=subscription_url, status_code=302)

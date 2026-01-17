@@ -257,7 +257,7 @@ async def connect_getter(
             # Формируем URL редиректа через наш сервер
             domain = config.domain.get_secret_value()
             happ_redirect_url = f"https://{domain}/api/v1/connect/{subscription_url}"
-            subscription_page_url = f"https://{domain}/api/v1/connect/{subscription_url}"
+            subscription_page_url = f"https://{domain}/api/v1/subscription/{subscription_url}"
     else:
         happ_redirect_url = ""
         subscription_page_url = ""
