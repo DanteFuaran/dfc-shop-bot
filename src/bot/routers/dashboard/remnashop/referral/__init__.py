@@ -1,5 +1,6 @@
-from . import dialog
+from . import callbacks, dialog
 
 __all__ = [
+    "callbacks",
     "dialog",
 ]

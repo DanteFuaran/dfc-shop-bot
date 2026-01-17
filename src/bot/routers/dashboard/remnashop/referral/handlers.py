@@ -16,9 +16,7 @@ from src.core.enums import (
     ReferralRewardType,
 )
 from src.core.utils.formatters import format_user_log as log
-from src.core.utils.message_payload import MessagePayload
 from src.infrastructure.database.models.dto import UserDto
-from src.services.notification import NotificationService
 from src.services.settings import SettingsService
 
 
@@ -527,11 +525,21 @@ async def on_invite_message_input(
     dialog_manager.show_mode = ShowMode.EDIT
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
-    new_message = message.text.strip() if message.text else ""
+    # Получаем текст и HTML entities
+    if message.html_text:
+        new_message = message.html_text
+    elif message.text:
+        new_message = message.text
+    else:
+        new_message = ""
     
-    if not new_message:
+    if not new_message.strip():
         await message.answer("⚠️ Сообщение не может быть пустым!")
         return
+    
+    # Автоматически добавляем {space} в начало если его нет
+    if not new_message.startswith("{space}"):
+        new_message = "{space}" + new_message
     
     # Сохраняем новое сообщение
     settings = await settings_service.get()
@@ -593,9 +601,8 @@ async def on_invite_preview(
     widget: Button,
     dialog_manager: DialogManager,
     settings_service: FromDishka[SettingsService],
-    notification_service: FromDishka[NotificationService],
 ) -> None:
-    """Показать предпросмотр сообщения приглашения через уведомление."""
+    """Показать предпросмотр сообщения приглашения."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     settings = await settings_service.get_referral_settings()
     
@@ -607,12 +614,17 @@ async def on_invite_preview(
         space="\n",
     )
     
-    # Отправляем предпросмотр как уведомление с кнопкой закрыть
-    await notification_service.notify_user(
-        user=user,
-        payload=MessagePayload(
-            i18n_key="ntf-invite-preview",
-            i18n_kwargs={"content": preview_message},
-            add_close_button=True,
-        ),
+    # Создаем клавиатуру с кнопкой закрыть
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="❌ Закрыть", callback_data="close_preview")]
+        ]
+    )
+    
+    # Отправляем предпросмотр как отдельное сообщение с кнопкой закрыть
+    await callback.message.answer(
+        text=preview_message,
+        reply_markup=keyboard,
+        parse_mode="HTML",
     )

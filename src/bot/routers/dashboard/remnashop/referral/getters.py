@@ -278,7 +278,12 @@ async def invite_message_getter(
     
     current_message = settings.invite_message
     
+    # Убираем {space} из отображения для пользователя
+    display_message = current_message
+    if display_message.startswith("{space}"):
+        display_message = display_message[7:]  # Удаляем первый {space}
+    
     return {
-        "current_message": current_message,
+        "current_message": display_message,
     }
 
