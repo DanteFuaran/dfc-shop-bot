@@ -295,7 +295,7 @@ async def devices_getter(
     is_balance_separate = not is_balance_combined
     
     # Получаем настройку реферальной системы
-    is_referral_enabled = await settings_service.is_referral_enabled()
+    is_referral_enabled = await settings_service.is_referral_enable()
     
     # Получаем данные для профиля (нужны для frg-user)
     referral_balance = await referral_service.get_pending_rewards_amount(
