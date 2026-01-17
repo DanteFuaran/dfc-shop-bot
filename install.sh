@@ -1477,20 +1477,13 @@ cleanup_on_error() {
             echo -e "${GREEN}✓ Удален клон репозитория${NC}"
         fi
         
-        # Удаляем целевую папку если установка не завершена
-        if [ "$INSTALL_STARTED" = true ] && [ -d "$PROJECT_DIR" ]; then
-            # Сохраняем .env если он существует и был заполнен
-            ENV_BACKUP=""
-            if [ -f "$ENV_FILE" ]; then
-                ENV_BACKUP=$(cat "$ENV_FILE" 2>/dev/null || true)
-            fi
-            
-            # Останавливаем контейнеры если они запущены
-            if command -v docker &> /dev/null; then
-                cd "$PROJECT_DIR" 2>/dev/null && docker compose down 2>/dev/null || true
-            fi
-            
-            # Удаляем проектную папку
+        # Останавливаем контейнеры если они запущены
+        if command -v docker &> /dev/null && [ -d "$PROJECT_DIR" ]; then
+            cd "$PROJECT_DIR" 2>/dev/null && docker compose down 2>/dev/null || true
+        fi
+        
+        # Удаляем целевую папку проекта при ошибке/отмене
+        if [ -d "$PROJECT_DIR" ]; then
             rm -rf "$PROJECT_DIR" 2>/dev/null || true
             echo -e "${GREEN}✓ Удалена папка проекта${NC}"
         fi
@@ -1761,8 +1754,8 @@ if [ "$COPY_FILES" = true ]; then
       if [ -n "$version" ]; then
           echo "$version" > "$PROJECT_DIR/assets/update/.version"
       fi
-    ) &
-    show_spinner "Копирование конфигурации"
+    )
+    wait  # Ждем завершения копирования без спиннера
 fi
 
 # 5. Создание .env файла
