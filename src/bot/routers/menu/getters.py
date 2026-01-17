@@ -294,6 +294,9 @@ async def devices_getter(
     is_balance_combined = await settings_service.is_balance_combined()
     is_balance_separate = not is_balance_combined
     
+    # Получаем настройку реферальной системы
+    is_referral_enabled = await settings_service.is_referral_enabled()
+    
     # Получаем данные для профиля (нужны для frg-user)
     referral_balance = await referral_service.get_pending_rewards_amount(
         telegram_id=user.telegram_id,
@@ -357,6 +360,7 @@ async def devices_getter(
             "show_extra_devices_button": False,
             "is_balance_enabled": 1 if is_balance_enabled else 0,
             "is_balance_separate": 1 if is_balance_separate else 0,
+            "is_referral_enable": 1 if is_referral_enabled else 0,
             # Данные профиля для frg-user
             "user_id": str(user.telegram_id),
             "user_name": user.name,
@@ -436,6 +440,7 @@ async def devices_getter(
         "show_extra_devices_button": show_extra_devices_button,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
+        "is_referral_enable": 1 if is_referral_enabled else 0,
         # Данные профиля для frg-user
         "user_id": str(user.telegram_id),
         "user_name": user.name,
