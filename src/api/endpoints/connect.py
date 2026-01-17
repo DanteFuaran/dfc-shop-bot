@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
+from urllib.parse import quote
 
 router = APIRouter(prefix="/api/v1", tags=["connect"])
 
@@ -47,10 +48,9 @@ async def download_app(request: Request) -> RedirectResponse:
 @router.get("/connect/{subscription_url:path}")
 async def connect_to_happ(subscription_url: str) -> RedirectResponse:
     """
-    Редирект на happ://import/{subscription_url}
+    Редирект на happ://add/{subscription_url}?merge=true
     Используется для обхода ограничения Telegram на кастомные URL схемы.
-    Использует happ://import/ вместо happ://add/ для сохранения существующих подписок
-    и предотвращения закрытия приложения Happ если оно уже открыто.
+    Параметр merge=true должен предотвращать удаление существующих подписок.
     """
     # Проверяем что URL не пустой и имеет корректный формат
     if not subscription_url or not subscription_url.strip():
@@ -62,7 +62,9 @@ async def connect_to_happ(subscription_url: str) -> RedirectResponse:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="Invalid subscription URL format")
     
-    # Используем happ://import/ для сохранения существующих подписок
-    # и предотвращения закрытия приложения
-    happ_url = f"happ://import/{subscription_url}"
+    # Кодируем URL для безопасной передачи
+    encoded_url = quote(subscription_url, safe='')
+    
+    # Используем happ://add/ с параметром merge для сохранения существующих подписок
+    happ_url = f"happ://add/{encoded_url}?merge=true"
     return RedirectResponse(url=happ_url, status_code=302)
