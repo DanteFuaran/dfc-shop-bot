@@ -248,6 +248,21 @@ class SettingsService(BaseService):
         await self.update(settings)
         logger.debug(f"Toggled extra_devices enabled -> '{new_value}'")
         return new_value
+
+    async def is_promocodes_enabled(self) -> bool:
+        """Check if promocodes feature is enabled."""
+        settings = await self.get()
+        return settings.features.promocodes_enabled
+
+    async def toggle_promocodes(self) -> bool:
+        """Toggle promocodes feature. Returns new value."""
+        settings = await self.get()
+        new_value = not settings.features.promocodes_enabled
+        settings.features.promocodes_enabled = new_value
+        settings.features = settings.features  # Trigger change tracking
+        await self.update(settings)
+        logger.debug(f"Toggled promocodes_enabled -> '{new_value}'")
+        return new_value
     
     async def set_extra_device_price(self, price: int) -> None:
         """Set price per extra device per month."""

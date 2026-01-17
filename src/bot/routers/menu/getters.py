@@ -156,6 +156,7 @@ async def menu_getter(
             "has_subscription": user.has_subscription,
             "is_app": config.bot.is_mini_app,
             "is_referral_enable": await settings_service.is_referral_enable(),
+            "is_promocodes_enabled": await settings_service.is_promocodes_enabled(),
             # Настройки функционала
             "community_url": (await settings_service.get()).features.community_url or "",
             "is_community_enabled": await settings_service.is_community_enabled() and bool((await settings_service.get()).features.community_url),

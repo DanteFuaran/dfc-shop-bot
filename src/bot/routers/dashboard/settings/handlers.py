@@ -957,6 +957,19 @@ async def on_toggle_referral(
     
     logger.info(f"{log(user)} Toggled referral_enabled -> {new_value}")
 
+
+@inject
+async def on_toggle_promocodes(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+) -> None:
+    """Toggle промокодов в главном меню."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    new_value = await settings_service.toggle_promocodes()
+    logger.info(f"{log(user)} Toggled promocodes_enabled -> {new_value}")
+
 # === Меню доп. устройств ===
 
 @inject

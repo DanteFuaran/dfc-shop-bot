@@ -151,6 +151,15 @@ menu = Window(
         ),
         when=F["has_subscription"],
     ),
+    # [Промокод] - для всех пользователей (если включено в настройках)
+    Row(
+        Button(
+            text=I18nFormat("btn-menu-promocode"),
+            id="promocode",
+            on_click=on_promocode,
+        ),
+        when=F["is_promocodes_enabled"],
+    ),
     # [Сообщество][Помощь]
     Row(
         Url(

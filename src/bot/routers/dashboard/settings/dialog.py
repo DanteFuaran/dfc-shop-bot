@@ -81,6 +81,7 @@ from .handlers import (
     on_toggle_notifications,
     on_toggle_access,
     on_toggle_referral,
+    on_toggle_promocodes,
     on_extra_devices_click,
     on_toggle_extra_devices_payment_type,
     on_edit_extra_devices_price,
@@ -245,6 +246,14 @@ settings_main = Window(
             text=I18nFormat("btn-settings-promocodes"),
             id="promocodes",
             state=DashboardPromocodes.MAIN,
+        ),
+        Button(
+            text=I18nFormat(
+                "btn-settings-toggle",
+                enabled=F["promocodes_enabled"],
+            ),
+            id="toggle_promocodes",
+            on_click=on_toggle_promocodes,
         ),
     ),
     Row(

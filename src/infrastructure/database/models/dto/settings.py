@@ -137,6 +137,7 @@ class FeatureSettingsDto(TrackableDto):
     notifications_enabled: bool = True  # Отправка уведомлений пользователям
     access_enabled: bool = True  # Глобальный доступ к боту (регистрация и покупки)
     referral_enabled: bool = True  # Реферальная система
+    promocodes_enabled: bool = True  # Промокоды в главном меню
     extra_devices: ExtraDeviceSettingsDto = ExtraDeviceSettingsDto()  # Настройки доп. устройств
     transfers: TransferSettingsDto = TransferSettingsDto()  # Настройки переводов
     inactive_notifications: InactiveUserNotificationDto = InactiveUserNotificationDto()  # Уведомления о неподключенных
