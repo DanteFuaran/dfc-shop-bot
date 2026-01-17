@@ -104,7 +104,7 @@ admins = Window(
         Start(
             text=I18nFormat("btn-back"),
             id="back",
-            state=DashboardRemnashop.MAIN,
+            state=Dashboard.MAIN,
             mode=StartMode.RESET_STACK,
         ),
     ),

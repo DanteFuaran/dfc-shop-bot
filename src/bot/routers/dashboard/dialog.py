@@ -1,10 +1,12 @@
 from aiogram_dialog import Dialog, StartMode, Window
-from aiogram_dialog.widgets.kbd import Row, Start
+from aiogram_dialog.widgets.kbd import Button, Row, Start
 from magic_filter import F
 
 from src.bot.keyboards import main_menu_button
 from src.bot.routers.dashboard.handlers import on_save_database
 from src.bot.routers.dashboard.getters import dashboard_main_getter
+from src.bot.routers.dashboard.remnashop.handlers import on_logs_request
+from src.bot.routers.extra.test import show_dev_popup
 from src.bot.states import (
     Dashboard,
     DashboardAccess,
@@ -41,6 +43,12 @@ dashboard = Window(
             state=DashboardUsers.MAIN,
             mode=StartMode.RESET_STACK,
         ),
+        Start(
+            text=I18nFormat("btn-remnashop-admins"),
+            id="admins",
+            state=DashboardRemnashop.ADMINS,
+            mode=StartMode.RESET_STACK,
+        ),
     ),
     Row(
         Start(
@@ -56,6 +64,25 @@ dashboard = Window(
             id="broadcast",
             state=DashboardBroadcast.MAIN,
             mode=StartMode.RESET_STACK,
+        ),
+    ),
+    Row(
+        Button(
+            text=I18nFormat("btn-remnashop-advertising"),
+            id="advertising",
+            on_click=show_dev_popup,
+        ),
+    ),
+    Row(
+        Button(
+            text=I18nFormat("btn-remnashop-logs"),
+            id="logs",
+            on_click=on_logs_request,
+        ),
+        Button(
+            text=I18nFormat("btn-remnashop-audit"),
+            id="audit",
+            on_click=show_dev_popup,
         ),
     ),
     Row(

@@ -86,14 +86,14 @@ class ReferralSettingsDto(TrackableDto):
 
 class ExtraDeviceSettingsDto(TrackableDto):
     """Настройки дополнительных устройств."""
-    enabled: bool = True  # Включен ли функционал доп. устройств
+    enabled: bool = False  # Включен ли функционал доп. устройств (по умолчанию выключен)
     price_per_device: int = 100  # Стоимость одного доп. устройства в месяц
     is_one_time: bool = False  # True = единоразовая оплата, False = ежемесячная
 
 
 class TransferSettingsDto(TrackableDto):
     """Настройки переводов баланса между пользователями."""
-    enabled: bool = True  # Включены ли переводы
+    enabled: bool = False  # Включены ли переводы (по умолчанию выключены)
     commission_type: str = "percent"  # "percent" или "fixed"
     commission_value: int = 5  # Значение комиссии (% или фикс. сумма)
     min_amount: int = 10  # Минимальная сумма перевода
@@ -130,14 +130,14 @@ class FeatureSettingsDto(TrackableDto):
     community_enabled: bool = False  # Кнопка "Сообщество" в главном меню (по-умолчанию выключена)
     community_url: Optional[str] = None  # URL Telegram группы сообщества
     tos_enabled: bool = False  # Кнопка "Соглашение" в главном меню (по-умолчанию выключена)
-    balance_enabled: bool = True  # Функционал баланса
+    balance_enabled: bool = False  # Функционал баланса (по умолчанию выключен)
     balance_mode: BalanceMode = BalanceMode.SEPARATE  # Режим баланса (раздельный/объединённый)
     balance_min_amount: Optional[int] = 10  # Минимальная сумма пополнения баланса
     balance_max_amount: Optional[int] = 100000  # Максимальная сумма пополнения баланса
     notifications_enabled: bool = True  # Отправка уведомлений пользователям
     access_enabled: bool = True  # Глобальный доступ к боту (регистрация и покупки)
     referral_enabled: bool = True  # Реферальная система
-    promocodes_enabled: bool = True  # Промокоды в главном меню
+    promocodes_enabled: bool = False  # Промокоды в главном меню (по умолчанию выключены)
     extra_devices: ExtraDeviceSettingsDto = ExtraDeviceSettingsDto()  # Настройки доп. устройств
     transfers: TransferSettingsDto = TransferSettingsDto()  # Настройки переводов
     inactive_notifications: InactiveUserNotificationDto = InactiveUserNotificationDto()  # Уведомления о неподключенных
