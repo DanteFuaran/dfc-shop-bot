@@ -1836,6 +1836,7 @@ if [ -z "$REMNAWAVE_TOKEN" ]; then
 fi
 update_env_var "$ENV_FILE" "REMNAWAVE_TOKEN" "$REMNAWAVE_TOKEN"
 
+clear
 echo ""
 echo -e "${BLUE}========================================${NC}"
 echo -e "${GREEN}       🚀 ПРОЦЕСС УСТАНОВКИ${NC}"
