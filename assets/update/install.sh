@@ -315,6 +315,9 @@ show_simple_menu() {
     local options=("🚀  Установить" "❌  Выход")
     local num_options=${#options[@]}
     
+    # Ждём завершения проверки обновлений
+    wait_for_update_check
+    
     # Сохраняем текущие настройки терминала
     local original_stty=$(stty -g 2>/dev/null)
     
