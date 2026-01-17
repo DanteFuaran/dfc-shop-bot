@@ -2667,6 +2667,7 @@ async def devices_getter(
         "devices": formatted_devices,
         "devices_empty": len(devices) == 0,
         "can_add_device": can_add_device,
+        "extra_devices": extra_devices,
         "is_extra_devices_enabled": 1 if is_extra_devices_enabled else 0,
         # Данные профиля
         "user_id": str(user.telegram_id),
