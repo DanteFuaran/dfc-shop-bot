@@ -222,28 +222,13 @@ get_version_from_file() {
     fi
 }
 
-# Функция для получения локальной версии (из assets/update/.version или src/__version__.py)
+# Функция для получения локальной версии (из assets/update/.version)
 get_local_version() {
-    # Сначала пробуем assets/update/.version файл
+    # Используем файл .version из production папки
     if [ -f "$PROJECT_DIR/assets/update/.version" ]; then
         cat "$PROJECT_DIR/assets/update/.version" 2>/dev/null | tr -d '\n' || echo ""
-    # Fallback на старый путь assets/setup/.version (для совместимости)
-    elif [ -f "$PROJECT_DIR/assets/setup/.version" ]; then
-        cat "$PROJECT_DIR/assets/setup/.version" 2>/dev/null | tr -d '\n' || echo ""
-    # Fallback на старый путь .version
-    elif [ -f "$PROJECT_DIR/.version" ]; then
-        cat "$PROJECT_DIR/.version" 2>/dev/null | tr -d '\n' || echo ""
-    # Fallback на src/__version__.py
-    elif [ -f "$PROJECT_DIR/src/__version__.py" ]; then
-        get_version_from_file "$PROJECT_DIR/src/__version__.py"
-    # Пробуем получить версию из контейнера
     else
-        local container_name="${PROJECT_NAME}-bot"
-        if docker ps --format '{{.Names}}' 2>/dev/null | grep -q "^${container_name}$"; then
-            docker exec "$container_name" cat /app/src/__version__.py 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo ""
-        else
-            echo ""
-        fi
+        echo ""
     fi
 }
 

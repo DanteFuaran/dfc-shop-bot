@@ -103,15 +103,6 @@ dashboard = Window(
         ),
     ),
     Row(
-        Start(
-            text=I18nFormat("btn-dashboard-remnashop"),
-            id="remnashop",
-            state=DashboardRemnashop.MAIN,
-            mode=StartMode.RESET_STACK,
-            when=F[MIDDLEWARE_DATA_KEY][USER_KEY].is_dev,
-        ),
-    ),
-    Row(
         *main_menu_button,
     ),
     IgnoreUpdate(),
