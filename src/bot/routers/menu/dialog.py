@@ -270,20 +270,13 @@ invite = Window(
     Banner(BannerName.REFERRAL),
     I18nFormat("msg-menu-invite"),
     Row(
-        Button(
-            text=I18nFormat("btn-menu-invite-send"),
-            id="send",
-            on_click=on_invite,
-            when=F["is_referral_enable"],
-        ),
         SwitchInlineQueryChosenChatButton(
             text=I18nFormat("btn-menu-invite-send"),
             query=Format("{invite}"),
             allow_user_chats=True,
             allow_group_chats=True,
             allow_channel_chats=True,
-            id="send_inline",
-            when=~F["is_referral_enable"],
+            id="send",
         ),
         Button(
             text=I18nFormat("btn-menu-invite-qr"),
