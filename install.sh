@@ -1463,7 +1463,8 @@ cleanup_on_error() {
     tput cnorm >/dev/null 2>&1 || true
     tput sgr0 >/dev/null 2>&1 || true
     
-    if [ $exit_code -ne 0 ] || [ "$INSTALL_STARTED" = true ]; then
+    # Если exit_code не 0 (ошибка или прерывание), выполняем очистку
+    if [ $exit_code -ne 0 ]; then
         echo
         echo -e "${RED}════════════════════════════════════════${NC}"
         echo -e "${RED}  ⚠️ УСТАНОВКА ПРЕРВАНА ИЛИ ОШИБКА${NC}"
@@ -1482,10 +1483,10 @@ cleanup_on_error() {
             cd "$PROJECT_DIR" 2>/dev/null && docker compose down 2>/dev/null || true
         fi
         
-        # Удаляем целевую папку проекта при ошибке/отмене
+        # ВСЕГДА удаляем папку /opt/dfc-shop-bot при ошибке или прерывании
         if [ -d "$PROJECT_DIR" ]; then
             rm -rf "$PROJECT_DIR" 2>/dev/null || true
-            echo -e "${GREEN}✓ Удалена папка проекта${NC}"
+            echo -e "${GREEN}✓ Удалена папка проекта ($PROJECT_DIR)${NC}"
         fi
         
         echo -e "${GREEN}✅ Очистка завершена${NC}"
@@ -1505,7 +1506,7 @@ cleanup_on_error() {
 
 # Установка trap для обработки ошибок, прерываний и выхода
 trap cleanup_on_error EXIT
-trap 'INSTALL_STARTED=false; exit 130' INT TERM
+trap 'exit 130' INT TERM
 
 # Автоматически даем права на выполнение самому себе
 chmod +x "$0" 2>/dev/null || true
