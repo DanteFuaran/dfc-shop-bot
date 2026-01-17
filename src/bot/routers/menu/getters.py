@@ -241,38 +241,37 @@ async def connect_getter(
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Геттер для окна подключения с инструкцией."""
-    from urllib.parse import quote
     
     subscription = user.current_subscription
     subscription_url = subscription.url if subscription else ""
     
-    # Используем редирект через наш сервер, т.к. Telegram не поддерживает happ:// в кнопках
+    # Формируем прямой happ:// URL для добавления подписки
     if subscription_url:
         # Проверяем что URL валидный (не пустой и содержит протокол)
         if not subscription_url.strip() or not subscription_url.startswith(("http://", "https://")):
             from loguru import logger
             logger.warning(f"Invalid subscription URL for user {user.telegram_id}: '{subscription_url}'")
-            happ_redirect_url = ""
+            happ_url = ""
         else:
-            # Формируем URL редиректа: /api/v1/connect/{subscription_url}
-            # URL уже должен быть закодирован Telegram при передаче в кнопке,
-            # но на всякий случай оставляем как есть
-            domain = config.domain.get_secret_value()
-            happ_redirect_url = f"https://{domain}/api/v1/connect/{subscription_url}"
+            # Используем happ://import/ для сохранения предыдущих подписок
+            happ_url = f"happ://import/{subscription_url}"
     else:
-        happ_redirect_url = ""
+        happ_url = ""
     
     # URL для скачивания с автоопределением ОС
     domain = config.domain.get_secret_value()
     download_url = f"https://{domain}/api/v1/download"
     
-    # URL страницы подписки пользователя в Remnawave
-    # Берём напрямую из подписки, которая уже содержит полный URL от Remnawave API
-    subscription_page_url = subscription_url
+    # URL страницы подписки (используется для кнопки "Подключить подписку")
+    # Также формируем happ:// URL для прямого добавления
+    if subscription_url:
+        subscription_page_url = f"happ://import/{subscription_url}"
+    else:
+        subscription_page_url = ""
     
     return {
         "url": config.bot.mini_app_url or subscription_url,
-        "happ_url": happ_redirect_url,
+        "happ_url": happ_url,
         "download_url": download_url,
         "subscription_url": subscription_page_url,
         "is_app": config.bot.is_mini_app,
