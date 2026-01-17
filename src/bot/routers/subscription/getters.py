@@ -2684,6 +2684,7 @@ async def devices_getter(
         "balance": display_balance,
         "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
         "is_balance_separate": 1 if not is_balance_combined else 0,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         # Данные подписки
         "is_trial": 1 if subscription.is_trial else 0,
         "plan_name": subscription.plan.name if subscription.plan else "Unknown",

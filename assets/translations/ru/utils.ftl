@@ -72,7 +72,10 @@ frg-user =
         *[0] {""}
     }
     { $is_balance_separate ->
-        [1] • <b>Бонусы</b>: { $referral_balance } ₽
+        [1] { $is_referral_enable ->
+            [1] • <b>Бонусы</b>: { $referral_balance } ₽
+            *[0] {""}
+        }
         *[0] {""}
     }
     </blockquote>

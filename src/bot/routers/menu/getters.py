@@ -164,6 +164,7 @@ async def menu_getter(
             "tos_url": (await settings_service.get()).rules_link.get_secret_value() or "https://telegra.ph/",
             "is_balance_enabled": 1 if await settings_service.is_balance_enabled() else 0,
             "is_balance_separate": 1 if not is_balance_combined else 0,
+            "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
             # Показывать кнопку "Мои устройства" если есть подписка с лимитом устройств или купленные доп. устройства
             "show_devices_button": has_extra_devices_purchases or (subscription and subscription.has_devices_limit),
         }

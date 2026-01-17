@@ -140,15 +140,6 @@ menu = Window(
             on_click=on_invite,
             when=F["is_referral_enable"],
         ),
-        SwitchInlineQueryChosenChatButton(
-            text=I18nFormat("btn-menu-invite"),
-            query=Format("{invite}"),
-            allow_user_chats=True,
-            allow_group_chats=True,
-            allow_channel_chats=True,
-            id="send",
-            when=~F["is_referral_enable"],
-        ),
         when=F["has_subscription"],
     ),
     # [Промокод] - для всех пользователей (если включено в настройках)
