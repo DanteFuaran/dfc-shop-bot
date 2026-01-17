@@ -1512,11 +1512,8 @@ trap 'exit 130' INT TERM
 # Автоматически даем права на выполнение самому себе
 chmod +x "$0" 2>/dev/null || true
 
-# Показать курсор
+# Скрыть курсор
 tput civis >/dev/null 2>&1 || true
-
-# Показать курсор при выходе
-trap 'tput cnorm >/dev/null 2>&1 || true; tput sgr0 >/dev/null 2>&1 || true' EXIT
 
 # Режим установки: dev или prod
 INSTALL_MODE="dev"
