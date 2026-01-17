@@ -373,7 +373,7 @@ show_simple_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 TG-SELL-BOT INSTALLER${NC}"
+        echo -e "${GREEN}   🚀 DFC-SHOP-BOT INSTALLER${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -476,7 +476,7 @@ show_full_menu() {
     while true; do
         clear
         echo -e "${BLUE}════════════════════════════════════════${NC}"
-        echo -e "${GREEN}   🚀 TG-SELL-BOT MANAGEMENT PANEL${NC}"
+        echo -e "${GREEN}   🚀 DFC-SHOP-BOT MANAGEMENT PANEL${NC}"
         echo -e "${BLUE}════════════════════════════════════════${NC}"
         echo
         
@@ -629,7 +629,7 @@ show_full_menu() {
 manage_update_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     
@@ -692,7 +692,7 @@ manage_update_bot() {
     if [ $UPDATE_NEEDED -eq 0 ]; then
         clear
         echo -e "${BLUE}========================================${NC}"
-        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ TG-SELL-BOT${NC}"
+        echo -e "${GREEN}       🔄 ОБНОВЛЕНИЕ DFC-SHOP-BOT${NC}"
         echo -e "${BLUE}========================================${NC}"
         echo
         if [ -n "$LOCAL_VERSION" ] && [ "$LOCAL_VERSION" != "unknown" ]; then
@@ -890,7 +890,7 @@ manage_update_bot() {
 manage_restart_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      🔃 ПЕРЕЗАГРУЗКА DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен...${NC}"
@@ -957,7 +957,7 @@ manage_restart_bot() {
 manage_restart_bot_with_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}    🔃📊 ПЕРЕЗАГРУЗКА С ЛОГАМИ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет перезагружен с отображением логов...${NC}"
@@ -989,7 +989,7 @@ manage_restart_bot_with_logs() {
 manage_reinstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      🔄 ПЕРЕУСТАНОВКА DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  ВНИМАНИЕ!${NC}"
@@ -1043,7 +1043,7 @@ manage_reinstall_bot() {
 manage_stop_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      ⬇️  ВЫКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет выключен...${NC}"
@@ -1068,7 +1068,7 @@ manage_stop_bot() {
 manage_start_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}      ⬆️  ВКЛЮЧЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${YELLOW}Бот будет включен...${NC}"
@@ -1093,7 +1093,7 @@ manage_start_bot() {
 manage_view_logs() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       📋 ПРОСМОТР ЛОГОВ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Последние 50 строк логов...${NC}"
@@ -1113,7 +1113,7 @@ manage_view_logs() {
 manage_view_logs_live() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}     📊 ЛОГИ В РЕАЛЬНОМ ВРЕМЕНИ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${DARKGRAY}Запуск просмотра логов...${NC}"
@@ -1413,7 +1413,7 @@ manage_cleanup_database() {
 manage_uninstall_bot() {
     clear
     echo -e "${BLUE}========================================${NC}"
-    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ TG-SELL-BOT${NC}"
+    echo -e "${GREEN}       🗑️  УДАЛЕНИЕ DFC-SHOP-BOT${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
     echo -e "${RED}⚠️  Внимание!${NC} Это удалит весь бот и все данные!"
@@ -1563,7 +1563,7 @@ fi
 
 clear
 echo -e "${BLUE}========================================${NC}"
-echo -e "${GREEN}       🚀 УСТАНОВКА TG-SELL-BOT${NC}"
+echo -e "${GREEN}       🚀 УСТАНОВКА DFC-SHOP-BOT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo
 
