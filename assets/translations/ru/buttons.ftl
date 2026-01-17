@@ -1034,7 +1034,7 @@ btn-referral-reward-strategy = ⚖️ Форма начисления
 btn-referral-reward = 🎁 Награда
 btn-referral-invite-message = ✉️ Настройка приглашения
 btn-reset-default = 🔄 Сбросить по умолчанию
-btn-invite-edit = ✏️ Редактировать приглашение
+btn-invite-edit = ✏️ Редактировать содержимое
 btn-invite-preview = 👁 Предпросмотр
 btn-invite-close-preview = ❌ Закрыть
 

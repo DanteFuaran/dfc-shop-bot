@@ -533,10 +533,6 @@ async def on_invite_message_input(
         await message.answer("⚠️ Сообщение не может быть пустым!")
         return
     
-    # Автоматически добавляем {space} в начало, если его там нет
-    if not new_message.startswith("{space}"):
-        new_message = "{space}" + new_message
-    
     # Сохраняем новое сообщение
     settings = await settings_service.get()
     settings.referral.invite_message = new_message
@@ -582,7 +578,7 @@ async def on_invite_message_reset(
     """Сброс сообщения приглашения на значение по умолчанию."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
-    default_message = "{space}Добро пожаловать в защищенный интернет!\n\n➡️ Подключиться: {url}"
+    default_message = "Добро пожаловать!\n\n⬇️ Подключайся ⬇️\n{url}"
     
     settings = await settings_service.get()
     settings.referral.invite_message = default_message
@@ -592,10 +588,31 @@ async def on_invite_message_reset(
 
 
 @inject
-async def on_invite_preview_close(
+async def on_invite_preview(
     callback: CallbackQuery,
     widget: Button,
     dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+    notification_service: FromDishka[NotificationService],
 ) -> None:
-    """Закрыть предпросмотр - возврат в настройки приглашения."""
-    await dialog_manager.switch_to(RemnashopReferral.INVITE_MESSAGE)
+    """Показать предпросмотр сообщения приглашения через уведомление."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    settings = await settings_service.get_referral_settings()
+    
+    invite_message_template = settings.invite_message
+    # Форматируем сообщение с примерными значениями
+    preview_message = invite_message_template.format(
+        name="VPN",
+        url=f"https://t.me/bot?start={user.referral_code}",
+        space="\n",
+    )
+    
+    # Отправляем предпросмотр как уведомление с кнопкой закрыть
+    await notification_service.notify_user(
+        user=user,
+        payload=MessagePayload(
+            i18n_key="ntf-invite-preview",
+            i18n_kwargs={"content": preview_message},
+            add_close_button=True,
+        ),
+    )

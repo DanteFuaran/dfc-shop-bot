@@ -700,6 +700,7 @@ ntf-broadcast-empty-content = <i>❌ Контент пустой.</i>
 ntf-broadcast-wrong-content = <i>❌ Некорректный контент.</i>
 ntf-broadcast-content-saved = <i>✅ Контент сообщения успешно сохранен.</i>
 ntf-broadcast-preview = { $content }
+ntf-invite-preview = { $content }
 ntf-broadcast-not-cancelable = <i>❌ Рассылка не может быть отменена.</i>
 ntf-broadcast-canceled = <i>✅ Рассылка успешно отменена.</i>
 ntf-broadcast-deleting = <i>⚠️ Идет удаление всех отправленных сообщений.</i>

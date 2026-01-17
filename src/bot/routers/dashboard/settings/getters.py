@@ -492,9 +492,9 @@ async def tos_settings_getter(
     url = current.get("url", "")
     enabled = current.get("enabled", True)
     
-    # Форматируем URL для отображения (показываем первые 50 символов)
+    # Форматируем URL для отображения (показываем полностью)
     if url:
-        url_display = url[:50] + "..." if len(url) > 50 else url
+        url_display = url
     else:
         url_display = "Не установлено"
     

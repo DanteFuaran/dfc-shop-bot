@@ -1452,10 +1452,9 @@ msg-referral-invite-edit =
     ℹ️ Доступные переменные:
     <blockquote>
     • <code>{"{url}"}</code> - реферальная ссылка
-    • <code>{"{space}"}</code> - пустая строка (перевод строки)
     </blockquote>
 
-    <i>✏️ Введите ваше приглашение</i>
+    <i>✏️ Введите ваше приглашение:</i>
 
 msg-referral-invite-preview =
 

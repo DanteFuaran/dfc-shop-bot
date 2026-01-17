@@ -11,7 +11,6 @@ from src.bot.routers.dashboard.remnashop.referral.getters import (
     reward_strategy_getter,
     reward_type_getter,
     invite_message_getter,
-    invite_preview_getter,
 )
 from src.bot.routers.dashboard.remnashop.referral.handlers import (
     on_accrual_strategy_select,
@@ -32,12 +31,11 @@ from src.bot.routers.dashboard.remnashop.referral.handlers import (
     on_invite_message_cancel,
     on_invite_message_accept,
     on_invite_message_reset,
-    on_invite_preview_close,
+    on_invite_preview,
 )
 from src.bot.states import RemnashopReferral
 from src.bot.widgets import Banner, I18nFormat, IgnoreUpdate
 from src.core.enums import BannerName
-
 # Главное окно настроек реферальной системы
 referral = Window(
     Banner(BannerName.DASHBOARD),
@@ -508,10 +506,10 @@ invite_message = Window(
         ),
     ),
     Row(
-        SwitchTo(
+        Button(
             text=I18nFormat("btn-invite-preview"),
             id="preview",
-            state=RemnashopReferral.INVITE_MESSAGE_PREVIEW,
+            on_click=on_invite_preview,
         ),
     ),
     Row(
@@ -555,22 +553,6 @@ invite_message_edit = Window(
     getter=invite_message_getter,
 )
 
-# Окно предпросмотра приглашения
-invite_message_preview = Window(
-    Banner(BannerName.DASHBOARD),
-    I18nFormat("msg-referral-invite-preview", preview_message=F["preview_message"]),
-    Row(
-        Button(
-            text=I18nFormat("btn-invite-close-preview"),
-            id="close",
-            on_click=on_invite_preview_close,
-        ),
-    ),
-    IgnoreUpdate(),
-    state=RemnashopReferral.INVITE_MESSAGE_PREVIEW,
-    getter=invite_preview_getter,
-)
-
 router = Dialog(
     referral,
     level,
@@ -581,5 +563,4 @@ router = Dialog(
     reward_manual_input,
     invite_message,
     invite_message_edit,
-    invite_message_preview,
 )
