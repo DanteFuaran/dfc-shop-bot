@@ -236,8 +236,14 @@ get_local_version() {
     # Fallback на src/__version__.py
     elif [ -f "$PROJECT_DIR/src/__version__.py" ]; then
         get_version_from_file "$PROJECT_DIR/src/__version__.py"
+    # Пробуем получить версию из контейнера
     else
-        echo ""
+        local container_name="${PROJECT_NAME}-bot"
+        if docker ps --format '{{.Names}}' 2>/dev/null | grep -q "^${container_name}$"; then
+            docker exec "$container_name" cat /app/src/__version__.py 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo ""
+        else
+            echo ""
+        fi
     fi
 }
 
