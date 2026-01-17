@@ -655,7 +655,6 @@ async def on_toggle_extra_devices(
 
 
 @inject
-@inject
 async def on_balance_click(
     callback: CallbackQuery,
     widget: Button,
@@ -2304,7 +2303,6 @@ async def on_toggle_currency_rates_auto(
 
 
 @inject
-@inject
 async def on_finances_cancel(
     callback: CallbackQuery,
     widget: Button,
@@ -2374,8 +2372,6 @@ async def on_balance_mode_separate(
     logger.info(f"{log(user)} Set balance mode to SEPARATE")
 
 
-@inject
-@inject
 async def on_finances_accept(
     callback: CallbackQuery,
     widget: Button,

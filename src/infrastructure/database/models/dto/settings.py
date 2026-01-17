@@ -136,7 +136,7 @@ class FeatureSettingsDto(TrackableDto):
     balance_max_amount: Optional[int] = 100000  # Максимальная сумма пополнения баланса
     notifications_enabled: bool = True  # Отправка уведомлений пользователям
     access_enabled: bool = True  # Глобальный доступ к боту (регистрация и покупки)
-    referral_enabled: bool = True  # Реферальная система
+    referral_enabled: bool = False  # Реферальная система (по умолчанию выключена)
     promocodes_enabled: bool = False  # Промокоды в главном меню (по умолчанию выключены)
     extra_devices: ExtraDeviceSettingsDto = ExtraDeviceSettingsDto()  # Настройки доп. устройств
     transfers: TransferSettingsDto = TransferSettingsDto()  # Настройки переводов
