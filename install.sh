@@ -3,6 +3,7 @@ set -e
 
 # Переменные для отслеживания состояния установки
 INSTALL_STARTED=false
+INSTALL_COMPLETED=false
 SOURCE_DIR=""
 CLEANUP_DIRS=()
 TEMP_REPO=""
@@ -1463,8 +1464,8 @@ cleanup_on_error() {
     tput cnorm >/dev/null 2>&1 || true
     tput sgr0 >/dev/null 2>&1 || true
     
-    # Если exit_code не 0 (ошибка или прерывание), выполняем очистку
-    if [ $exit_code -ne 0 ]; then
+    # Если установка не завершена успешно, выполняем очистку
+    if [ "$INSTALL_COMPLETED" != "true" ]; then
         echo
         echo -e "${RED}════════════════════════════════════════${NC}"
         echo -e "${RED}  ⚠️ УСТАНОВКА ПРЕРВАНА ИЛИ ОШИБКА${NC}"
@@ -2016,6 +2017,7 @@ fi
 
 # Отмечаем успешное завершение установки
 INSTALL_STARTED=false
+INSTALL_COMPLETED=true
 
 # Создание глобальной команды dfc-shop-bot
 (
