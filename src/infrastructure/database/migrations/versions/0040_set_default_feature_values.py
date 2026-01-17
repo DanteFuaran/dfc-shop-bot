@@ -23,22 +23,21 @@ def upgrade() -> None:
         SET features = jsonb_set(
             jsonb_set(
                 jsonb_set(
-                    features::jsonb,
-                    '{balance_enabled}',
+                    jsonb_set(
+                        features::jsonb,
+                        '{balance_enabled}',
+                        'false'::jsonb,
+                        true
+                    ),
+                    '{promocodes_enabled}',
                     'false'::jsonb,
                     true
                 ),
-                '{promocodes_enabled}',
+                '{extra_devices,enabled}',
                 'false'::jsonb,
                 true
             ),
-            '{extra_devices,enabled}',
-            'false'::jsonb,
-            true
-        ),
-        transfers = jsonb_set(
-            transfers::jsonb,
-            '{enabled}',
+            '{transfers,enabled}',
             'false'::jsonb,
             true
         )
@@ -53,22 +52,21 @@ def downgrade() -> None:
         SET features = jsonb_set(
             jsonb_set(
                 jsonb_set(
-                    features::jsonb,
-                    '{balance_enabled}',
+                    jsonb_set(
+                        features::jsonb,
+                        '{balance_enabled}',
+                        'true'::jsonb,
+                        true
+                    ),
+                    '{promocodes_enabled}',
                     'true'::jsonb,
                     true
                 ),
-                '{promocodes_enabled}',
+                '{extra_devices,enabled}',
                 'true'::jsonb,
                 true
             ),
-            '{extra_devices,enabled}',
-            'true'::jsonb,
-            true
-        ),
-        transfers = jsonb_set(
-            transfers::jsonb,
-            '{enabled}',
+            '{transfers,enabled}',
             'true'::jsonb,
             true
         )
