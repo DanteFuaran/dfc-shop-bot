@@ -307,14 +307,6 @@ settings_main = Window(
             id="finances",
             on_click=on_finances_click,
         ),
-        Button(
-            text=I18nFormat(
-                "btn-settings-toggle",
-                enabled=F["finances_sync_enabled"],
-            ),
-            id="toggle_finances_sync",
-            on_click=on_toggle_finances_sync,
-        ),
     ),
     Row(
         Button(
