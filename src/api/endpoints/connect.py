@@ -51,6 +51,7 @@ async def connect_to_happ(subscription_url: str) -> HTMLResponse:
     Используется для обхода ограничения Telegram на кастомные URL схемы.
     HTML подход более надёжен чем 302 redirect для custom URL schemes,
     особенно когда приложение уже открыто.
+    Использует happ://import/ вместо happ://add/ для сохранения предыдущих подписок.
     """
     # Проверяем что URL не пустой и имеет корректный формат
     if not subscription_url or not subscription_url.strip():
@@ -62,7 +63,7 @@ async def connect_to_happ(subscription_url: str) -> HTMLResponse:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="Invalid subscription URL format")
     
-    happ_url = f"happ://add/{subscription_url}"
+    happ_url = f"happ://import/{subscription_url}"
     
     # HTML страница с JavaScript для открытия приложения
     # Используем window.location.replace вместо redirect для более надёжного поведения

@@ -501,10 +501,13 @@ async def tos_settings_getter(
     # Статус для отображения в шапке
     status_text = "🟢 Включено" if enabled else "🔴 Выключено"
     
+    # Используем url напрямую в source (без сокращения)
+    source_display = url if url else "Не установлено"
+    
     return {
         "enabled": 1 if enabled else 0,
         "url": url,
-        "url_display": url_display,
+        "source": source_display,
         "status_text": status_text,
     }
 
