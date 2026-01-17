@@ -45,11 +45,11 @@ async def download_app(request: Request) -> RedirectResponse:
 
 
 @router.get("/connect/{subscription_url:path}")
-async def connect_to_happ(subscription_url: str) -> RedirectResponse:
+async def connect_to_happ(subscription_url: str) -> HTMLResponse:
     """
-    Редиректит на happ://import/ для добавления подписки в приложение Happ.
-    Используется для обхода ограничения Telegram на кастомные URL схемы.
-    Использует happ://import/ вместо happ://add/ для сохранения предыдущих подписок.
+    Открывает Happ и добавляет подписку через custom URL scheme.
+    Использует HTML с мета-тегом и JavaScript для надёжного редиректа.
+    Использует happ://add/ для добавления подписки.
     """
     # Проверяем что URL не пустой и имеет корректный формат
     if not subscription_url or not subscription_url.strip():
@@ -61,6 +61,21 @@ async def connect_to_happ(subscription_url: str) -> RedirectResponse:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="Invalid subscription URL format")
     
-    happ_url = f"happ://import/{subscription_url}"
+    happ_url = f"happ://add/{subscription_url}"
     
-    return RedirectResponse(url=happ_url, status_code=302)
+    # HTML с мета-тегом для редиректа и JavaScript для надёжности
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0;url={happ_url}">
+    <title>Подключение к Happ</title>
+</head>
+<body>
+    <script>
+        window.location.href = "{happ_url}";
+    </script>
+</body>
+</html>"""
+    
+    return HTMLResponse(content=html_content, status_code=200)
