@@ -17,6 +17,7 @@ from src.core.enums import (
 )
 from src.core.utils.formatters import format_user_log as log
 from src.infrastructure.database.models.dto import UserDto
+from src.services.notification import NotificationService
 from src.services.settings import SettingsService
 
 
