@@ -31,13 +31,6 @@ dashboard = Window(
     I18nFormat("msg-dashboard-main"),
     Row(
         Start(
-            text=I18nFormat("btn-dashboard-statistics"),
-            id="statistics",
-            state=DashboardStatistics.MAIN,
-        ),
-    ),
-    Row(
-        Start(
             text=I18nFormat("btn-dashboard-users"),
             id="users",
             state=DashboardUsers.MAIN,
@@ -52,21 +45,11 @@ dashboard = Window(
     ),
     Row(
         Start(
-            text=I18nFormat("btn-dashboard-plans"),
-            id="plans",
-            state=RemnashopPlans.MAIN,
-            mode=StartMode.RESET_STACK,
-        ),
-    ),
-    Row(
-        Start(
             text=I18nFormat("btn-dashboard-broadcast"),
             id="broadcast",
             state=DashboardBroadcast.MAIN,
             mode=StartMode.RESET_STACK,
         ),
-    ),
-    Row(
         Button(
             text=I18nFormat("btn-remnashop-advertising"),
             id="advertising",
@@ -74,10 +57,10 @@ dashboard = Window(
         ),
     ),
     Row(
-        Button(
-            text=I18nFormat("btn-remnashop-logs"),
-            id="logs",
-            on_click=on_logs_request,
+        Start(
+            text=I18nFormat("btn-dashboard-statistics"),
+            id="statistics",
+            state=DashboardStatistics.MAIN,
         ),
         Button(
             text=I18nFormat("btn-remnashop-audit"),
@@ -86,12 +69,10 @@ dashboard = Window(
         ),
     ),
     Row(
-        Start(
-            text=I18nFormat("btn-dashboard-remnashop"),
-            id="remnashop",
-            state=DashboardRemnashop.MAIN,
-            mode=StartMode.RESET_STACK,
-            when=F[MIDDLEWARE_DATA_KEY][USER_KEY].is_dev,
+        Button(
+            text=I18nFormat("btn-remnashop-logs"),
+            id="logs",
+            on_click=on_logs_request,
         ),
         Start(
             text=I18nFormat("btn-dashboard-remnawave"),
@@ -102,9 +83,10 @@ dashboard = Window(
     ),
     Row(
         Start(
-            text=I18nFormat("btn-dashboard-db"),
-            id="db_management",
-            state=DashboardDB.MAIN,
+            text=I18nFormat("btn-dashboard-plans"),
+            id="plans",
+            state=RemnashopPlans.MAIN,
+            mode=StartMode.RESET_STACK,
         ),
     ),
     Row(
@@ -113,6 +95,20 @@ dashboard = Window(
             id="settings",
             state=DashboardSettings.MAIN,
             mode=StartMode.RESET_STACK,
+        ),
+        Start(
+            text=I18nFormat("btn-dashboard-db"),
+            id="db_management",
+            state=DashboardDB.MAIN,
+        ),
+    ),
+    Row(
+        Start(
+            text=I18nFormat("btn-dashboard-remnashop"),
+            id="remnashop",
+            state=DashboardRemnashop.MAIN,
+            mode=StartMode.RESET_STACK,
+            when=F[MIDDLEWARE_DATA_KEY][USER_KEY].is_dev,
         ),
     ),
     Row(
