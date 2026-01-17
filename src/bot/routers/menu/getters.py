@@ -394,8 +394,11 @@ async def devices_getter(
     actual_device_limit = subscription.device_limit
     device_limit_bonus = max(0, actual_device_limit - plan_device_limit - extra_devices) if plan_device_limit > 0 else 0
     
+    # Проверяем включён ли функционал доп. устройств
+    is_extra_devices_enabled = await settings_service.is_extra_devices_enabled()
+    
     # Определяем показывать ли кнопку "Управление доп. устройствами"
-    # Условия: есть extra_devices > 0 ИЛИ (подписка не триал и не реферальная)
+    # Условия: функционал включён И (есть extra_devices > 0 ИЛИ (подписка не триал и не реферальная))
     # ИЛИ есть история покупок доп. устройств (даже если подписка истекла)
     plan_name_lower = subscription.plan.name.lower() if subscription.plan else ""
     is_trial_subscription = subscription.is_trial or "пробн" in plan_name_lower
@@ -410,14 +413,14 @@ async def devices_getter(
         pass
     
     # Показываем кнопку если:
-    # 1. Есть активные extra_devices
-    # 2. ИЛИ есть история покупок доп. устройств  
-    # 3. ИЛИ подписка активна и это не триал/реферальная подписка
-    show_extra_devices_button = (
+    # 1. Функционал доп. устройств ВКЛЮЧЁН в Настройках И:
+    #    - Есть активные extra_devices
+    #    - ИЛИ подписка активна и это не триал/реферальная подписка
+    # 2. ИЛИ есть история покупок доп. устройств (даже если функционал отключен)
+    show_extra_devices_button = is_extra_devices_enabled and (
         extra_devices > 0 
-        or has_extra_device_purchases
         or (subscription.is_active and not is_trial_subscription and not is_referral_subscription)
-    )
+    ) or has_extra_device_purchases
 
     return {
         "current_count": len(devices),
