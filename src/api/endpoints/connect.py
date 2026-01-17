@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse
 
 router = APIRouter(prefix="/api/v1", tags=["connect"])
 
@@ -45,12 +45,10 @@ async def download_app(request: Request) -> RedirectResponse:
 
 
 @router.get("/connect/{subscription_url:path}")
-async def connect_to_happ(subscription_url: str) -> HTMLResponse:
+async def connect_to_happ(subscription_url: str) -> RedirectResponse:
     """
-    Открывает Happ и добавляет подписку через custom URL scheme.
-    Использует HTML с мета-тегом и JavaScript для надёжного редиректа.
-    Использует happ://import/ для сохранения существующих подписок.
-    Страница автоматически закрывается сразу после редиректа.
+    Редирект на happ://add/{subscription_url}
+    Используется для обхода ограничения Telegram на кастомные URL схемы
     """
     # Проверяем что URL не пустой и имеет корректный формат
     if not subscription_url or not subscription_url.strip():
@@ -62,29 +60,5 @@ async def connect_to_happ(subscription_url: str) -> HTMLResponse:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="Invalid subscription URL format")
     
-    # Используем happ://import/ вместо happ://add/ для сохранения существующих подписок
-    happ_url = f"happ://import/{subscription_url}"
-    
-    # Минимальная HTML страница с мгновенным редиректом и автозакрытием
-    html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0;url={happ_url}">
-</head>
-<body>
-    <script>
-        // Мгновенный редирект
-        window.location.href = "{happ_url}";
-        
-        // Пытаемся закрыть окно сразу
-        window.close();
-        
-        // Дополнительные попытки закрытия на случай блокировки
-        setTimeout(function() {{ window.close(); }}, 50);
-        setTimeout(function() {{ window.close(); }}, 100);
-    </script>
-</body>
-</html>"""
-    
-    return HTMLResponse(content=html_content, status_code=200)
+    happ_url = f"happ://add/{subscription_url}"
+    return RedirectResponse(url=happ_url, status_code=302)
