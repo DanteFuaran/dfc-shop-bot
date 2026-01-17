@@ -49,7 +49,8 @@ async def connect_to_happ(subscription_url: str) -> HTMLResponse:
     """
     Открывает Happ и добавляет подписку через custom URL scheme.
     Использует HTML с мета-тегом и JavaScript для надёжного редиректа.
-    Использует happ://add/ для добавления подписки.
+    Использует happ://import/ для сохранения существующих подписок.
+    Страница автоматически закрывается после редиректа.
     """
     # Проверяем что URL не пустой и имеет корректный формат
     if not subscription_url or not subscription_url.strip():
@@ -61,9 +62,10 @@ async def connect_to_happ(subscription_url: str) -> HTMLResponse:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="Invalid subscription URL format")
     
-    happ_url = f"happ://add/{subscription_url}"
+    # Используем happ://import/ вместо happ://add/ для сохранения существующих подписок
+    happ_url = f"happ://import/{subscription_url}"
     
-    # HTML с мета-тегом для редиректа и JavaScript для надёжности
+    # HTML с мета-тегом для редиректа, JavaScript для надёжности и автозакрытия окна
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -73,7 +75,13 @@ async def connect_to_happ(subscription_url: str) -> HTMLResponse:
 </head>
 <body>
     <script>
+        // Редиректим на Happ
         window.location.href = "{happ_url}";
+        
+        // Пытаемся закрыть окно через 500мс (после редиректа)
+        setTimeout(function() {{
+            window.close();
+        }}, 500);
     </script>
 </body>
 </html>"""
