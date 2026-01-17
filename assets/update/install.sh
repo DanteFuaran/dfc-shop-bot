@@ -15,7 +15,7 @@ ENV_FILE="$PROJECT_DIR/.env"
 REPO_DIR="/opt/dfc-shop-bot"
 REMNAWAVE_DIR="/opt/remnawave"
 REPO_URL="https://github.com/DanteFuaran/dfc-shop-bot.git"
-REPO_BRANCH="main"
+REPO_BRANCH="dev"
 
 # Статус обновлений
 UPDATE_AVAILABLE=0
@@ -1511,31 +1511,23 @@ trap 'tput cnorm >/dev/null 2>&1 || true; tput sgr0 >/dev/null 2>&1 || true' EXI
 # Режим установки: dev или prod
 INSTALL_MODE="dev"
 
-# Если это первый запуск (не из временной папки), клонируем репозиторий в /tmp
-if [ "$1" != "--install" ] && [ ! -d "/tmp/dfc-shop-bot-install-$$" ]; then
+# Если это первый запуск (скрипт запущен из системы, не из временной папки)
+if [ "$1" != "--install" ]; then
     # Проверяем режим если скрипт вызван без аргументов --install
     if [ "$1" != "--prod" ] && [ "$1" != "-p" ]; then
         check_mode "$1"
-    fi
-    
-    # Если нужна установка, создаем временную папку и клонируем туда
-    if [ "$1" = "--install" ] || [ -z "$1" ]; then
-        # Это будет обработано ниже после check_mode
-        :
     fi
     
     if [ "$1" = "--prod" ] || [ "$1" = "-p" ]; then
         INSTALL_MODE="prod"
     fi
     
-    # Если скрипт запущен с флагом установки, создаем временную папку и переклонируемся туда
-    if [ "$1" = "--install" ]; then
-        CLONE_DIR=$(mktemp -d)
-        trap "cd /opt 2>/dev/null || true; rm -rf '$CLONE_DIR' 2>/dev/null || true" EXIT
-        git clone -b "$REPO_BRANCH" --depth 1 "$REPO_URL" "$CLONE_DIR" >/dev/null 2>&1
-        cd "$CLONE_DIR"
-        exec "$CLONE_DIR/install.sh" --install "$CLONE_DIR"
-    fi
+    # Создаем временную папку с уникальным именем и переклонируемся туда
+    CLONE_DIR=$(mktemp -d)
+    trap "cd /opt 2>/dev/null || true; rm -rf '$CLONE_DIR' 2>/dev/null || true" EXIT
+    git clone -b "$REPO_BRANCH" --depth 1 "$REPO_URL" "$CLONE_DIR" >/dev/null 2>&1
+    cd "$CLONE_DIR"
+    exec "$CLONE_DIR/install.sh" --install "$CLONE_DIR" "$INSTALL_MODE"
 else
     # Это повторный запуск из временной папки
     CLONE_DIR="$2"
@@ -1748,6 +1740,12 @@ if [ "$COPY_FILES" = true ]; then
       mkdir -p "$PROJECT_DIR/assets/update"
       cp "$SOURCE_DIR/install.sh" "$PROJECT_DIR/assets/update/install.sh"
       chmod +x "$PROJECT_DIR/assets/update/install.sh"
+      
+      # Сохраняем версию в .version файл
+      local version=$(grep -oP '__version__ = "\K[^"]+' "$SOURCE_DIR/src/__version__.py" 2>/dev/null || echo "")
+      if [ -n "$version" ]; then
+          echo "$version" > "$PROJECT_DIR/assets/update/.version"
+      fi
     ) &
     show_spinner "Копирование конфигурации"
 fi

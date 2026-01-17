@@ -1740,6 +1740,12 @@ if [ "$COPY_FILES" = true ]; then
       mkdir -p "$PROJECT_DIR/assets/update"
       cp "$SOURCE_DIR/install.sh" "$PROJECT_DIR/assets/update/install.sh"
       chmod +x "$PROJECT_DIR/assets/update/install.sh"
+      
+      # Сохраняем версию в .version файл
+      local version=$(grep -oP '__version__ = "\K[^"]+' "$SOURCE_DIR/src/__version__.py" 2>/dev/null || echo "")
+      if [ -n "$version" ]; then
+          echo "$version" > "$PROJECT_DIR/assets/update/.version"
+      fi
     ) &
     show_spinner "Копирование конфигурации"
 fi
