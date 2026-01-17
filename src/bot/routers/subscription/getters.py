@@ -2605,6 +2605,9 @@ async def devices_getter(
     # Проверяем включён ли функционал доп. устройств
     is_extra_devices_enabled = await settings_service.is_extra_devices_enabled()
     
+    # DEBUG: Логируем значение
+    logger.info(f"devices_getter: is_extra_devices_enabled={is_extra_devices_enabled}, as int={1 if is_extra_devices_enabled else 0}")
+    
     # Проверяем, можно ли добавить устройство
     # Запрещаем для пробных и реферальных подписок
     # Запрещаем если функционал доп. устройств отключён
