@@ -87,10 +87,14 @@ async def hosts_getter(
             )
         )
 
+    # Обработка случая, когда список пуст или индекс выходит за границы
+    if not hosts or current_page >= len(hosts):
+        current_page = 0
+
     return {
         "pages": len(hosts),
         "current_page": current_page + 1,
-        "host": hosts[current_page],
+        "host": hosts[current_page] if hosts else None,
     }
 
 
@@ -136,10 +140,14 @@ async def nodes_getter(
             )
         )
 
+    # Обработка случая, когда список пуст или индекс выходит за границы
+    if not nodes or current_page >= len(nodes):
+        current_page = 0
+    
     return {
         "pages": len(nodes),
         "current_page": current_page + 1,
-        "node": nodes[current_page],
+        "node": nodes[current_page] if nodes else None,
     }
 
 
@@ -172,8 +180,12 @@ async def inbounds_getter(
             )
         )
 
+    # Обработка случая, когда список пуст или индекс выходит за границы
+    if not inbounds or current_page >= len(inbounds):
+        current_page = 0
+
     return {
         "pages": len(inbounds),
         "current_page": current_page + 1,
-        "inbound": inbounds[current_page],
+        "inbound": inbounds[current_page] if inbounds else None,
     }
