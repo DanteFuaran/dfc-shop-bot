@@ -78,53 +78,56 @@ async def connect_to_happ(subscription_url: str):
                 align-items: center;
                 min-height: 100vh;
                 margin: 0;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
+                background: #0a0e27;
+                color: #e8e8e8;
                 text-align: center;
                 padding: 20px;
             }}
             .container {{
                 max-width: 400px;
-                background: rgba(255, 255, 255, 0.1);
-                backdrop-filter: blur(10px);
-                border-radius: 20px;
+                background: #1a1f3a;
+                border: 1px solid #2a2f4a;
+                border-radius: 12px;
                 padding: 40px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             }}
             h1 {{
                 font-size: 24px;
                 margin-bottom: 20px;
+                color: #00a8e8;
             }}
             .btn {{
                 display: inline-block;
-                background: white;
-                color: #667eea;
+                background: #00a8e8;
+                color: #0a0e27;
                 padding: 15px 30px;
-                border-radius: 50px;
+                border-radius: 8px;
                 text-decoration: none;
                 font-weight: bold;
                 font-size: 16px;
                 margin: 10px 0;
-                transition: transform 0.2s, box-shadow 0.2s;
+                transition: all 0.2s;
                 cursor: pointer;
                 border: none;
             }}
             .btn:hover {{
+                background: #00c8f8;
                 transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 4px 12px rgba(0, 168, 232, 0.3);
             }}
             .info {{
                 font-size: 14px;
                 margin-top: 20px;
-                opacity: 0.9;
+                opacity: 0.85;
+                color: #b0b0b0;
             }}
             .spinner {{
                 display: inline-block;
                 width: 20px;
                 height: 20px;
-                border: 3px solid rgba(255,255,255,.3);
+                border: 3px solid rgba(0, 168, 232, 0.3);
                 border-radius: 50%;
-                border-top-color: white;
+                border-top-color: #00a8e8;
                 animation: spin 1s ease-in-out infinite;
                 margin-right: 10px;
             }}
