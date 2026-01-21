@@ -1399,7 +1399,6 @@ async def on_add_device_duration_select(
     from src.core.utils.pricing import (
         calculate_device_price_until_subscription_end,
         calculate_device_price_until_month_end,
-        MIN_EXTRA_DEVICE_DAYS,
     )
     
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
@@ -1409,19 +1408,20 @@ async def on_add_device_duration_select(
     
     device_count = dialog_manager.dialog_data.get("device_count", 1)
     device_price_monthly = await settings_service.get_extra_device_price()
+    min_days = await settings_service.get_extra_device_min_days()
     
     if user.current_subscription:
         if duration_type == "month":
             price_per_device, duration_days = calculate_device_price_until_month_end(
                 monthly_price=device_price_monthly,
                 subscription_expire_at=user.current_subscription.expire_at,
-                min_days=MIN_EXTRA_DEVICE_DAYS,
+                min_days=min_days,
             )
         else:
             price_per_device, duration_days = calculate_device_price_until_subscription_end(
                 monthly_price=device_price_monthly,
                 subscription_expire_at=user.current_subscription.expire_at,
-                min_days=MIN_EXTRA_DEVICE_DAYS,
+                min_days=min_days,
             )
         calculated_price = price_per_device * device_count
     else:

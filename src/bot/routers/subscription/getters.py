@@ -2018,7 +2018,6 @@ async def add_device_duration_getter(
     from src.core.utils.pricing import (
         calculate_device_price_until_subscription_end,
         calculate_device_price_until_month_end,
-        MIN_EXTRA_DEVICE_DAYS,
     )
     
     # Получаем количество устройств из dialog_data
@@ -2026,6 +2025,9 @@ async def add_device_duration_getter(
     
     # Получаем цену дополнительного устройства из настроек (за месяц)
     device_price_monthly = await settings_service.get_extra_device_price()
+    
+    # Получаем минимальное количество дней из настроек
+    min_days = await settings_service.get_extra_device_min_days()
     
     # Получаем реферальный баланс
     referral_balance = await referral_service.get_pending_rewards_amount(
@@ -2044,14 +2046,14 @@ async def add_device_duration_getter(
         price_full, days_full = calculate_device_price_until_subscription_end(
             monthly_price=device_price_monthly,
             subscription_expire_at=subscription.expire_at,
-            min_days=MIN_EXTRA_DEVICE_DAYS,
+            min_days=min_days,
         )
         
         # Вариант 2: До конца месяца подписки
         price_month, days_month = calculate_device_price_until_month_end(
             monthly_price=device_price_monthly,
             subscription_expire_at=subscription.expire_at,
-            min_days=MIN_EXTRA_DEVICE_DAYS,
+            min_days=min_days,
         )
     else:
         # Если нет подписки, используем полную цену
@@ -2196,23 +2198,23 @@ async def add_device_payment_getter(
         from src.core.utils.pricing import (
             calculate_device_price_until_subscription_end,
             calculate_device_price_until_month_end,
-            MIN_EXTRA_DEVICE_DAYS,
         )
         
         device_price_monthly = await settings_service.get_extra_device_price()
+        min_days = await settings_service.get_extra_device_min_days()
         
         if user.current_subscription:
             if duration_type == "month":
                 price_per_device, duration_days = calculate_device_price_until_month_end(
                     monthly_price=device_price_monthly,
                     subscription_expire_at=user.current_subscription.expire_at,
-                    min_days=MIN_EXTRA_DEVICE_DAYS,
+                    min_days=min_days,
                 )
             else:
                 price_per_device, duration_days = calculate_device_price_until_subscription_end(
                     monthly_price=device_price_monthly,
                     subscription_expire_at=user.current_subscription.expire_at,
-                    min_days=MIN_EXTRA_DEVICE_DAYS,
+                    min_days=min_days,
                 )
             device_price_rub = price_per_device * device_count
         else:
@@ -2414,23 +2416,23 @@ async def add_device_confirm_getter(
         from src.core.utils.pricing import (
             calculate_device_price_until_subscription_end,
             calculate_device_price_until_month_end,
-            MIN_EXTRA_DEVICE_DAYS,
         )
         
         device_price_monthly = await settings_service.get_extra_device_price()
+        min_days = await settings_service.get_extra_device_min_days()
         
         if user.current_subscription:
             if duration_type == "month":
                 price_per_device, duration_days = calculate_device_price_until_month_end(
                     monthly_price=device_price_monthly,
                     subscription_expire_at=user.current_subscription.expire_at,
-                    min_days=MIN_EXTRA_DEVICE_DAYS,
+                    min_days=min_days,
                 )
             else:
                 price_per_device, duration_days = calculate_device_price_until_subscription_end(
                     monthly_price=device_price_monthly,
                     subscription_expire_at=user.current_subscription.expire_at,
-                    min_days=MIN_EXTRA_DEVICE_DAYS,
+                    min_days=min_days,
                 )
             device_price_rub = price_per_device * device_count
         else:
