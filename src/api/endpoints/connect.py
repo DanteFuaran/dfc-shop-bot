@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
-from dishka import FromDishka
-from dishka.integrations.fastapi import inject
 from aiogram import Bot
 from src.core.config import AppConfig
 
@@ -52,20 +50,25 @@ async def download_app(request: Request) -> RedirectResponse:
 
 
 @router.get("/user-devices/{subscription_url:path}")
-@inject
 async def get_user_devices_count(
     subscription_url: str,
-    user_service: FromDishka["UserService"],
-    remnawave_service: FromDishka["RemnawaveService"],
+    request: Request,
 ):
     """
     Получить количество устройств пользователя по subscription_url.
     Возвращает JSON с количеством устройств.
     """
-    from fastapi import HTTPException
     from fastapi.responses import JSONResponse
+    from src.services.user import UserService
+    from src.services.remnawave import RemnawaveService
     
     try:
+        # Получаем Dishka контейнер из приложения
+        container = request.app.state.dishka_container
+        
+        user_service = await container.get(UserService)
+        remnawave_service = await container.get(RemnawaveService)
+        
         # Получаем пользователя по subscription_url
         user = await user_service.get_by_subscription_url(subscription_url)
         
@@ -84,8 +87,7 @@ async def get_user_devices_count(
 
 
 @router.get("/connect/{subscription_url:path}")
-@inject
-async def connect_to_happ(subscription_url: str, config: FromDishka[AppConfig], bot: FromDishka[Bot]):
+async def connect_to_happ(subscription_url: str, request: Request):
     """
     Страница для подключения к Happ.
     Использует HTML с JavaScript для надежного открытия приложения.
@@ -94,6 +96,13 @@ async def connect_to_happ(subscription_url: str, config: FromDishka[AppConfig], 
     global _bot_username_cache
     from fastapi import HTTPException
     from fastapi.responses import HTMLResponse
+    from src.services.user import UserService
+    from src.services.remnawave import RemnawaveService
+    
+    # Получаем зависимости из контейнера
+    container = request.app.state.dishka_container
+    config = await container.get(AppConfig)
+    bot = await container.get(Bot)
     
     # Проверяем что URL не пустой и имеет корректный формат
     if not subscription_url or not subscription_url.strip():
