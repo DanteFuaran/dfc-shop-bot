@@ -1148,6 +1148,11 @@ async def on_extra_devices_min_days_manual_input_click(
     dialog_manager: DialogManager,
 ) -> None:
     """Переход к окну ручного ввода минимальных дней."""
+    # Удаляем текущее сообщение перед переходом
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
     await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES_MIN_DAYS_MANUAL)
 
 
@@ -1171,6 +1176,11 @@ async def on_extra_devices_min_days_manual_value_input(
             
         dialog_manager.dialog_data["pending_extra_devices_min_days"] = days
         logger.info(f"{log(user)} Manually entered extra devices min days: {days}")
+        # Удаляем сообщение пользователя
+        try:
+            await message.delete()
+        except Exception:
+            pass
         await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES_MIN_DAYS)
     except ValueError:
         await message.answer("❌ Введите корректное число дней")
