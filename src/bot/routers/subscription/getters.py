@@ -2662,6 +2662,7 @@ async def devices_getter(
     plan_name_lower = subscription.plan.name.lower() if subscription.plan else ""
     is_trial_subscription = subscription.is_trial or "пробн" in plan_name_lower
     is_referral_subscription = "реферал" in plan_name_lower
+    is_import_subscription = "import" in plan_name_lower or (subscription.tag and "import" in subscription.tag.lower())
     is_trial_or_referral = is_trial_subscription or is_referral_subscription
     
     # Проверяем включён ли функционал доп. устройств
@@ -2754,12 +2755,13 @@ async def devices_getter(
     has_extra_device_purchases = len(purchases) > 0
     
     # Проверяем, можно ли добавить устройство
-    # Запрещаем для пробных и реферальных подписок
+    # Запрещаем для пробных, реферальных и импорт подписок
     # Запрещаем если функционал доп. устройств отключён
     can_add_device = (
         max_count is not None 
         and max_count > 0 
         and not is_trial_or_referral
+        and not is_import_subscription
         and is_extra_devices_enabled
     )
     
@@ -2768,6 +2770,7 @@ async def devices_getter(
         is_extra_devices_enabled 
         and subscription.is_active
         and not is_trial_or_referral
+        and not is_import_subscription
     )
 
     # Данные профиля

@@ -413,6 +413,7 @@ async def devices_getter(
     plan_name_lower = subscription.plan.name.lower() if subscription.plan else ""
     is_trial_subscription = subscription.is_trial or "пробн" in plan_name_lower
     is_referral_subscription = "реферал" in plan_name_lower
+    is_import_subscription = "import" in (subscription.plan.name.lower() if subscription.plan else "") or (subscription.tag and "import" in subscription.tag.lower())
     
     # Получаем активные покупки доп. устройств
     purchases = []
@@ -501,12 +502,13 @@ async def devices_getter(
     has_extra_device_purchases = len(purchases) > 0
     
     # Показываем кнопку добавления устройств если:
-    # Функционал включён И подписка активна И это не триал/реферальная подписка
+    # Функционал включён И подписка активна И это не триал/реферальная/импорт подписка
     can_add_extra_device = (
         is_extra_devices_enabled 
         and subscription.is_active 
         and not is_trial_subscription 
         and not is_referral_subscription
+        and not is_import_subscription
     )
 
     return {
