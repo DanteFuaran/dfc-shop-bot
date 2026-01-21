@@ -4,8 +4,6 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from aiogram import Bot
 from src.core.config import AppConfig
-from src.services.remnawave import RemnawaveService
-from src.services.user import UserService
 
 router = APIRouter(prefix="/api/v1", tags=["connect"])
 
@@ -57,8 +55,8 @@ async def download_app(request: Request) -> RedirectResponse:
 @inject
 async def get_user_devices_count(
     subscription_url: str,
-    user_service: FromDishka[UserService],
-    remnawave_service: FromDishka[RemnawaveService],
+    user_service: FromDishka["UserService"],
+    remnawave_service: FromDishka["RemnawaveService"],
 ):
     """
     Получить количество устройств пользователя по subscription_url.
