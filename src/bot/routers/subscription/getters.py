@@ -1157,6 +1157,9 @@ async def confirm_balance_getter(
     # Проверяем режим баланса (раздельный или объединённый)
     is_balance_separate = not is_balance_combined
     result["is_balance_separate"] = 1 if is_balance_separate else 0
+    
+    # Проверяем, включен ли функционал рефералов
+    result["is_referral_enable"] = 1 if await settings_service.is_referral_enable() else 0
 
     # Получаем информацию о планируемых дополнительных устройствах (если выбраны)
     planned_extra_devices = dialog_manager.dialog_data.get("device_count", 0)
