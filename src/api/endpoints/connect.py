@@ -86,6 +86,45 @@ async def get_user_devices_count(
         return JSONResponse({"device_count": 0})
 
 
+@router.post("/notify-device-connected/{subscription_url:path}")
+async def notify_device_connected(
+    subscription_url: str,
+    request: Request,
+):
+    """
+    Отправляет уведомление пользователю в Telegram об успешном подключении устройства.
+    """
+    from fastapi.responses import JSONResponse
+    from src.services.user import UserService
+    from src.services.notification import NotificationService
+    from src.core.utils.message_payload import MessagePayload
+    
+    try:
+        # Получаем Dishka контейнер из приложения
+        container = request.app.state.dishka_container
+        
+        user_service = await container.get(UserService)
+        notification_service = await container.get(NotificationService)
+        
+        # Получаем пользователя по subscription_url
+        user = await user_service.get_by_subscription_url(subscription_url)
+        
+        if not user:
+            return JSONResponse({"success": False, "error": "User not found"})
+        
+        # Отправляем уведомление об успешном подключении
+        await notification_service.notify_user(
+            user=user,
+            payload=MessagePayload(i18n_key="ntf-device-connected")
+        )
+        
+        return JSONResponse({"success": True})
+    except Exception as e:
+        from loguru import logger
+        logger.error(f"Error sending device connected notification: {e}")
+        return JSONResponse({"success": False, "error": str(e)})
+
+
 @router.get("/connect/{subscription_url:path}")
 async def connect_to_happ(subscription_url: str, request: Request):
     """
@@ -310,8 +349,33 @@ async def connect_to_happ(subscription_url: str, request: Request):
                             // Если количество устройств увеличилось - успех
                             if (currentDeviceCount > initialDeviceCount) {{
                                 clearInterval(checkInterval);
-                                document.getElementById('checking').style.display = 'none';
-                                document.getElementById('success').style.display = 'flex';
+                                
+                                // Отправляем уведомление в Telegram
+                                fetch('/api/v1/notify-device-connected/{subscription_url_encoded}', {{
+                                    method: 'POST'
+                                }})
+                                .then(response => response.json())
+                                .then(data => {{
+                                    console.log('Notification sent:', data);
+                                }})
+                                .catch(err => {{
+                                    console.error('Error sending notification:', err);
+                                }});
+                                
+                                // Закрываем окно/вкладку
+                                window.close();
+                                
+                                // Если window.close() не сработало (некоторые браузеры блокируют),
+                                // показываем сообщение о том, что окно можно закрыть
+                                setTimeout(function() {{
+                                    document.getElementById('checking').style.display = 'none';
+                                    document.getElementById('success').innerHTML = `
+                                        <div class="result-icon">✅</div>
+                                        <h2 class="result-title">Устройство подключено!</h2>
+                                        <p class="result-description">Уведомление отправлено в бот. Вы можете закрыть эту вкладку.</p>
+                                    `;
+                                    document.getElementById('success').style.display = 'flex';
+                                }}, 500);
                             }}
                             // Если достигли максимального количества попыток - ошибка
                             else if (checkAttempts >= maxAttempts) {{
