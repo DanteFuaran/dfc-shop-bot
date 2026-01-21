@@ -1124,6 +1124,9 @@ async def on_edit_extra_devices_min_days(
     dialog_manager: DialogManager,
 ) -> None:
     """Переход к окну изменения минимальных дней."""
+    # Очищаем pending значение при входе в окно выбора
+    # Это обеспечивает правильное отображение текущего значения
+    dialog_manager.dialog_data.pop("pending_extra_devices_min_days", None)
     await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES_MIN_DAYS)
 
 
@@ -1163,6 +1166,7 @@ async def on_extra_devices_min_days_manual_value_input(
     dialog_manager: DialogManager,
 ) -> None:
     """Обработка ручного ввода минимального количества дней."""
+    dialog_manager.show_mode = ShowMode.EDIT
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
     try:
