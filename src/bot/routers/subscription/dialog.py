@@ -501,7 +501,7 @@ devices = Window(
                 text=Format("❌"),
                 id="delete",
                 on_click=on_device_delete,
-                when=F["item"]["is_occupied"],
+                when=F["item"]["can_delete"],
             ),
         ),
         id="device_slots_list",

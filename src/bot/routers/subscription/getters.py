@@ -2639,7 +2639,8 @@ async def devices_getter(
     # Создаём объединённый список слотов устройств
     # Сначала базовые слоты (из плана), потом купленные
     device_slots = []
-    slot_hwid_map = {}  # Маппинг slot_index -> hwid для удаления
+    slot_hwid_map = {}  # Маппинг slot_index -> hwid для удаления устройств
+    slot_purchase_map = {}  # Маппинг slot_index -> purchase_id для удаления пустых extra слотов
     devices_copy = list(formatted_devices)  # Копия для распределения
     slot_index = 0
     
@@ -2653,6 +2654,7 @@ async def devices_getter(
                 "slot_type": "base",
                 "days_display": "∞",
                 "is_occupied": True,
+                "can_delete": True,  # Можно удалить устройство
                 "device_info": f"{device['platform']} - {device['device_model']}",
             }
             slot_hwid_map[str(slot_index)] = device["short_hwid"]
@@ -2662,6 +2664,7 @@ async def devices_getter(
                 "slot_type": "base",
                 "days_display": "∞",
                 "is_occupied": False,
+                "can_delete": False,  # Базовый пустой слот нельзя удалить
                 "device_info": "Пусто",
             }
         device_slots.append(slot)
@@ -2679,6 +2682,7 @@ async def devices_getter(
                     "slot_type": "extra",
                     "days_display": f"{p.days_remaining}д",
                     "is_occupied": True,
+                    "can_delete": True,  # Можно удалить устройство
                     "device_info": f"{device['platform']} - {device['device_model']}",
                 }
                 slot_hwid_map[str(slot_index)] = device["short_hwid"]
@@ -2689,13 +2693,17 @@ async def devices_getter(
                     "slot_type": "extra",
                     "days_display": f"{p.days_remaining}д",
                     "is_occupied": False,
+                    "can_delete": True,  # Пустой extra слот можно удалить
                     "device_info": "Пусто",
                 }
+                # Сохраняем purchase_id для удаления пустого слота
+                slot_purchase_map[str(slot_index)] = p.id
             device_slots.append(slot)
             slot_index += 1
     
     # Сохраняем для обработчика удаления
     dialog_manager.dialog_data["slot_hwid_map"] = slot_hwid_map
+    dialog_manager.dialog_data["slot_purchase_map"] = slot_purchase_map
     dialog_manager.dialog_data["extra_device_purchases"] = [
         {"id": p.id, "device_count": p.device_count}
         for p in purchases

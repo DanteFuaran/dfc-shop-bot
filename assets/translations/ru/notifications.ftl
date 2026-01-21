@@ -816,6 +816,7 @@ ntf-payment-gateway-not-available = <i>❌ Выбранная платёжная
 ntf-subscription-required = <i>❌ Для добавления устройства необходима активная подписка.</i>
 ntf-extra-device-auto-renew-disabled = <i>✅ Автопродление дополнительных устройств отключено. Устройства будут удалены по истечению срока.</i>
 ntf-extra-device-deleted = <i>✅ Дополнительные устройства удалены. Лимит устройств обновлён.</i>
+ntf-extra-slot-deleted = <i>✅ Дополнительный слот удалён. Лимит устройств уменьшен.</i>
 ntf-extra-device-expired = <i>⚠️ Срок действия { $device_count } доп. устройств истёк. Лимит устройств уменьшен.</i>
 ntf-extra-device-renewed = <i>✅ Автопродление { $device_count } доп. устройств успешно! Списано { $price } ₽ с баланса.</i>
 

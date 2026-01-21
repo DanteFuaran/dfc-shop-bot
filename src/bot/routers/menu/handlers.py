@@ -409,38 +409,102 @@ async def on_device_delete(
     widget: Button,
     sub_manager: SubManager,
     remnawave_service: FromDishka[RemnawaveService],
+    extra_device_service: FromDishka[ExtraDeviceService],
+    subscription_service: FromDishka[SubscriptionService],
+    user_service: FromDishka[UserService],
+    notification_service: FromDishka[NotificationService],
 ) -> None:
+    """Удаление устройства или пустого extra слота."""
     await sub_manager.load_data()
     slot_id = sub_manager.item_id  # Получаем индекс слота
     user: UserDto = sub_manager.middleware_data[USER_KEY]
     
     # Получаем маппинги из dialog_data
     slot_hwid_map = sub_manager.dialog_data.get("slot_hwid_map", {})
+    slot_purchase_map = sub_manager.dialog_data.get("slot_purchase_map", {})
     hwid_map = sub_manager.dialog_data.get("hwid_map")
     
-    # Получаем short_hwid из маппинга по индексу слота
+    # Проверяем, это занятый слот (есть hwid) или пустой extra слот (есть purchase_id)
     short_hwid = slot_hwid_map.get(slot_id)
-    if not short_hwid:
-        raise ValueError(f"HWID not found for slot '{slot_id}'")
+    purchase_id = slot_purchase_map.get(slot_id)
+    
+    if short_hwid:
+        # Удаляем устройство из занятого слота
+        if not hwid_map:
+            raise ValueError(f"Selected slot '{slot_id}', but 'hwid_map' is missing")
 
-    if not hwid_map:
-        raise ValueError(f"Selected slot '{slot_id}', but 'hwid_map' is missing")
+        full_hwid = next((d["hwid"] for d in hwid_map if d["short_hwid"] == short_hwid), None)
 
-    full_hwid = next((d["hwid"] for d in hwid_map if d["short_hwid"] == short_hwid), None)
+        if not full_hwid:
+            raise ValueError(f"Full HWID not found for '{short_hwid}'")
 
-    if not full_hwid:
-        raise ValueError(f"Full HWID not found for '{short_hwid}'")
+        if not (user.current_subscription and user.current_subscription.device_limit):
+            raise ValueError("User has no active subscription or device limit unlimited")
 
-    if not (user.current_subscription and user.current_subscription.device_limit):
-        raise ValueError("User has no active subscription or device limit unlimited")
+        devices = await remnawave_service.delete_device(user=user, hwid=full_hwid)
+        logger.info(f"{log(user)} Deleted device '{full_hwid}'")
 
-    devices = await remnawave_service.delete_device(user=user, hwid=full_hwid)
-    logger.info(f"{log(user)} Deleted device '{full_hwid}'")
+        if devices:
+            return
 
-    if devices:
-        return
-
-    await sub_manager.switch_to(state=MainMenu.MAIN)
+        await sub_manager.switch_to(state=MainMenu.MAIN)
+    
+    elif purchase_id:
+        # Удаляем пустой extra слот (покупку)
+        subscription = user.current_subscription
+        if not subscription:
+            return
+        
+        # Получаем информацию о покупке
+        purchase = await extra_device_service.get(purchase_id)
+        if not purchase:
+            return
+        
+        # Уменьшаем device_count на 1
+        if purchase.device_count > 1:
+            # Уменьшаем количество устройств в покупке
+            purchase.device_count -= 1
+            await extra_device_service.update(purchase)
+            
+            # Обновляем лимит устройств
+            subscription.extra_devices = max(0, (subscription.extra_devices or 0) - 1)
+            subscription.device_limit = max(
+                subscription.plan.device_limit if subscription.plan else 1,
+                (subscription.device_limit or 1) - 1
+            )
+        else:
+            # Удаляем покупку полностью
+            await extra_device_service.delete(purchase_id)
+            
+            # Обновляем лимит устройств
+            subscription.extra_devices = max(0, (subscription.extra_devices or 0) - 1)
+            subscription.device_limit = max(
+                subscription.plan.device_limit if subscription.plan else 1,
+                (subscription.device_limit or 1) - 1
+            )
+        
+        await subscription_service.update(subscription)
+        
+        # Обновляем в Remnawave
+        await remnawave_service.updated_user(
+            user=user,
+            uuid=subscription.user_remna_id,
+            subscription=subscription,
+        )
+        
+        # Очищаем кеш
+        await user_service.clear_user_cache(user.telegram_id)
+        
+        logger.info(f"{log(user)} Deleted empty extra slot from purchase '{purchase_id}'")
+        
+        await notification_service.notify_user(
+            user=user,
+            payload=MessagePayload(i18n_key="ntf-extra-slot-deleted"),
+        )
+        
+        await callback.answer()
+    else:
+        raise ValueError(f"Slot '{slot_id}' has no hwid or purchase_id")
 
 
 @inject
