@@ -15,6 +15,7 @@ from .getters import (
     transfers_settings_getter,
     extra_devices_getter,
     extra_devices_price_getter,
+    extra_devices_min_days_getter,
     global_discount_settings_getter,
     global_discount_apply_to_getter,
     global_discount_mode_getter,
@@ -90,6 +91,10 @@ from .handlers import (
     on_extra_devices_price_input,
     on_cancel_extra_devices_price,
     on_accept_extra_devices_price,
+    on_edit_extra_devices_min_days,
+    on_extra_devices_min_days_select,
+    on_cancel_extra_devices_min_days,
+    on_accept_extra_devices_min_days,
     on_cancel_extra_devices,
     on_accept_extra_devices,
     # Глобальная скидка
@@ -1184,6 +1189,11 @@ extra_devices = Window(
         id="edit_price",
         on_click=on_edit_extra_devices_price,
     ),
+    Button(
+        text=I18nFormat("btn-extra-devices-min-days", days=F["min_days"]),
+        id="edit_min_days",
+        on_click=on_edit_extra_devices_min_days,
+    ),
     Row(
         Button(
             text=I18nFormat("btn-cancel"),
@@ -1313,6 +1323,72 @@ extra_devices_price_manual = Window(
     getter=extra_devices_price_getter,
 )
 
+
+# Выбор минимального количества дней для покупки доп.устройства
+extra_devices_min_days = Window(
+    Banner(BannerName.DASHBOARD),
+    I18nFormat(
+        "msg-dashboard-extra-devices-min-days",
+        current_min_days=F["current_min_days"],
+        selected_min_days=F["selected_min_days"],
+    ),
+    Row(
+        Button(
+            text=I18nFormat("btn-days-1", selected=F["days_1_selected"]),
+            id="days_1",
+            on_click=on_extra_devices_min_days_select,
+        ),
+        Button(
+            text=I18nFormat("btn-days-3", selected=F["days_3_selected"]),
+            id="days_3",
+            on_click=on_extra_devices_min_days_select,
+        ),
+        Button(
+            text=I18nFormat("btn-days-5", selected=F["days_5_selected"]),
+            id="days_5",
+            on_click=on_extra_devices_min_days_select,
+        ),
+    ),
+    Row(
+        Button(
+            text=I18nFormat("btn-days-7", selected=F["days_7_selected"]),
+            id="days_7",
+            on_click=on_extra_devices_min_days_select,
+        ),
+        Button(
+            text=I18nFormat("btn-days-10", selected=F["days_10_selected"]),
+            id="days_10",
+            on_click=on_extra_devices_min_days_select,
+        ),
+        Button(
+            text=I18nFormat("btn-days-14", selected=F["days_14_selected"]),
+            id="days_14",
+            on_click=on_extra_devices_min_days_select,
+        ),
+    ),
+    Row(
+        Button(
+            text=I18nFormat("btn-days-30", selected=F["days_30_selected"]),
+            id="days_30",
+            on_click=on_extra_devices_min_days_select,
+        ),
+    ),
+    Row(
+        Button(
+            text=I18nFormat("btn-cancel"),
+            id="cancel",
+            on_click=on_cancel_extra_devices_min_days,
+        ),
+        Button(
+            text=I18nFormat("btn-accept"),
+            id="accept",
+            on_click=on_accept_extra_devices_min_days,
+        ),
+    ),
+    IgnoreUpdate(),
+    state=DashboardSettings.EXTRA_DEVICES_MIN_DAYS,
+    getter=extra_devices_min_days_getter,
+)
 
 
 # Ручной ввод значения комиссии
@@ -2004,6 +2080,7 @@ router = Dialog(
     extra_devices,
     extra_devices_price,
     extra_devices_price_manual,
+    extra_devices_min_days,
     global_discount_settings,
     global_discount_value,
     global_discount_manual,

@@ -449,6 +449,7 @@ btn-feature-toggle =
 
 btn-extra-devices-menu = 📱 Доп. устройства
 btn-extra-devices-price = 💰 Стоимость: { $price } ₽
+btn-extra-devices-min-days = ⏳ Минимум дней: { $days }
 btn-extra-devices-one-time = 
     { $selected ->
     [1] 🔘 Единоразово
@@ -459,6 +460,36 @@ btn-extra-devices-monthly =
     [1] 🔘 Ежемесячно
     *[0] ⚪ Ежемесячно
     }
+
+# Дни для минимального срока
+btn-days-1 = { $selected ->
+    [1] [1 день]
+    *[0] 1 день
+}
+btn-days-3 = { $selected ->
+    [1] [3 дня]
+    *[0] 3 дня
+}
+btn-days-5 = { $selected ->
+    [1] [5 дней]
+    *[0] 5 дней
+}
+btn-days-7 = { $selected ->
+    [1] [7 дней]
+    *[0] 7 дней
+}
+btn-days-10 = { $selected ->
+    [1] [10 дней]
+    *[0] 10 дней
+}
+btn-days-14 = { $selected ->
+    [1] [14 дней]
+    *[0] 14 дней
+}
+btn-days-30 = { $selected ->
+    [1] [30 дней]
+    *[0] 30 дней
+}
 
 # Цены доп. устройств
 btn-price-free = { $selected ->

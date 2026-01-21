@@ -1082,6 +1082,7 @@ async def on_cancel_extra_devices(
     """Отмена изменений в настройках доп. устройств."""
     dialog_manager.dialog_data.pop("pending_extra_devices_payment_type", None)
     dialog_manager.dialog_data.pop("pending_extra_devices_price", None)
+    dialog_manager.dialog_data.pop("pending_extra_devices_min_days", None)
     await dialog_manager.switch_to(DashboardSettings.MAIN)
 
 
@@ -1096,6 +1097,7 @@ async def on_accept_extra_devices(
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     pending_payment_type = dialog_manager.dialog_data.get("pending_extra_devices_payment_type")
     pending_price = dialog_manager.dialog_data.get("pending_extra_devices_price")
+    pending_min_days = dialog_manager.dialog_data.get("pending_extra_devices_min_days")
     
     if pending_payment_type is not None:
         await settings_service.toggle_extra_devices_payment_type()
@@ -1107,7 +1109,57 @@ async def on_accept_extra_devices(
         logger.info(f"{log(user)} Updated extra devices price to {pending_price}")
         dialog_manager.dialog_data.pop("pending_extra_devices_price", None)
     
+    if pending_min_days is not None:
+        await settings_service.set_extra_device_min_days(pending_min_days)
+        logger.info(f"{log(user)} Updated extra devices min days to {pending_min_days}")
+        dialog_manager.dialog_data.pop("pending_extra_devices_min_days", None)
+    
     await dialog_manager.switch_to(DashboardSettings.MAIN)
+
+
+@inject
+async def on_edit_extra_devices_min_days(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Переход к окну изменения минимальных дней."""
+    await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES_MIN_DAYS)
+
+
+@inject
+async def on_extra_devices_min_days_select(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Выбор предустановленного количества дней."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    days = int(widget.widget_id.replace("days_", ""))
+    
+    dialog_manager.dialog_data["pending_extra_devices_min_days"] = days
+    logger.info(f"{log(user)} Selected extra devices min days: {days}")
+
+
+@inject
+async def on_cancel_extra_devices_min_days(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Отмена изменения минимальных дней."""
+    dialog_manager.dialog_data.pop("pending_extra_devices_min_days", None)
+    await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES)
+
+
+@inject
+async def on_accept_extra_devices_min_days(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Применение выбранного минимального количества дней."""
+    await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES)
 
 
 # === Глобальная скидка ===

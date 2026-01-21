@@ -280,6 +280,10 @@ async def extra_devices_getter(
     pending_price = dialog_manager.dialog_data.get("pending_extra_devices_price")
     extra_devices_price = pending_price if pending_price is not None else features.extra_devices.price_per_device
     
+    # Получаем pending min_days или текущее значение из БД
+    pending_min_days = dialog_manager.dialog_data.get("pending_extra_devices_min_days")
+    min_days = pending_min_days if pending_min_days is not None else features.extra_devices.min_days
+    
     payment_type_display = "Разовая платёж" if is_one_time else "Ежемесячно"
     
     return {
@@ -288,6 +292,7 @@ async def extra_devices_getter(
         "is_one_time": 1 if is_one_time else 0,
         "is_monthly": 0 if is_one_time else 1,
         "payment_type_display": payment_type_display,
+        "min_days": min_days,
     }
 
 
@@ -309,6 +314,35 @@ async def extra_devices_price_getter(
     return {
         "current_price": current_price,
         "selected_price": selected_price,
+    }
+
+
+@inject
+async def extra_devices_min_days_getter(
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Геттер для окна изменения минимального количества дней."""
+    settings = await settings_service.get()
+    features = settings.features
+    
+    # Получаем pending min_days или текущее
+    pending_min_days = dialog_manager.dialog_data.get("pending_extra_devices_min_days")
+    current_min_days = features.extra_devices.min_days
+    selected_min_days = pending_min_days if pending_min_days is not None else current_min_days
+    
+    return {
+        "current_min_days": current_min_days,
+        "selected_min_days": selected_min_days,
+        # Для проверки выбора
+        "days_1_selected": 1 if selected_min_days == 1 else 0,
+        "days_3_selected": 1 if selected_min_days == 3 else 0,
+        "days_5_selected": 1 if selected_min_days == 5 else 0,
+        "days_7_selected": 1 if selected_min_days == 7 else 0,
+        "days_10_selected": 1 if selected_min_days == 10 else 0,
+        "days_14_selected": 1 if selected_min_days == 14 else 0,
+        "days_30_selected": 1 if selected_min_days == 30 else 0,
     }
 
 

@@ -89,6 +89,7 @@ class ExtraDeviceSettingsDto(TrackableDto):
     enabled: bool = False  # Включен ли функционал доп. устройств (по умолчанию выключен)
     price_per_device: int = 100  # Стоимость одного доп. устройства в месяц
     is_one_time: bool = False  # True = единоразовая оплата, False = ежемесячная
+    min_days: int = 10  # Минимальное количество дней до истечения подписки для покупки слота
 
 
 class TransferSettingsDto(TrackableDto):

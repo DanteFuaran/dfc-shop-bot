@@ -287,6 +287,14 @@ class SettingsService(BaseService):
         await self.update(settings)
         logger.debug(f"Set extra_device price -> '{price}'")
 
+    async def set_extra_device_min_days(self, min_days: int) -> None:
+        """Set minimum days before subscription expiration to purchase extra device slot."""
+        settings = await self.get()
+        settings.features.extra_devices.min_days = min_days
+        settings.features = settings.features  # Trigger change tracking
+        await self.update(settings)
+        logger.debug(f"Set extra_device min_days -> '{min_days}'")
+
     async def toggle_extra_devices_payment_type(self) -> bool:
         """Toggle extra devices payment type (one-time vs monthly). Returns new is_one_time value."""
         settings = await self.get()
