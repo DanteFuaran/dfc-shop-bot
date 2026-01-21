@@ -460,15 +460,19 @@ async def on_device_delete(
         if not purchase:
             return
         
-        # Удаляем покупку полностью
-        # (чтобы ее не включали в продление подписки)
-        await extra_device_service.delete(purchase_id)
+        # Удаляем один слот из покупки
+        if purchase.device_count > 1:
+            # Уменьшаем количество устройств в покупке на 1
+            await extra_device_service.decrease_device_count(purchase_id)
+        else:
+            # Удаляем покупку полностью (последний слот)
+            await extra_device_service.delete(purchase_id)
         
-        # Обновляем лимит устройств
-        subscription.extra_devices = max(0, (subscription.extra_devices or 0) - purchase.device_count)
+        # Обновляем лимит устройств (всегда уменьшаем на 1)
+        subscription.extra_devices = max(0, (subscription.extra_devices or 0) - 1)
         subscription.device_limit = max(
             subscription.plan.device_limit if subscription.plan else 1,
-            (subscription.device_limit or 1) - purchase.device_count
+            (subscription.device_limit or 1) - 1
         )
         
         await subscription_service.update(subscription)

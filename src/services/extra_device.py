@@ -125,6 +125,23 @@ class ExtraDeviceService(BaseService):
             logger.info(f"Deleted extra device purchase '{purchase_id}'")
         return result
 
+    async def decrease_device_count(self, purchase_id: int) -> Optional[ExtraDevicePurchaseDto]:
+        """Уменьшить количество устройств в покупке на 1."""
+        purchase = await self.uow.repository.extra_device_purchases.get(purchase_id)
+        if not purchase or purchase.device_count <= 1:
+            return None
+        
+        updated = await self.uow.repository.extra_device_purchases.update(
+            purchase_id,
+            device_count=purchase.device_count - 1
+        )
+        
+        if updated:
+            await self.uow.commit()
+            logger.info(f"Decreased device count for purchase '{purchase_id}' to {updated.device_count}")
+        
+        return self._to_dto(updated) if updated else None
+
     async def renew_purchase(
         self,
         purchase_id: int,
