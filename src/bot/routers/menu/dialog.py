@@ -141,14 +141,24 @@ menu = Window(
         ),
         when=F["has_subscription"],
     ),
-    # [Промокод] - для всех пользователей (если включено в настройках)
+    # [Пригласить] - доступна без подписки (если реферальная система включена)
+    Row(
+        Button(
+            text=I18nFormat("btn-menu-invite"),
+            id="invite_no_subscription",
+            on_click=on_invite,
+            when=F["is_referral_enable"],
+        ),
+        when=~F["has_subscription"],
+    ),
+    # [Промокод] - только для пользователей с подпиской
     Row(
         Button(
             text=I18nFormat("btn-menu-promocode"),
             id="promocode",
             on_click=on_promocode,
         ),
-        when=F["is_promocodes_enabled"],
+        when=F["is_promocodes_enabled"] & F["has_subscription"],
     ),
     # [Сообщество][Помощь]
     Row(
