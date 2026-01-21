@@ -109,7 +109,7 @@ menu = Window(
         ),
         when=F["is_balance_enabled"],
     ),
-    # [Подписка][Мои устройства] - для всех пользователей
+    # [Подписка][Мои устройства] (если есть подписка) или [Подписка][Пригласить] (если нет подписки и реферальная система включена)
     Row(
         Start(
             text=I18nFormat("btn-menu-subscription"),
@@ -123,6 +123,12 @@ menu = Window(
             state=MainMenu.DEVICES,
             when=F["show_devices_button"],
         ),
+        Button(
+            text=I18nFormat("btn-menu-invite"),
+            id="invite",
+            on_click=on_invite,
+            when=~F["has_subscription"] & F["is_referral_enable"],
+        ),
     ),
     # [Подключиться][Пригласить] (если есть подписка)
     Row(
@@ -135,21 +141,11 @@ menu = Window(
         ),
         Button(
             text=I18nFormat("btn-menu-invite"),
-            id="invite",
+            id="invite_with_subscription",
             on_click=on_invite,
             when=F["is_referral_enable"],
         ),
         when=F["has_subscription"],
-    ),
-    # [Пригласить] - доступна без подписки (если реферальная система включена)
-    Row(
-        Button(
-            text=I18nFormat("btn-menu-invite"),
-            id="invite_no_subscription",
-            on_click=on_invite,
-            when=F["is_referral_enable"],
-        ),
-        when=~F["has_subscription"],
     ),
     # [Промокод] - только для пользователей с подпиской
     Row(
