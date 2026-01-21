@@ -13,7 +13,6 @@ from remnapy.exceptions.general import ServerError
 from remnapy.models import (
     CreateUserRequestDto,
     CreateUserResponseDto,
-    DeleteUserHwidDeviceResponseDto,
     GetStatsResponseDto,
     HWIDDeleteRequest,
     HwidUserDeviceDto,
@@ -701,26 +700,12 @@ class RemnawaveService(BaseService):
             logger.warning(f"No subscription found for user '{user.telegram_id}'")
             return None
 
-        # Используем прямой HTTP запрос для поддержки параметра permanent
-        request_data = HWIDDeleteRequest(
-            user_uuid=user.current_subscription.user_remna_id,
-            hwid=hwid,
+        result = await self.remnawave.hwid.delete_hwid_to_user(
+            HWIDDeleteRequest(
+                user_uuid=user.current_subscription.user_remna_id,
+                hwid=hwid,
+            )
         )
-        
-        # Формируем URL с query параметром permanent если нужно
-        # base_url уже содержит /api, поэтому не добавляем его снова
-        url = f"{self.remnawave.base_url}/hwid/devices/delete"
-        if permanent:
-            url += "?permanent=true"
-        
-        # Делаем прямой POST запрос через internal client SDK
-        response = await self.remnawave._client.post(
-            url,
-            json=request_data.model_dump(by_alias=True, mode="json"),
-        )
-        response.raise_for_status()
-        
-        result = DeleteUserHwidDeviceResponseDto.model_validate(response.json())
 
         logger.info(
             f"Deleted device '{hwid}' for RemnaUser '{user.telegram_id}' "
