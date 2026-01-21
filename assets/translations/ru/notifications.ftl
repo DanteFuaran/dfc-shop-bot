@@ -42,6 +42,7 @@ ntf-db-clear-all-success =
     • Рефералы: <b>{ $referrals }</b>
     • Награды: <b>{ $rewards }</b>
     • Уведомления: <b>{ $notifications }</b>
+    • HWID устройства: <b>{ $hwid_devices }</b>
     </blockquote>
 ntf-db-clear-all-failed = 
     <i>❌ Ошибка при очистке базы данных:</i>
@@ -60,6 +61,7 @@ ntf-db-clear-users-success =
     • Активации: <b>{ $activations }</b>
     • Рефералы: <b>{ $referrals }</b>
     • Награды: <b>{ $rewards }</b>
+    • HWID устройства: <b>{ $hwid_devices }</b>
     </blockquote>
 ntf-db-clear-users-failed = 
     <i>❌ Ошибка при удалении пользователей:</i>
