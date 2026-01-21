@@ -1215,10 +1215,18 @@ async def on_device_delete(
 ) -> None:
     """Удаление устройства из списка."""
     await sub_manager.load_data()
-    selected_short_hwid = sub_manager.item_id
+    slot_id = sub_manager.item_id  # Получаем индекс слота
     user: UserDto = sub_manager.middleware_data[USER_KEY]
+    
+    # Получаем маппинги из dialog_data
+    slot_hwid_map = sub_manager.dialog_data.get("slot_hwid_map", {})
     hwid_map = sub_manager.dialog_data.get("hwid_map")
-
+    
+    # Получаем short_hwid из маппинга по индексу слота
+    selected_short_hwid = slot_hwid_map.get(slot_id)
+    if not selected_short_hwid:
+        raise ValueError(f"HWID not found for slot '{slot_id}'")
+    
     if not hwid_map:
         raise ValueError(f"Selected '{selected_short_hwid}' HWID, but 'hwid_map' is missing")
 

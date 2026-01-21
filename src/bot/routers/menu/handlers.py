@@ -411,13 +411,20 @@ async def on_device_delete(
     remnawave_service: FromDishka[RemnawaveService],
 ) -> None:
     await sub_manager.load_data()
-    # item_id теперь это short_hwid для занятых слотов
-    short_hwid = sub_manager.item_id
+    slot_id = sub_manager.item_id  # Получаем индекс слота
     user: UserDto = sub_manager.middleware_data[USER_KEY]
+    
+    # Получаем маппинги из dialog_data
+    slot_hwid_map = sub_manager.dialog_data.get("slot_hwid_map", {})
     hwid_map = sub_manager.dialog_data.get("hwid_map")
+    
+    # Получаем short_hwid из маппинга по индексу слота
+    short_hwid = slot_hwid_map.get(slot_id)
+    if not short_hwid:
+        raise ValueError(f"HWID not found for slot '{slot_id}'")
 
     if not hwid_map:
-        raise ValueError(f"Selected slot '{short_hwid}', but 'hwid_map' is missing")
+        raise ValueError(f"Selected slot '{slot_id}', but 'hwid_map' is missing")
 
     full_hwid = next((d["hwid"] for d in hwid_map if d["short_hwid"] == short_hwid), None)
 

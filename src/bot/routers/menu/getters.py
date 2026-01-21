@@ -420,7 +420,9 @@ async def devices_getter(
     # Создаём объединённый список слотов устройств
     # Сначала базовые слоты (из плана), потом купленные
     device_slots = []
+    slot_hwid_map = {}  # Маппинг slot_index -> hwid для удаления
     devices_copy = list(formatted_devices)  # Копия для распределения
+    slot_index = 0
     
     # Базовые слоты подписки (бесконечный срок)
     for i in range(plan_device_limit):
@@ -428,23 +430,23 @@ async def devices_getter(
         if devices_copy:
             device = devices_copy.pop(0)
             slot = {
-                "id": device["short_hwid"],  # Используем hwid как id для удаления
+                "id": str(slot_index),  # Короткий индекс для callback_data
                 "slot_type": "base",
                 "days_display": "∞",
                 "is_occupied": True,
                 "device_info": f"{device['platform']} - {device['device_model']}",
-                "short_hwid": device["short_hwid"],
             }
+            slot_hwid_map[str(slot_index)] = device["short_hwid"]
         else:
             slot = {
-                "id": f"empty_base_{i}",
+                "id": str(slot_index),
                 "slot_type": "base",
                 "days_display": "∞",
                 "is_occupied": False,
                 "device_info": "Пусто",
-                "short_hwid": None,
             }
         device_slots.append(slot)
+        slot_index += 1
     
     # Слоты из покупок (с ограниченным сроком)
     for p in purchases:
@@ -453,27 +455,28 @@ async def devices_getter(
             if devices_copy:
                 device = devices_copy.pop(0)
                 slot = {
-                    "id": device["short_hwid"],  # Используем hwid как id для удаления
+                    "id": str(slot_index),  # Короткий индекс для callback_data
                     "purchase_id": str(p.id),
                     "slot_type": "extra",
                     "days_display": f"{p.days_remaining}д",
                     "is_occupied": True,
                     "device_info": f"{device['platform']} - {device['device_model']}",
-                    "short_hwid": device["short_hwid"],
                 }
+                slot_hwid_map[str(slot_index)] = device["short_hwid"]
             else:
                 slot = {
-                    "id": f"empty_extra_{p.id}_{j}",
+                    "id": str(slot_index),
                     "purchase_id": str(p.id),
                     "slot_type": "extra",
                     "days_display": f"{p.days_remaining}д",
                     "is_occupied": False,
                     "device_info": "Пусто",
-                    "short_hwid": None,
                 }
             device_slots.append(slot)
+            slot_index += 1
     
     # Сохраняем данные для обработчиков
+    dialog_manager.dialog_data["slot_hwid_map"] = slot_hwid_map
     dialog_manager.dialog_data["extra_device_purchases"] = [
         {"id": p.id, "device_count": p.device_count}
         for p in purchases
