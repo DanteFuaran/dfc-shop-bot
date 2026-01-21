@@ -708,7 +708,8 @@ class RemnawaveService(BaseService):
         )
         
         # Формируем URL с query параметром permanent если нужно
-        url = f"{self.remnawave.base_url}/api/hwid/devices/delete"
+        # base_url уже содержит /api, поэтому не добавляем его снова
+        url = f"{self.remnawave.base_url}/hwid/devices/delete"
         if permanent:
             url += "?permanent=true"
         
