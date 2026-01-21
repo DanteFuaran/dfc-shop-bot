@@ -1046,13 +1046,11 @@ class RemnawaveService(BaseService):
 
         if event == RemnaUserHwidDevicesEvent.ADDED:
             logger.debug(f"Device '{device.hwid}' added for RemnaUser '{remna_user.telegram_id}'")
-            system_i18n_key = "ntf-event-user-hwid-added"
-            user_i18n_key = "ntf-user-hwid-device-added"
+            i18n_key = "ntf-event-user-hwid-added"
 
         elif event == RemnaUserHwidDevicesEvent.DELETED:
             logger.debug(f"Device '{device.hwid}' deleted for RemnaUser '{remna_user.telegram_id}'")
-            system_i18n_key = "ntf-event-user-hwid-deleted"
-            user_i18n_key = "ntf-user-hwid-device-deleted"
+            i18n_key = "ntf-event-user-hwid-deleted"
 
         else:
             logger.warning(
@@ -1060,11 +1058,10 @@ class RemnawaveService(BaseService):
             )
             return
 
-        # Уведомление для администраторов/разработчиков
         await send_system_notification_task.kiq(
             ntf_type=SystemNotificationType.USER_HWID,
             payload=MessagePayload.not_deleted(
-                i18n_key=system_i18n_key,
+                i18n_key=i18n_key,
                 i18n_kwargs={
                     "user_id": str(user.telegram_id),
                     "user_name": user.name,
@@ -1076,20 +1073,6 @@ class RemnawaveService(BaseService):
                     "user_agent": device.user_agent,
                 },
                 reply_markup=get_user_keyboard(user.telegram_id),
-            ),
-        )
-        
-        # Уведомление для пользователя
-        await self.notification_service.notify_user(
-            user=user,
-            payload=MessagePayload(
-                i18n_key=user_i18n_key,
-                i18n_kwargs={
-                    "platform": device.platform,
-                    "device_model": device.device_model,
-                },
-                auto_delete_after=None,
-                add_close_button=True,
             ),
         )
 
