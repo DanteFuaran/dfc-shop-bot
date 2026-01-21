@@ -207,6 +207,16 @@ def i18n_format_seconds(
     return parts
 
 
+def pluralize_days(count: int) -> str:
+    """Склонение слова 'день' в зависимости от числа."""
+    if count % 10 == 1 and count % 100 != 11:
+        return "день"
+    elif count % 10 in [2, 3, 4] and count % 100 not in [12, 13, 14]:
+        return "дня"
+    else:
+        return "дней"
+
+
 def i18n_format_days(value: int) -> tuple[str, dict[str, int]]:
     if value is None or value == -1:  # UNLIMITED
         return UtilKey.UNLIMITED, {}

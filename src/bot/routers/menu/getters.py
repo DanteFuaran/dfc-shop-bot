@@ -450,7 +450,7 @@ async def devices_getter(
                 "days_display": "∞",
                 "is_occupied": False,
                 "can_delete": False,  # Базовый пустой слот нельзя удалить
-                "device_info": "Пусто",
+                "device_info": "Пустой слот",
             }
         device_slots.append(slot)
         slot_index += 1

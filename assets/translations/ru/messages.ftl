@@ -218,6 +218,13 @@ msg-dashboard-extra-devices-settings =
     }
     • Тип оплаты: { $payment_type_display }
     • Стоимость устройства: { $extra_devices_price } ₽
+    • Минимальное количество дней: { $min_days } { $min_days ->
+        [1] день
+        [2] дня
+        [3] дня
+        [4] дня
+        *[other] дней
+    }
     </blockquote>
 
 
