@@ -410,32 +410,76 @@ async def devices_getter(
     is_trial_subscription = subscription.is_trial or "пробн" in plan_name_lower
     is_referral_subscription = "реферал" in plan_name_lower
     
-    # Получаем активные покупки доп. устройств для отображения в списке
-    active_purchases = []
-    has_extra_device_purchases = False
+    # Получаем активные покупки доп. устройств
     purchases = []
     try:
         purchases = await extra_device_service.get_active_by_subscription(subscription.id)
-        has_extra_device_purchases = len(purchases) > 0
-        
-        # Форматируем покупки для отображения с оставшимся сроком
-        for p in purchases:
-            active_purchases.append({
-                "id": str(p.id),
-                "device_count": p.device_count,
-                "days_remaining": p.days_remaining,
-                # Форматируем срок: "∞" для устройств из подписки не используется,
-                # т.к. это купленные доп.устройства - всегда показываем дни
-                "days_display": f"{p.days_remaining}д",
-            })
     except Exception:
         pass
     
-    # Сохраняем для обработчика удаления
+    # Создаём объединённый список слотов устройств
+    # Сначала базовые слоты (из плана), потом купленные
+    device_slots = []
+    devices_copy = list(formatted_devices)  # Копия для распределения
+    
+    # Базовые слоты подписки (бесконечный срок)
+    for i in range(plan_device_limit):
+        # Пытаемся занять слот устройством
+        if devices_copy:
+            device = devices_copy.pop(0)
+            slot = {
+                "id": device["short_hwid"],  # Используем hwid как id для удаления
+                "slot_type": "base",
+                "days_display": "∞",
+                "is_occupied": True,
+                "device_info": f"{device['platform']} - {device['device_model']}",
+                "short_hwid": device["short_hwid"],
+            }
+        else:
+            slot = {
+                "id": f"empty_base_{i}",
+                "slot_type": "base",
+                "days_display": "∞",
+                "is_occupied": False,
+                "device_info": "Пусто",
+                "short_hwid": None,
+            }
+        device_slots.append(slot)
+    
+    # Слоты из покупок (с ограниченным сроком)
+    for p in purchases:
+        for j in range(p.device_count):
+            # Пытаемся занять слот устройством
+            if devices_copy:
+                device = devices_copy.pop(0)
+                slot = {
+                    "id": device["short_hwid"],  # Используем hwid как id для удаления
+                    "purchase_id": str(p.id),
+                    "slot_type": "extra",
+                    "days_display": f"{p.days_remaining}д",
+                    "is_occupied": True,
+                    "device_info": f"{device['platform']} - {device['device_model']}",
+                    "short_hwid": device["short_hwid"],
+                }
+            else:
+                slot = {
+                    "id": f"empty_extra_{p.id}_{j}",
+                    "purchase_id": str(p.id),
+                    "slot_type": "extra",
+                    "days_display": f"{p.days_remaining}д",
+                    "is_occupied": False,
+                    "device_info": "Пусто",
+                    "short_hwid": None,
+                }
+            device_slots.append(slot)
+    
+    # Сохраняем данные для обработчиков
     dialog_manager.dialog_data["extra_device_purchases"] = [
         {"id": p.id, "device_count": p.device_count}
         for p in purchases
-    ] if has_extra_device_purchases else []
+    ]
+    
+    has_extra_device_purchases = len(purchases) > 0
     
     # Показываем кнопку добавления устройств если:
     # Функционал включён И подписка активна И это не триал/реферальная подписка
@@ -450,7 +494,10 @@ async def devices_getter(
         "current_count": len(devices),
         "max_count": i18n_format_device_limit(subscription.device_limit),
         "devices": formatted_devices,
-        "devices_empty": len(devices) == 0,
+        "devices_empty": len(device_slots) == 0,
+        # Слоты устройств (базовые + купленные)
+        "device_slots": device_slots,
+        "has_device_slots": 1 if device_slots else 0,
         # Данные подписки
         "plan_name": subscription.plan.name if subscription.plan else "Unknown",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit),
@@ -458,8 +505,7 @@ async def devices_getter(
         "device_limit_bonus": device_limit_bonus,
         "extra_devices": extra_devices,
         "expire_time": i18n_format_expire_time(subscription.expire_at),
-        # Список покупок доп. устройств
-        "extra_device_purchases": active_purchases,
+        # Флаги для покупок
         "has_extra_device_purchases": 1 if has_extra_device_purchases else 0,
         # Флаги для кнопок
         "can_add_device": subscription.is_active and subscription.has_devices_limit,

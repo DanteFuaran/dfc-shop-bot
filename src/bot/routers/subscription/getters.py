@@ -2611,48 +2611,90 @@ async def devices_getter(
     subscription = user.current_subscription
     current_count = len(devices)
     max_count = subscription.device_limit
-    base_device_limit = subscription.plan.device_limit
+    plan_device_limit = subscription.plan.device_limit
     
     # Докупленные устройства
     extra_devices = getattr(subscription, 'extra_devices', 0) or 0
     
     # Определяем, является ли подписка пробной или реферальной
     plan_name_lower = subscription.plan.name.lower() if subscription.plan else ""
-    is_trial_or_referral = (
-        subscription.is_trial 
-        or "пробн" in plan_name_lower 
-        or "реферал" in plan_name_lower
-    )
+    is_trial_subscription = subscription.is_trial or "пробн" in plan_name_lower
+    is_referral_subscription = "реферал" in plan_name_lower
+    is_trial_or_referral = is_trial_subscription or is_referral_subscription
     
     # Проверяем включён ли функционал доп. устройств
     is_extra_devices_enabled = await settings_service.is_extra_devices_enabled()
     
-    # DEBUG: Логируем значение
-    logger.info(f"devices_getter: is_extra_devices_enabled={is_extra_devices_enabled}, as int={1 if is_extra_devices_enabled else 0}")
-    
-    # Получаем активные покупки доп. устройств для отображения в списке
-    active_purchases = []
-    has_extra_device_purchases = False
+    # Получаем активные покупки доп. устройств
     purchases = []
     try:
         purchases = await extra_device_service.get_active_by_subscription(subscription.id)
-        has_extra_device_purchases = len(purchases) > 0
-        
-        for p in purchases:
-            active_purchases.append({
-                "id": str(p.id),
-                "device_count": p.device_count,
-                "days_remaining": p.days_remaining,
-                "days_display": f"{p.days_remaining}д",
-            })
     except Exception:
         pass
+    
+    # Создаём объединённый список слотов устройств
+    # Сначала базовые слоты (из плана), потом купленные
+    device_slots = []
+    devices_copy = list(formatted_devices)  # Копия для распределения
+    
+    # Базовые слоты подписки (бесконечный срок)
+    for i in range(plan_device_limit):
+        # Пытаемся занять слот устройством
+        if devices_copy:
+            device = devices_copy.pop(0)
+            slot = {
+                "id": device["short_hwid"],  # Используем hwid как id для удаления
+                "slot_type": "base",
+                "days_display": "∞",
+                "is_occupied": True,
+                "device_info": f"{device['platform']} - {device['device_model']}",
+                "short_hwid": device["short_hwid"],
+            }
+        else:
+            slot = {
+                "id": f"empty_base_{i}",
+                "slot_type": "base",
+                "days_display": "∞",
+                "is_occupied": False,
+                "device_info": "Пусто",
+                "short_hwid": None,
+            }
+        device_slots.append(slot)
+    
+    # Слоты из покупок (с ограниченным сроком)
+    for p in purchases:
+        for j in range(p.device_count):
+            # Пытаемся занять слот устройством
+            if devices_copy:
+                device = devices_copy.pop(0)
+                slot = {
+                    "id": device["short_hwid"],  # Используем hwid как id для удаления
+                    "purchase_id": str(p.id),
+                    "slot_type": "extra",
+                    "days_display": f"{p.days_remaining}д",
+                    "is_occupied": True,
+                    "device_info": f"{device['platform']} - {device['device_model']}",
+                    "short_hwid": device["short_hwid"],
+                }
+            else:
+                slot = {
+                    "id": f"empty_extra_{p.id}_{j}",
+                    "purchase_id": str(p.id),
+                    "slot_type": "extra",
+                    "days_display": f"{p.days_remaining}д",
+                    "is_occupied": False,
+                    "device_info": "Пусто",
+                    "short_hwid": None,
+                }
+            device_slots.append(slot)
     
     # Сохраняем для обработчика удаления
     dialog_manager.dialog_data["extra_device_purchases"] = [
         {"id": p.id, "device_count": p.device_count}
         for p in purchases
-    ] if has_extra_device_purchases else []
+    ]
+    
+    has_extra_device_purchases = len(purchases) > 0
     
     # Проверяем, можно ли добавить устройство
     # Запрещаем для пробных и реферальных подписок
@@ -2667,7 +2709,7 @@ async def devices_getter(
     # Показываем кнопку добавления устройств
     can_add_extra_device = (
         is_extra_devices_enabled 
-        and subscription.is_active 
+        and subscription.is_active
         and not is_trial_or_referral
     )
 
@@ -2721,11 +2763,12 @@ async def devices_getter(
         "current_count": current_count,
         "max_count": i18n_format_device_limit(max_count),
         "devices": formatted_devices,
-        "devices_empty": len(devices) == 0,
+        "devices_empty": len(device_slots) == 0,
         "can_add_device": can_add_device,
         "extra_devices": extra_devices,
-        # Список покупок доп. устройств
-        "extra_device_purchases": active_purchases,
+        # Слоты устройств (базовые + купленные)
+        "device_slots": device_slots,
+        "has_device_slots": 1 if device_slots else 0,
         "has_extra_device_purchases": 1 if has_extra_device_purchases else 0,
         "can_add_extra_device": 1 if can_add_extra_device else 0,
         # Данные профиля
@@ -2746,8 +2789,8 @@ async def devices_getter(
         "plan_name": subscription.plan.name if subscription.plan else "Unknown",
         "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit),
         "device_limit": i18n_format_device_limit(max_count),
-        "device_limit_number": base_device_limit,
-        "device_limit_bonus": max(0, max_count - base_device_limit - extra_devices) if base_device_limit > 0 else 0,
+        "device_limit_number": plan_device_limit,
+        "device_limit_bonus": max(0, max_count - plan_device_limit - extra_devices) if plan_device_limit > 0 else 0,
         "expire_time": i18n_format_expire_time(subscription.expire_at),
     }
 

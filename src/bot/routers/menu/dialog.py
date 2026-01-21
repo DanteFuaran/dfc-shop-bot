@@ -79,7 +79,6 @@ from .handlers import (
     on_bonus_custom_mode,
     on_cancel_bonus_amount,
     on_device_delete,
-    on_delete_extra_device_purchase,
     on_add_device,
     on_invite,
     on_platform_select,
@@ -233,39 +232,24 @@ devices = Window(
             when=F["devices_empty"],
         ),
     ),
+    # Список слотов устройств (базовые + купленные)
     ListGroup(
         Row(
-            CopyText(
-                text=Format("{item[platform]} - {item[device_model]}"),
-                copy_text=Format("{item[platform]} - {item[device_model]}"),
+            Button(
+                text=Format("{item[days_display]} | {item[device_info]}"),
+                id="slot_info",
             ),
             Button(
-                text=Format("❌ ∞"),
+                text=Format("❌"),
                 id="delete",
                 on_click=on_device_delete,
+                when=F["item"]["is_occupied"],
             ),
         ),
-        id="devices_list",
-        item_id_getter=lambda item: item["short_hwid"],
-        items="devices",
-    ),
-    # Список купленных дополнительных устройств
-    ListGroup(
-        Row(
-            Button(
-                text=Format("📱 +{item[device_count]} шт."),
-                id="info_count",
-            ),
-            Button(
-                text=Format("❌ {item[days_display]}"),
-                id="delete_extra",
-                on_click=on_delete_extra_device_purchase,
-            ),
-        ),
-        id="extra_devices_list",
+        id="device_slots_list",
         item_id_getter=lambda item: item["id"],
-        items="extra_device_purchases",
-        when=F["has_extra_device_purchases"] == 1,
+        items="device_slots",
+        when=F["has_device_slots"] == 1,
     ),
     # Кнопка добавления дополнительных устройств
     Row(

@@ -69,10 +69,10 @@ async def connect_to_happ(subscription_url: str):
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Подключение к Happ</title>
+        <title>Подключение...</title>
         <style>
             body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -80,56 +80,14 @@ async def connect_to_happ(subscription_url: str):
                 margin: 0;
                 background: #0a0e27;
                 color: #e8e8e8;
-                text-align: center;
-                padding: 20px;
-            }}
-            .container {{
-                max-width: 400px;
-                background: #1a1f3a;
-                border: 1px solid #2a2f4a;
-                border-radius: 12px;
-                padding: 40px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            }}
-            h1 {{
-                font-size: 24px;
-                margin-bottom: 20px;
-                color: #00a8e8;
-            }}
-            .btn {{
-                display: inline-block;
-                background: #00a8e8;
-                color: #0a0e27;
-                padding: 15px 30px;
-                border-radius: 8px;
-                text-decoration: none;
-                font-weight: bold;
-                font-size: 16px;
-                margin: 10px 0;
-                transition: all 0.2s;
-                cursor: pointer;
-                border: none;
-            }}
-            .btn:hover {{
-                background: #00c8f8;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 168, 232, 0.3);
-            }}
-            .info {{
-                font-size: 14px;
-                margin-top: 20px;
-                opacity: 0.85;
-                color: #b0b0b0;
             }}
             .spinner {{
-                display: inline-block;
-                width: 20px;
-                height: 20px;
-                border: 3px solid rgba(0, 168, 232, 0.3);
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(0, 168, 232, 0.2);
                 border-radius: 50%;
                 border-top-color: #00a8e8;
                 animation: spin 1s ease-in-out infinite;
-                margin-right: 10px;
             }}
             @keyframes spin {{
                 to {{ transform: rotate(360deg); }}
@@ -137,38 +95,19 @@ async def connect_to_happ(subscription_url: str):
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>🚀 Подключение к Happ</h1>
-            <p class="info">Нажмите кнопку ниже для добавления профиля в приложение Happ</p>
-            <button class="btn" onclick="openHapp()">
-                Открыть в Happ
-            </button>
-            <p class="info" id="status"></p>
-        </div>
-        
+        <div class="spinner"></div>
         <script>
-            function openHapp() {{
-                const btn = document.querySelector('.btn');
-                const status = document.getElementById('status');
-                
-                btn.innerHTML = '<span class="spinner"></span>Открытие...';
-                btn.disabled = true;
-                
-                // Пытаемся открыть приложение
-                window.location.href = '{happ_url}';
-                
-                // Через 2 секунды показываем сообщение и восстанавливаем кнопку
-                setTimeout(() => {{
-                    status.textContent = 'Если приложение не открылось, убедитесь что Happ установлен';
-                    btn.innerHTML = 'Попробовать снова';
-                    btn.disabled = false;
-                }}, 2000);
-            }}
+            // Немедленно открываем приложение
+            window.location.href = '{happ_url}';
             
-            // Автоматически пытаемся открыть при загрузке страницы
-            window.addEventListener('load', () => {{
-                setTimeout(openHapp, 500);
-            }});
+            // Закрываем страницу через 5 секунд
+            setTimeout(function() {{
+                // Пытаемся закрыть окно
+                window.close();
+                // Если не получилось закрыть (ограничения браузера), 
+                // показываем пустую страницу
+                document.body.innerHTML = '';
+            }}, 5000);
         </script>
     </body>
     </html>
