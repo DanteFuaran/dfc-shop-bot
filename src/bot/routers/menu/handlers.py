@@ -450,7 +450,45 @@ async def on_device_delete(
         await sub_manager.switch_to(state=MainMenu.MAIN)
     
     elif purchase_id:
-        # Удаляем пустой extra слот (покупку)
+        # Проверяем подтверждение удаления пустого слота
+        import time
+        
+        pending_delete = sub_manager.dialog_data.get("pending_delete_slot")
+        pending_timestamp = sub_manager.dialog_data.get("pending_delete_timestamp")
+        
+        # Проверяем, это повторное нажатие в течение 5 секунд
+        is_confirmed = (
+            pending_delete == slot_id 
+            and pending_timestamp is not None
+            and time.time() - pending_timestamp < 5
+        )
+        
+        if not is_confirmed:
+            # Первое нажатие - отправляем предупреждение как отдельное сообщение
+            sub_manager.dialog_data["pending_delete_slot"] = slot_id
+            sub_manager.dialog_data["pending_delete_timestamp"] = time.time()
+            
+            warning_msg = await callback.message.answer(
+                "⚠️ Слот будет удалён без возврата средств.\nНажмите кнопку удаления повторно для подтверждения."
+            )
+            
+            # Удаляем сообщение через 5 секунд
+            async def delete_warning():
+                await asyncio.sleep(5)
+                try:
+                    await warning_msg.delete()
+                except Exception:
+                    pass
+            
+            asyncio.create_task(delete_warning())
+            await callback.answer()
+            return
+        
+        # Подтверждено - удаляем слот
+        # Очищаем состояние подтверждения
+        sub_manager.dialog_data.pop("pending_delete_slot", None)
+        sub_manager.dialog_data.pop("pending_delete_timestamp", None)
+        
         subscription = user.current_subscription
         if not subscription:
             return
@@ -494,7 +532,7 @@ async def on_device_delete(
             payload=MessagePayload(i18n_key="ntf-extra-slot-deleted"),
         )
         
-        await callback.answer()
+        await callback.answer("✅ Слот удалён")
     else:
         raise ValueError(f"Slot '{slot_id}' has no hwid or purchase_id")
 

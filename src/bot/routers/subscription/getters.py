@@ -1679,7 +1679,38 @@ async def success_payment_getter(
     subscription = fresh_user.current_subscription
 
     if not subscription:
-        raise ValueError(f"User '{fresh_user.telegram_id}' has no active subscription after purchase")
+        # Возвращаем безопасные дефолтные значения вместо ошибки
+        logger.error(f"User '{fresh_user.telegram_id}' has no active subscription after purchase")
+        return {
+            "purchase_type": purchase_type,
+            "plan_name": "N/A",
+            "is_trial": 0,
+            "traffic_limit": "N/A",
+            "device_limit": "N/A",
+            "device_limit_number": 0,
+            "device_limit_bonus": 0,
+            "extra_devices": 0,
+            "expire_time": "N/A",
+            "added_duration": "N/A",
+            "is_app": config.bot.is_mini_app,
+            "url": config.bot.mini_app_url or "",
+            "connectable": False,
+            "referral_balance": 0,
+            "purchase_discount": 0,
+            "personal_discount": 0,
+            "discount_value": 0,
+            "discount_remaining": 0,
+            "is_temporary_discount": 0,
+            "is_permanent_discount": 0,
+            "is_balance_enabled": 0,
+            "is_balance_separate": 0,
+            "device_count": 0,
+            "subscription_days_left": 0,
+            "subscription_price": 0,
+            "payment_sum": 0,
+            "extra_devices_count": 0,
+            "extra_devices_price": 0,
+        }
 
     # Получаем реферальный баланс
     referral_balance = await referral_service.get_pending_rewards_amount(
