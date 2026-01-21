@@ -461,25 +461,29 @@ async def devices_getter(
             # Пытаемся занять слот устройством
             if devices_copy:
                 device = devices_copy.pop(0)
+                from src.core.utils.formatters import pluralize_days
+                days_word = pluralize_days(p.days_remaining)
                 slot = {
                     "id": str(slot_index),  # Короткий индекс для callback_data
                     "purchase_id": str(p.id),
                     "slot_type": "extra",
-                    "days_display": f"{p.days_remaining}д",
+                    "days_display": f"{p.days_remaining} {days_word}",
                     "is_occupied": True,
                     "can_delete": True,  # Можно удалить устройство
                     "device_info": f"{device['platform']} - {device['device_model']}",
                 }
                 slot_hwid_map[str(slot_index)] = device["short_hwid"]
             else:
+                from src.core.utils.formatters import pluralize_days
+                days_word = pluralize_days(p.days_remaining)
                 slot = {
                     "id": str(slot_index),
                     "purchase_id": str(p.id),
                     "slot_type": "extra",
-                    "days_display": f"{p.days_remaining}д",
+                    "days_display": f"{p.days_remaining} {days_word}",
                     "is_occupied": False,
                     "can_delete": True,  # Пустой extra слот можно удалить
-                    "device_info": "Пусто",
+                    "device_info": "Пустой слот",
                 }
                 # Сохраняем purchase_id для удаления пустого слота
                 slot_purchase_map[str(slot_index)] = p.id

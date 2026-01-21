@@ -2087,6 +2087,9 @@ async def add_device_duration_getter(
     discounted_price_month = int(price_details_month.final_amount)
     has_discount = price_details_full.discount_percent > 0
     
+    # Проверяем, одинаковые ли варианты (если подписка меньше месяца)
+    show_both_options = days_full != days_month
+    
     # Вычисляем информацию о скидке для отображения
     from datetime import datetime, timezone
     purchase_disc = user.purchase_discount if user.purchase_discount is not None else 0
@@ -2167,6 +2170,8 @@ async def add_device_duration_getter(
         "days_month": days_month,
         # Общие данные о скидке
         "has_discount": 1 if has_discount else 0,
+        # Флаг для отображения обеих кнопок
+        "show_both_options": 1 if show_both_options else 0,
         # Месячная цена для информации
         "device_price_monthly": device_price_monthly,
     }
