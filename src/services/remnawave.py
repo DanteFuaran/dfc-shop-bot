@@ -715,7 +715,7 @@ class RemnawaveService(BaseService):
         # Делаем прямой POST запрос через internal client SDK
         response = await self.remnawave._client.post(
             url,
-            json=request_data.model_dump(by_alias=True),
+            json=request_data.model_dump(by_alias=True, mode="json"),
         )
         response.raise_for_status()
         
