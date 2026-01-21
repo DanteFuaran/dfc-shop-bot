@@ -1142,6 +1142,41 @@ async def on_extra_devices_min_days_select(
 
 
 @inject
+async def on_extra_devices_min_days_manual_input_click(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Переход к окну ручного ввода минимальных дней."""
+    await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES_MIN_DAYS_MANUAL)
+
+
+@inject
+async def on_extra_devices_min_days_manual_value_input(
+    message: Message,
+    widget: MessageInput,
+    dialog_manager: DialogManager,
+) -> None:
+    """Обработка ручного ввода минимального количества дней."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    
+    try:
+        days = int(message.text.strip())
+        if days < 1:
+            await message.answer("❌ Минимальное количество дней должно быть больше 0")
+            return
+        if days > 365:
+            await message.answer("❌ Минимальное количество дней не может быть больше 365")
+            return
+            
+        dialog_manager.dialog_data["pending_extra_devices_min_days"] = days
+        logger.info(f"{log(user)} Manually entered extra devices min days: {days}")
+        await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES_MIN_DAYS)
+    except ValueError:
+        await message.answer("❌ Введите корректное число дней")
+
+
+@inject
 async def on_cancel_extra_devices_min_days(
     callback: CallbackQuery,
     widget: Button,

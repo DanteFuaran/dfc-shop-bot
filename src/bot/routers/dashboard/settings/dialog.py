@@ -93,6 +93,8 @@ from .handlers import (
     on_accept_extra_devices_price,
     on_edit_extra_devices_min_days,
     on_extra_devices_min_days_select,
+    on_extra_devices_min_days_manual_input_click,
+    on_extra_devices_min_days_manual_value_input,
     on_cancel_extra_devices_min_days,
     on_accept_extra_devices_min_days,
     on_cancel_extra_devices,
@@ -1375,6 +1377,13 @@ extra_devices_min_days = Window(
     ),
     Row(
         Button(
+            text=I18nFormat("btn-manual-input"),
+            id="manual_input",
+            on_click=on_extra_devices_min_days_manual_input_click,
+        ),
+    ),
+    Row(
+        Button(
             text=I18nFormat("btn-cancel"),
             id="cancel",
             on_click=on_cancel_extra_devices_min_days,
@@ -1387,6 +1396,22 @@ extra_devices_min_days = Window(
     ),
     IgnoreUpdate(),
     state=DashboardSettings.EXTRA_DEVICES_MIN_DAYS,
+    getter=extra_devices_min_days_getter,
+)
+
+
+# Окно для ручного ввода минимальных дней для доп.устройства
+extra_devices_min_days_manual = Window(
+    Banner(BannerName.DASHBOARD),
+    I18nFormat("msg-dashboard-extra-devices-min-days-manual"),
+    MessageInput(func=on_extra_devices_min_days_manual_value_input),
+    SwitchTo(
+        text=I18nFormat("btn-cancel"),
+        id="cancel",
+        state=DashboardSettings.EXTRA_DEVICES_MIN_DAYS,
+    ),
+    IgnoreUpdate(),
+    state=DashboardSettings.EXTRA_DEVICES_MIN_DAYS_MANUAL,
     getter=extra_devices_min_days_getter,
 )
 
@@ -2081,6 +2106,7 @@ router = Dialog(
     extra_devices_price,
     extra_devices_price_manual,
     extra_devices_min_days,
+    extra_devices_min_days_manual,
     global_discount_settings,
     global_discount_value,
     global_discount_manual,

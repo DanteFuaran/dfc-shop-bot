@@ -1,5 +1,6 @@
 """Pricing utility functions for subscription calculations."""
 
+import math
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 from typing import Tuple
@@ -50,8 +51,8 @@ def calculate_prorated_device_price(
     daily_price = Decimal(monthly_price) / Decimal(30)
     prorated_price = daily_price * Decimal(billable_days)
     
-    # Округляем до целого числа (вверх, чтобы не терять копейки)
-    return int(prorated_price.quantize(Decimal("1"), rounding="ROUND_HALF_UP"))
+    # Округляем вверх, чтобы не терять копейки
+    return math.ceil(float(prorated_price))
 
 
 def calculate_device_price_until_subscription_end(
@@ -90,7 +91,7 @@ def calculate_device_price_until_subscription_end(
     daily_price = Decimal(monthly_price) / Decimal(30)
     price = daily_price * Decimal(billable_days)
     
-    return int(price.quantize(Decimal("1"), rounding="ROUND_HALF_UP")), billable_days
+    return math.ceil(float(price)), billable_days
 
 
 def calculate_device_price_until_month_end(
@@ -147,7 +148,7 @@ def calculate_device_price_until_month_end(
     daily_price = Decimal(monthly_price) / Decimal(30)
     price = daily_price * Decimal(billable_days)
     
-    return int(price.quantize(Decimal("1"), rounding="ROUND_HALF_UP")), billable_days
+    return math.ceil(float(price)), billable_days
 
 
 def get_remaining_days(expire_at: datetime) -> int:

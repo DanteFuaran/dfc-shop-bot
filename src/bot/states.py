@@ -141,6 +141,7 @@ class DashboardSettings(StatesGroup):
     EXTRA_DEVICES_PRICE = State()
     EXTRA_DEVICES_PRICE_MANUAL = State()
     EXTRA_DEVICES_MIN_DAYS = State()
+    EXTRA_DEVICES_MIN_DAYS_MANUAL = State()
     
     # Глобальная скидка
     GLOBAL_DISCOUNT = State()
