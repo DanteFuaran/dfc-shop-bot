@@ -2604,6 +2604,10 @@ async def devices_getter(
         }
         for device in devices
     ]
+    
+    # Сортируем устройства по hwid для стабильного порядка
+    # Это предотвращает сдвиг списка при добавлении новых устройств
+    formatted_devices.sort(key=lambda d: d["hwid"])
 
     dialog_manager.dialog_data["hwid_map"] = formatted_devices
     
