@@ -32,6 +32,7 @@ from src.infrastructure.database.models.dto import PlanSnapshotDto, Subscription
 from src.infrastructure.taskiq.tasks.redirects import redirect_to_main_menu_task
 from src.infrastructure.taskiq.tasks.notifications import send_delayed_transfer_notification_task
 from src.services.balance_transfer import BalanceTransferService
+from src.services.extra_device import ExtraDeviceService
 from src.services.notification import NotificationService
 from src.services.payment_gateway import PaymentGatewayService
 from src.services.plan import PlanService
@@ -1644,3 +1645,70 @@ async def on_add_device(
     """Переход к добавлению дополнительных устройств."""
     from src.bot.states import Subscription
     await dialog_manager.start(Subscription.ADD_DEVICE_SELECT_COUNT, mode=StartMode.RESET_STACK)
+
+
+@inject
+async def on_delete_extra_device_purchase(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    extra_device_service: FromDishka[ExtraDeviceService],
+    subscription_service: FromDishka[SubscriptionService],
+    remnawave_service: FromDishka[RemnawaveService],
+    user_service: FromDishka[UserService],
+    notification_service: FromDishka[NotificationService],
+) -> None:
+    """Удалить покупку дополнительных устройств из меню устройств."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    
+    # Получаем purchase_id из SubManager (ListGroup)
+    if isinstance(dialog_manager, SubManager):
+        purchase_id = int(dialog_manager.item_id)
+    else:
+        return
+    
+    if not purchase_id:
+        return
+    
+    # Получаем информацию о покупке
+    purchase = await extra_device_service.get(purchase_id)
+    if not purchase:
+        return
+    
+    subscription = user.current_subscription
+    if not subscription:
+        return
+    
+    # Удаляем покупку и уменьшаем лимит устройств
+    device_count_to_remove = purchase.device_count
+    await extra_device_service.delete(purchase_id)
+    
+    # Обновляем лимит устройств в подписке
+    new_extra_devices = max(0, (subscription.extra_devices or 0) - device_count_to_remove)
+    base_device_limit = (subscription.plan.device_limit if subscription.plan and subscription.plan.device_limit else 0)
+    current_device_limit = subscription.device_limit if subscription.device_limit else 0
+    new_device_limit = max(base_device_limit, current_device_limit - device_count_to_remove)
+    
+    subscription.extra_devices = new_extra_devices
+    subscription.device_limit = new_device_limit
+    
+    await subscription_service.update(subscription)
+    
+    # Обновляем в Remnawave
+    await remnawave_service.updated_user(
+        user=user,
+        uuid=subscription.user_remna_id,
+        subscription=subscription,
+    )
+    
+    # Очищаем кеш
+    await user_service.clear_user_cache(user.telegram_id)
+    
+    logger.info(f"{log(user)} Deleted extra device purchase '{purchase_id}', removed {device_count_to_remove} devices")
+    
+    await notification_service.notify_user(
+        user=user,
+        payload=MessagePayload(i18n_key="ntf-extra-device-deleted"),
+    )
+    
+    await callback.answer()

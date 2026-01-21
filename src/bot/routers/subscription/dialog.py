@@ -497,7 +497,7 @@ devices = Window(
                 copy_text=Format("{item[platform]} - {item[device_model]}"),
             ),
             Button(
-                text=Format("❌"),
+                text=Format("❌ ∞"),
                 id="delete",
                 on_click=on_device_delete,
             ),
@@ -506,20 +506,31 @@ devices = Window(
         item_id_getter=lambda item: item["short_hwid"],
         items="devices",
     ),
+    # Список купленных дополнительных устройств
+    ListGroup(
+        Row(
+            Button(
+                text=Format("📱 +{item[device_count]} шт."),
+                id="info_count",
+            ),
+            Button(
+                text=Format("❌ {item[days_display]}"),
+                id="delete_extra",
+                on_click=on_delete_extra_device_purchase,
+            ),
+        ),
+        id="extra_devices_list",
+        item_id_getter=lambda item: item["id"],
+        items="extra_device_purchases",
+        when=F["has_extra_device_purchases"] == 1,
+    ),
+    # Кнопка добавления дополнительных устройств
     Row(
         Button(
             text=I18nFormat("btn-menu-add-device"),
             id="add_device",
             on_click=on_add_device,
-            when=F["can_add_device"],
-        ),
-    ),
-    Row(
-        Button(
-            text=I18nFormat("btn-menu-extra-devices"),
-            id="extra_devices_list",
-            on_click=on_extra_devices_list,
-            when=F["is_extra_devices_enabled"] == 1,
+            when=F["can_add_extra_device"] == 1,
         ),
     ),
     Row(

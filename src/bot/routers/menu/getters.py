@@ -343,7 +343,7 @@ async def devices_getter(
     else:
         discount_value = 0
     
-    # Если нет подписки - показываем пустой список устройств с возможностью управления доп. устройствами
+    # Если нет подписки - показываем пустой список устройств
     if not subscription:
         return {
             "current_count": 0,
@@ -357,10 +357,13 @@ async def devices_getter(
             "device_limit_bonus": 0,
             "extra_devices": 0,
             "expire_time": "—",
+            # Список покупок доп. устройств
+            "extra_device_purchases": [],
+            "has_extra_device_purchases": 0,
             # Флаги для кнопок
             "can_add_device": False,
+            "can_add_extra_device": 0,
             "has_subscription": False,
-            "show_extra_devices_button": False,
             "is_balance_enabled": 1 if is_balance_enabled else 0,
             "is_balance_separate": 1 if is_balance_separate else 0,
             "is_referral_enable": 1 if is_referral_enabled else 0,
@@ -407,23 +410,41 @@ async def devices_getter(
     is_trial_subscription = subscription.is_trial or "пробн" in plan_name_lower
     is_referral_subscription = "реферал" in plan_name_lower
     
-    # Получаем историю покупок доп. устройств
+    # Получаем активные покупки доп. устройств для отображения в списке
+    active_purchases = []
     has_extra_device_purchases = False
+    purchases = []
     try:
-        purchases = await extra_device_service.get_by_subscription(subscription.id)
+        purchases = await extra_device_service.get_active_by_subscription(subscription.id)
         has_extra_device_purchases = len(purchases) > 0
+        
+        # Форматируем покупки для отображения с оставшимся сроком
+        for p in purchases:
+            active_purchases.append({
+                "id": str(p.id),
+                "device_count": p.device_count,
+                "days_remaining": p.days_remaining,
+                # Форматируем срок: "∞" для устройств из подписки не используется,
+                # т.к. это купленные доп.устройства - всегда показываем дни
+                "days_display": f"{p.days_remaining}д",
+            })
     except Exception:
         pass
     
-    # Показываем кнопку если:
-    # 1. Функционал доп. устройств ВКЛЮЧЁН в Настройках И:
-    #    - Есть активные extra_devices
-    #    - ИЛИ подписка активна и это не триал/реферальная подписка
-    # 2. ИЛИ есть история покупок доп. устройств (даже если функционал отключен)
-    show_extra_devices_button = is_extra_devices_enabled and (
-        extra_devices > 0 
-        or (subscription.is_active and not is_trial_subscription and not is_referral_subscription)
-    ) or has_extra_device_purchases
+    # Сохраняем для обработчика удаления
+    dialog_manager.dialog_data["extra_device_purchases"] = [
+        {"id": p.id, "device_count": p.device_count}
+        for p in purchases
+    ] if has_extra_device_purchases else []
+    
+    # Показываем кнопку добавления устройств если:
+    # Функционал включён И подписка активна И это не триал/реферальная подписка
+    can_add_extra_device = (
+        is_extra_devices_enabled 
+        and subscription.is_active 
+        and not is_trial_subscription 
+        and not is_referral_subscription
+    )
 
     return {
         "current_count": len(devices),
@@ -437,10 +458,13 @@ async def devices_getter(
         "device_limit_bonus": device_limit_bonus,
         "extra_devices": extra_devices,
         "expire_time": i18n_format_expire_time(subscription.expire_at),
+        # Список покупок доп. устройств
+        "extra_device_purchases": active_purchases,
+        "has_extra_device_purchases": 1 if has_extra_device_purchases else 0,
         # Флаги для кнопок
         "can_add_device": subscription.is_active and subscription.has_devices_limit,
+        "can_add_extra_device": 1 if can_add_extra_device else 0,
         "has_subscription": True,
-        "show_extra_devices_button": show_extra_devices_button,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
         "is_referral_enable": 1 if is_referral_enabled else 0,

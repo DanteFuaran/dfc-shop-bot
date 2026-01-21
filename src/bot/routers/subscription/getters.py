@@ -2583,6 +2583,7 @@ async def devices_getter(
     remnawave_service: FromDishka[RemnawaveService],
     referral_service: FromDishka[ReferralService],
     settings_service: FromDishka[SettingsService],
+    extra_device_service: FromDishka[ExtraDeviceService],
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Геттер для окна управления устройствами в меню подписки."""
@@ -2629,6 +2630,30 @@ async def devices_getter(
     # DEBUG: Логируем значение
     logger.info(f"devices_getter: is_extra_devices_enabled={is_extra_devices_enabled}, as int={1 if is_extra_devices_enabled else 0}")
     
+    # Получаем активные покупки доп. устройств для отображения в списке
+    active_purchases = []
+    has_extra_device_purchases = False
+    purchases = []
+    try:
+        purchases = await extra_device_service.get_active_by_subscription(subscription.id)
+        has_extra_device_purchases = len(purchases) > 0
+        
+        for p in purchases:
+            active_purchases.append({
+                "id": str(p.id),
+                "device_count": p.device_count,
+                "days_remaining": p.days_remaining,
+                "days_display": f"{p.days_remaining}д",
+            })
+    except Exception:
+        pass
+    
+    # Сохраняем для обработчика удаления
+    dialog_manager.dialog_data["extra_device_purchases"] = [
+        {"id": p.id, "device_count": p.device_count}
+        for p in purchases
+    ] if has_extra_device_purchases else []
+    
     # Проверяем, можно ли добавить устройство
     # Запрещаем для пробных и реферальных подписок
     # Запрещаем если функционал доп. устройств отключён
@@ -2637,6 +2662,13 @@ async def devices_getter(
         and max_count > 0 
         and not is_trial_or_referral
         and is_extra_devices_enabled
+    )
+    
+    # Показываем кнопку добавления устройств
+    can_add_extra_device = (
+        is_extra_devices_enabled 
+        and subscription.is_active 
+        and not is_trial_or_referral
     )
 
     # Данные профиля
@@ -2692,7 +2724,10 @@ async def devices_getter(
         "devices_empty": len(devices) == 0,
         "can_add_device": can_add_device,
         "extra_devices": extra_devices,
-        "is_extra_devices_enabled": 1 if is_extra_devices_enabled else 0,
+        # Список покупок доп. устройств
+        "extra_device_purchases": active_purchases,
+        "has_extra_device_purchases": 1 if has_extra_device_purchases else 0,
+        "can_add_extra_device": 1 if can_add_extra_device else 0,
         # Данные профиля
         "user_id": str(user.telegram_id),
         "user_name": user.name,
@@ -2713,7 +2748,6 @@ async def devices_getter(
         "device_limit": i18n_format_device_limit(max_count),
         "device_limit_number": base_device_limit,
         "device_limit_bonus": max(0, max_count - base_device_limit - extra_devices) if base_device_limit > 0 else 0,
-        "extra_devices": extra_devices,
         "expire_time": i18n_format_expire_time(subscription.expire_at),
     }
 
