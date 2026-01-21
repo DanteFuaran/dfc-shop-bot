@@ -724,6 +724,9 @@ async def on_confirm_balance_payment(
             )
         
         # Process payment as succeeded
+        # ВАЖНО: handle_payment_succeeded запускает purchase_subscription_task через taskiq,
+        # который в конце вызывает redirect_to_successed_payment_task для перехода на SUCCESS.
+        # Поэтому НЕ вызываем switch_to(SUCCESS) здесь - это приводило бы к двойному уведомлению.
         await payment_gateway_service.handle_payment_succeeded(result.id)
         
         logger.info(f"{log(user)} Paid subscription from balance: {price.final_amount} {currency.symbol}")
@@ -735,13 +738,6 @@ async def on_confirm_balance_payment(
             payload=MessagePayload(i18n_key="ntf-subscription-payment-creation-failed"),
         )
         return
-    
-    # Go to success page (после успешной обработки платежа)
-    try:
-        await dialog_manager.switch_to(state=Subscription.SUCCESS)
-    except Exception as e:
-        logger.error(f"{log(user)} Failed to switch to success state: {e}", exc_info=True)
-        # Даже если switch_to не удался, платеж прошел успешно, не показываем ошибку
 
 
 async def on_referral_code_request(

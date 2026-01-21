@@ -364,16 +364,14 @@ ntf-event-extra-devices =
 ntf-event-extra-devices-balance =
     #EventExtraDevices
 
-    <b>📱 Событие: Покупка дополнительных устройств (с баланса)!</b>
+    <b>📱 Событие: Покупка дополнительных устройств!</b>
 
     <blockquote>
+    • <b>Способ оплаты</b>: 💰 С баланса
     • <b>Сумма</b>: { $price } ₽
     • <b>Скидка</b>: { $discount_percent }%
     • <b>Устройств</b>: +{ $device_count } шт.
     </blockquote>
-
-    { hdr-subscription }
-    { frg-subscription-details }
 
     { hdr-user }
     { frg-user-info }
