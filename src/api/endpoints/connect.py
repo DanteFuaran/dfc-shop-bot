@@ -126,6 +126,10 @@ async def connect_to_happ(subscription_url: str, request: Request):
     bot_url = f"https://t.me/{bot_username}" if bot_username else ""
     support_url = f"https://t.me/{support_username}"
     
+    # Кодируем URL для использования в fetch запросах
+    from urllib.parse import quote
+    subscription_url_encoded = quote(subscription_url, safe='')
+    
     html_content = f"""
     <!DOCTYPE html>
     <html>
