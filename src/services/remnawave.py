@@ -13,6 +13,7 @@ from remnapy.exceptions.general import ServerError
 from remnapy.models import (
     CreateUserRequestDto,
     CreateUserResponseDto,
+    DeleteUserHwidDeviceResponseDto,
     GetStatsResponseDto,
     HWIDDeleteRequest,
     HwidUserDeviceDto,
@@ -681,21 +682,49 @@ class RemnawaveService(BaseService):
         logger.info(f"No devices found for RemnaUser '{user.telegram_id}'")
         return []
 
-    async def delete_device(self, user: UserDto, hwid: str) -> Optional[int]:
-        logger.info(f"Deleting device '{hwid}' for RemnaUser '{user.telegram_id}'")
+    async def delete_device(self, user: UserDto, hwid: str, permanent: bool = True) -> Optional[int]:
+        """
+        Удаляет устройство от пользователя.
+        
+        Args:
+            user: Пользователь
+            hwid: HWID устройства
+            permanent: Если True, HWID будет удалён полностью из базы remnawave.
+                      Если False, только отвяжет HWID от пользователя (старое поведение).
+        
+        Returns:
+            Количество оставшихся устройств у пользователя или None при ошибке
+        """
+        logger.info(f"Deleting device '{hwid}' for RemnaUser '{user.telegram_id}' (permanent={permanent})")
 
         if not user.current_subscription:
             logger.warning(f"No subscription found for user '{user.telegram_id}'")
             return None
 
-        result = await self.remnawave.hwid.delete_hwid_to_user(
-            HWIDDeleteRequest(
-                user_uuid=user.current_subscription.user_remna_id,
-                hwid=hwid,
-            )
+        # Используем прямой HTTP запрос для поддержки параметра permanent
+        request_data = HWIDDeleteRequest(
+            user_uuid=user.current_subscription.user_remna_id,
+            hwid=hwid,
         )
+        
+        # Формируем URL с query параметром permanent если нужно
+        url = f"{self.remnawave.base_url}/api/hwid/devices/delete"
+        if permanent:
+            url += "?permanent=true"
+        
+        # Делаем прямой POST запрос через internal client SDK
+        response = await self.remnawave._client.post(
+            url,
+            json=request_data.model_dump(by_alias=True),
+        )
+        response.raise_for_status()
+        
+        result = DeleteUserHwidDeviceResponseDto.model_validate(response.json())
 
-        logger.info(f"Deleted device '{hwid}' for RemnaUser '{user.telegram_id}'")
+        logger.info(
+            f"Deleted device '{hwid}' for RemnaUser '{user.telegram_id}' "
+            f"(permanent={permanent}, remaining={result.total})"
+        )
         return result.total
 
     async def get_user(self, uuid: UUID) -> Optional[UserResponseDto]:
