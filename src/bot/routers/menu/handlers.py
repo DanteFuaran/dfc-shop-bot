@@ -444,10 +444,14 @@ async def on_device_delete(
         devices = await remnawave_service.delete_device(user=user, hwid=full_hwid)
         logger.info(f"{log(user)} Deleted device '{full_hwid}'")
 
-        if devices:
-            return
-
-        await sub_manager.switch_to(state=MainMenu.MAIN)
+        # Показываем уведомление об успешном удалении устройства
+        await notification_service.notify_user(
+            user=user,
+            payload=MessagePayload(i18n_key="ntf-device-deleted"),
+        )
+        
+        # Оставляем пользователя в меню устройств
+        return
     
     elif purchase_id:
         # Проверяем подтверждение удаления пустого слота
