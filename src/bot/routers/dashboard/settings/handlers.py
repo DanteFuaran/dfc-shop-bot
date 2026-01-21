@@ -1124,9 +1124,9 @@ async def on_edit_extra_devices_min_days(
     dialog_manager: DialogManager,
 ) -> None:
     """Переход к окну изменения минимальных дней."""
-    # Очищаем pending значение при входе в окно выбора
-    # Это обеспечивает правильное отображение текущего значения
-    dialog_manager.dialog_data.pop("pending_extra_devices_min_days", None)
+    # Сохраняем текущее pending значение для возможности отмены
+    current_pending = dialog_manager.dialog_data.get("pending_extra_devices_min_days")
+    dialog_manager.dialog_data["original_pending_extra_devices_min_days"] = current_pending
     await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES_MIN_DAYS)
 
 
@@ -1197,7 +1197,14 @@ async def on_cancel_extra_devices_min_days(
     dialog_manager: DialogManager,
 ) -> None:
     """Отмена изменения минимальных дней."""
-    dialog_manager.dialog_data.pop("pending_extra_devices_min_days", None)
+    # Восстанавливаем оригинальное pending значение
+    original_pending = dialog_manager.dialog_data.pop("original_pending_extra_devices_min_days", None)
+    if original_pending is None:
+        # Если оригинального pending не было, очищаем текущее
+        dialog_manager.dialog_data.pop("pending_extra_devices_min_days", None)
+    else:
+        # Восстанавливаем оригинальное значение
+        dialog_manager.dialog_data["pending_extra_devices_min_days"] = original_pending
     await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES)
 
 
@@ -1208,6 +1215,8 @@ async def on_accept_extra_devices_min_days(
     dialog_manager: DialogManager,
 ) -> None:
     """Применение выбранного минимального количества дней."""
+    # Очищаем сохраненное оригинальное значение
+    dialog_manager.dialog_data.pop("original_pending_extra_devices_min_days", None)
     await dialog_manager.switch_to(DashboardSettings.EXTRA_DEVICES)
 
 
