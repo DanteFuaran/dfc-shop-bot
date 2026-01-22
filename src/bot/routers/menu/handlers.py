@@ -572,7 +572,7 @@ async def on_connect_app(
     callback: CallbackQuery,
     widget: Button,
     dialog_manager: DialogManager,
-    bot: Bot,
+    bot: FromDishka[Bot],
 ) -> None:
     """Обработчик для добавления подписки в приложение Happ."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
@@ -591,13 +591,11 @@ async def on_connect_app(
     # Пытаемся открыть ссылку
     await callback.answer()
     
-    # Используем WebApp для открытия happ протокола
-    # Telegram не поддерживает happ://, поэтому показываем инструкцию
-    import asyncio
-    asyncio.create_task(
-        callback.message.reply(
-            f"📱 Откройте приложение Happ и добавьте подписку:\n\n<code>{happ_add_url}</code>"
-        )
+    # Отправляем сообщение с инструкцией
+    await bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=f"📱 Откройте приложение Happ и добавьте подписку:\n\n<code>{happ_add_url}</code>",
+        parse_mode="HTML"
     )
 
 
