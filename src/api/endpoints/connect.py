@@ -76,7 +76,7 @@ async def get_user_devices_count(
             return JSONResponse({"device_count": 0})
         
         # Получаем список устройств из Remnawave
-        devices = await remnawave_service.get_devices(user=user)
+        devices = await remnawave_service.get_devices_user(user=user)
         device_count = len(devices) if devices else 0
         
         return JSONResponse({"device_count": device_count})
