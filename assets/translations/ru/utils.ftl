@@ -50,7 +50,10 @@ frg-user =
     <blockquote>
     • <b>ID</b>: <code>{ $user_id }</code>
     • <b>Имя</b>: { $user_name }
-    • <b>Реферальный код</b>: <code>{ $referral_code }</code>
+    { $is_referral_enable ->
+        [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
+        *[0] {""}
+    }
     • <b>Скидка</b>: { $discount_value }%{ $discount_value ->
     [0] {""}
     *[other] { $discount_is_permanent ->
@@ -98,7 +101,10 @@ frg-user-details =
     }
     • <b>Роль</b>: { role }
     • <b>Язык</b>: { language }
-    • <b>Реферальный код</b>: <code>{ $referral_code }</code>
+    { $is_referral_enable ->
+        [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
+        *[0] {""}
+    }
     • <b>Баланс</b>: { $balance } ₽
     </blockquote>
 

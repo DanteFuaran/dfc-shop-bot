@@ -66,22 +66,22 @@ subscription = Window(
             when=F["trial_available"] & ~F["is_topup_mode"] & (F["is_trial_subscription"] == 0),
         ),
     ),
-    # Кнопка "Реферальная подписка" - только если нет пробной подписки (is_trial_subscription == 0)
+    # Кнопка "Реферальная подписка" - только если нет пробной подписки (is_trial_subscription == 0) и реф.система включена
     Row(
         Button(
             text=I18nFormat("btn-subscription-referral"),
             id="referral_trial",
             on_click=on_referral_code_request,
-            when=F["trial_available"] & ~F["is_referral_trial"] & ~F["is_topup_mode"] & (F["is_trial_subscription"] == 0),
+            when=F["trial_available"] & ~F["is_referral_trial"] & ~F["is_topup_mode"] & (F["is_trial_subscription"] == 0) & F["is_referral_enable"],
         ),
     ),
-    # Кнопка "Улучшить до реферальной" - для Пробного тарифа (когда is_trial_subscription == 1 и is_referral_subscription == 0)
+    # Кнопка "Улучшить до реферальной" - для Пробного тарифа (когда is_trial_subscription == 1 и is_referral_subscription == 0), только если реф.система включена
     Row(
         Button(
             text=I18nFormat("btn-subscription-upgrade-referral"),
             id="upgrade_referral",
             on_click=on_referral_code_request,
-            when=F["can_upgrade_to_referral"] & ~F["is_topup_mode"],
+            when=F["can_upgrade_to_referral"] & ~F["is_topup_mode"] & F["is_referral_enable"],
         ),
     ),
     # Купить подписку - когда нет активной подписки ИЛИ есть пробная/реферальная подписка
