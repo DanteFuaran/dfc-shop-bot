@@ -1479,7 +1479,7 @@ msg-referral-invite-edit =
     • <code>{"{space}"}</code> - пустая строка в начале (не видна в превью)
     </blockquote>
 
-    ℹ️ Поддерживается HTML-разметка и markdown ссылки: <code>[текст]({"{url}"})</code>
+    ℹ️ Поддерживается HTML-разметка и ссылки: <code>&lt;a href="{"{url}"}"&gt;текст&lt;/a&gt;</code>
 
     <i>✏️ Введите ваше приглашение:</i>
 
