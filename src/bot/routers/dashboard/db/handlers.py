@@ -1487,8 +1487,7 @@ async def on_clear_all_confirm(
             (SELECT COUNT(*) FROM promocode_activations) as activations,
             (SELECT COUNT(*) FROM referrals) as referrals,
             (SELECT COUNT(*) FROM referral_rewards) as rewards,
-            (SELECT COUNT(*) FROM notifications) as notifications,
-            (SELECT COUNT(*) FROM hwid_user_devices) as hwid_devices;
+            (SELECT COUNT(*) FROM notifications) as notifications;
         """
         
         # Получаем количество записей до удаления
@@ -1510,7 +1509,6 @@ async def on_clear_all_confirm(
                 'referrals': int(values[5].strip()),
                 'rewards': int(values[6].strip()),
                 'notifications': int(values[7].strip()),
-                'hwid_devices': int(values[8].strip()),
             }
         
         # SQL запрос для удаления всех данных
@@ -1521,7 +1519,6 @@ async def on_clear_all_confirm(
         DELETE FROM promocode_activations;
         DELETE FROM transactions;
         DELETE FROM subscriptions;
-        DELETE FROM hwid_user_devices;
         DELETE FROM users;
         DELETE FROM promocodes;
         DELETE FROM notifications;
@@ -1617,8 +1614,7 @@ async def on_clear_users_confirm(
             (SELECT COUNT(*) FROM transactions) as transactions,
             (SELECT COUNT(*) FROM promocode_activations) as activations,
             (SELECT COUNT(*) FROM referrals) as referrals,
-            (SELECT COUNT(*) FROM referral_rewards) as rewards,
-            (SELECT COUNT(*) FROM hwid_user_devices) as hwid_devices;
+            (SELECT COUNT(*) FROM referral_rewards) as rewards;
         """
         
         # Получаем количество записей до удаления
@@ -1638,7 +1634,6 @@ async def on_clear_users_confirm(
                 'activations': int(values[3].strip()),
                 'referrals': int(values[4].strip()),
                 'rewards': int(values[5].strip()),
-                'hwid_devices': int(values[6].strip()),
             }
         
         # SQL запрос для удаления пользователей и связанных данных
@@ -1649,7 +1644,6 @@ async def on_clear_users_confirm(
         DELETE FROM promocode_activations;
         DELETE FROM transactions;
         DELETE FROM subscriptions;
-        DELETE FROM hwid_user_devices;
         DELETE FROM users;
         COMMIT;
         """
