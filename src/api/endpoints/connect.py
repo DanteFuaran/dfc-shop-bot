@@ -92,12 +92,15 @@ async def notify_device_connected(
     request: Request,
 ):
     """
-    Отправляет уведомление пользователю в Telegram об успешном подключении устройства.
+    Отправляет уведомление пользователю и разработчикам в Telegram об успешном подключении устройства.
     """
     from fastapi.responses import JSONResponse
     from src.services.user import UserService
     from src.services.notification import NotificationService
+    from src.services.remnawave import RemnawaveService
     from src.core.utils.message_payload import MessagePayload
+    from src.core.enums import SystemNotificationType
+    from src.bot.keyboards import get_user_keyboard
     
     try:
         # Получаем Dishka контейнер из приложения
@@ -105,6 +108,7 @@ async def notify_device_connected(
         
         user_service = await container.get(UserService)
         notification_service = await container.get(NotificationService)
+        remnawave_service = await container.get(RemnawaveService)
         
         # Получаем пользователя по subscription_url
         user = await user_service.get_by_subscription_url(subscription_url)
@@ -112,11 +116,36 @@ async def notify_device_connected(
         if not user:
             return JSONResponse({"success": False, "error": "User not found"})
         
-        # Отправляем уведомление об успешном подключении
+        # Отправляем уведомление пользователю об успешном подключении
         await notification_service.notify_user(
             user=user,
             payload=MessagePayload(i18n_key="ntf-device-connected")
         )
+        
+        # Получаем список устройств пользователя для отправки уведомления разработчикам
+        devices = await remnawave_service.get_devices_user(user)
+        
+        # Отправляем уведомление разработчикам о последнем подключенном устройстве
+        if devices:
+            latest_device = max(devices, key=lambda d: d.updated_at)
+            
+            await notification_service.system_notify(
+                ntf_type=SystemNotificationType.USER_HWID,
+                payload=MessagePayload.not_deleted(
+                    i18n_key="ntf-event-user-hwid-added",
+                    i18n_kwargs={
+                        "user_id": str(user.telegram_id),
+                        "user_name": user.name,
+                        "username": user.username or False,
+                        "hwid": latest_device.hwid,
+                        "platform": latest_device.platform,
+                        "device_model": latest_device.device_model,
+                        "os_version": latest_device.os_version,
+                        "user_agent": latest_device.user_agent,
+                    },
+                    reply_markup=get_user_keyboard(user.telegram_id),
+                ),
+            )
         
         return JSONResponse({"success": True})
     except Exception as e:
