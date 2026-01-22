@@ -568,31 +568,6 @@ async def show_reason(
 
 
 @inject
-async def on_connect_app(
-    callback: CallbackQuery,
-    widget: Button,
-    dialog_manager: DialogManager,
-    i18n: FromDishka[TranslatorRunner],
-) -> None:
-    """Обработчик для добавления подписки в приложение Happ."""
-    user: UserDto = dialog_manager.middleware_data[USER_KEY]
-    subscription = user.current_subscription
-    
-    if not subscription:
-        await callback.answer(
-            text=i18n.get("ntf-no-subscription"),
-            show_alert=True,
-        )
-        return
-    
-    # Показываем URL подписки для добавления в приложение
-    await callback.answer(
-        text=i18n.get("ntf-open-app-with-subscription", url=subscription.url),
-        show_alert=False,
-    )
-
-
-@inject
 async def on_show_qr(
     callback: CallbackQuery,
     widget: Button,
