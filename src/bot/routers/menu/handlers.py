@@ -644,9 +644,9 @@ async def on_show_key(
     # Create message text with instruction and countdown
     def create_message_text(seconds_left: int) -> str:
         return (
-            f"Ключ подписки:\n"
-            f"<code>{subscription_url}</code>\n"
-            f"<i>{seconds_left}с</i>"
+            f"Ключ подписки:\n\n"
+            f"<code>{subscription_url}</code>\n\n"
+            f"⏱ Сообщение закроется через {seconds_left}с"
         )
     
     # Send subscription URL message
