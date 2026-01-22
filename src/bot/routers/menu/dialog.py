@@ -300,11 +300,7 @@ invite = Window(
     Row(
         SwitchInlineQueryChosenChatButton(
             text=I18nFormat("btn-menu-invite-send"),
-            query=Format("{invite}"),
-            allow_user_chats=True,
-            allow_group_chats=True,
-            allow_channel_chats=True,
-            id="send",
+            query="invite_",  # This prefix triggers on_referral_inline_query handler
         ),
         Button(
             text=I18nFormat("btn-menu-invite-qr"),
