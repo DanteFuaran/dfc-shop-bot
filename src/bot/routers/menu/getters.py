@@ -252,10 +252,14 @@ async def connect_getter(
     domain = config.domain.get_secret_value()
     download_url = f"https://{domain}/api/v1/download"
     
+    # URL для добавления в приложение Happ через редирект
+    happ_add_url = f"https://{domain}/api/v1/connect/{subscription_url}" if subscription_url else ""
+    
     return {
         "url": config.bot.mini_app_url or subscription_url,
         "download_url": download_url,
         "subscription_url": subscription_url,
+        "happ_add_url": happ_add_url,
         "is_app": config.bot.is_mini_app,
     }
 
