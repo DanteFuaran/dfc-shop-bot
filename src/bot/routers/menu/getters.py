@@ -247,6 +247,7 @@ async def connect_getter(
     
     subscription = user.current_subscription
     subscription_url = subscription.url if subscription else ""
+    subscription_key = subscription.url.split("/")[-1] if subscription and subscription.url else ""
     
     # URL для скачивания с автоопределением ОС
     domain = config.domain.get_secret_value()
@@ -259,8 +260,10 @@ async def connect_getter(
         "url": config.bot.mini_app_url or subscription_url,
         "download_url": download_url,
         "subscription_url": subscription_url,
+        "subscription_key": subscription_key,
         "happ_add_url": happ_add_url,
         "is_app": config.bot.is_mini_app,
+        "has_subscription": 1 if subscription else 0,
     }
 
 

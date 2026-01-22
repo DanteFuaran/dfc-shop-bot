@@ -84,6 +84,7 @@ from .handlers import (
     on_platform_select,
     on_promocode,
     on_show_qr,
+    on_show_key,
     on_withdraw_points,
     show_reason,
 )
@@ -226,6 +227,20 @@ connect = Window(
         ),
     ),
     Row(
+        Button(
+            text=I18nFormat("btn-menu-connect-qr"),
+            id="qr",
+            on_click=on_show_qr,
+            when=F["has_subscription"],
+        ),
+        Button(
+            text=I18nFormat("btn-menu-connect-key"),
+            id="key",
+            on_click=on_show_key,
+            when=F["has_subscription"],
+        ),
+    ),
+    Row(
         *main_menu_button,
     ),
     IgnoreUpdate(),
@@ -339,6 +354,27 @@ invite_qr = Window(
     IgnoreUpdate(),
     state=MainMenu.INVITE_QR,
     getter=invite_getter,
+)
+
+connect_qr = Window(
+    Banner(BannerName.MENU),
+    I18nFormat("msg-menu-connect"),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-back"),
+            id="back",
+            state=MainMenu.CONNECT,
+        ),
+        Start(
+            text=I18nFormat("btn-main-menu"),
+            id="back_main_menu",
+            state=MainMenu.MAIN,
+            mode=StartMode.RESET_STACK,
+        ),
+    ),
+    IgnoreUpdate(),
+    state=MainMenu.CONNECT_QR,
+    getter=connect_getter,
 )
 
 balance = Window(
@@ -780,6 +816,7 @@ balance_transfer_message = Window(
 router = Dialog(
     menu,
     connect,
+    connect_qr,
     devices,
     invite,
     invite_about,

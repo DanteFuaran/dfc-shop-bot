@@ -624,6 +624,48 @@ async def on_show_qr(
 
 
 @inject
+async def on_show_key(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    notification_service: FromDishka[NotificationService],
+) -> None:
+    import asyncio
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    
+    subscription = user.current_subscription
+    if not subscription:
+        return
+    
+    subscription_key = subscription.url.split("/")[-1] if subscription.url else ""
+    if not subscription_key:
+        return
+    
+    # Send key message
+    try:
+        key_msg = await callback.bot.send_message(
+            chat_id=callback.from_user.id,
+            text=f"<code>{subscription_key}</code>",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(
+                    text="📋 Копировать",
+                    callback_data=f"copy_key:{subscription_key}"
+                )
+            ]])
+        )
+        
+        # Delete message after 10 seconds
+        await asyncio.sleep(10)
+        try:
+            await key_msg.delete()
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+
+@inject
 async def on_withdraw_points(
     callback: CallbackQuery,
     widget: Button,

@@ -6,6 +6,7 @@ from aiogram.fsm.state import State, StatesGroup
 class MainMenu(StatesGroup):
     MAIN = State()
     CONNECT = State()
+    CONNECT_QR = State()
     DEVICES = State()
     INVITE = State()
     INVITE_ABOUT = State()
