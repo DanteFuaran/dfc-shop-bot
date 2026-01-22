@@ -246,14 +246,34 @@ async def connect_getter(
     """Геттер для окна подключения с инструкцией."""
     
     subscription = user.current_subscription
+    subscription_url = subscription.url if subscription else ""
+    
+    # Формируем URL через редирект на сервере для обхода ограничений Telegram на happ://
+    if subscription_url:
+        # Проверяем что URL валидный (не пустой и содержит протокол)
+        if not subscription_url.strip() or not subscription_url.startswith(("http://", "https://")):
+            from loguru import logger
+            logger.warning(f"Invalid subscription URL for user {user.telegram_id}: '{subscription_url}'")
+            happ_redirect_url = ""
+            subscription_page_url = ""
+        else:
+            # Формируем URL редиректа через наш сервер
+            domain = config.domain.get_secret_value()
+            happ_redirect_url = f"https://{domain}/api/v1/connect/{subscription_url}"
+            subscription_page_url = f"https://{domain}/api/v1/subscription/{subscription_url}"
+    else:
+        happ_redirect_url = ""
+        subscription_page_url = ""
     
     # URL для скачивания с автоопределением ОС
     domain = config.domain.get_secret_value()
     download_url = f"https://{domain}/api/v1/download"
     
     return {
-        "url": config.bot.mini_app_url or (subscription.url if subscription else ""),
+        "url": config.bot.mini_app_url or subscription_url,
+        "happ_url": happ_redirect_url,
         "download_url": download_url,
+        "subscription_url": subscription_page_url,
         "is_app": config.bot.is_mini_app,
     }
 
