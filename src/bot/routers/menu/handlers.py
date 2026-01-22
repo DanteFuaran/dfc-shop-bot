@@ -67,6 +67,18 @@ async def close_success_transfer(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
+@router.callback_query(F.data.startswith("copy_sub_key:"))
+async def copy_subscription_key(callback: CallbackQuery) -> None:
+    """Копирование ключа подписки в буфер обмена."""
+    subscription_url = callback.data.replace("copy_sub_key:", "")
+    
+    # Show alert with subscription URL for copying
+    await callback.answer(
+        text=subscription_url,
+        show_alert=False,
+    )
+
+
 @inject
 @router.message(F.text, StateFilter(MainMenu.BALANCE_AMOUNT))
 async def validate_balance_amount_input(
@@ -641,12 +653,18 @@ async def on_show_key(
     if not subscription_url:
         return
     
-    # Send subscription URL message
+    # Send subscription URL message with copy button
     try:
         key_msg = await callback.bot.send_message(
             chat_id=callback.from_user.id,
             text=f"<code>{subscription_url}</code>",
             parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(
+                    text="📋 копировать",
+                    callback_data=f"copy_sub_key:{subscription_url}"
+                )
+            ]])
         )
         
         # Delete message after 10 seconds
