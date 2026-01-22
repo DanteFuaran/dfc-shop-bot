@@ -93,6 +93,7 @@ async def notify_device_connected(
 ):
     """
     Отправляет уведомление пользователю и разработчикам в Telegram об успешном подключении устройства.
+    Уведомление разработчикам отправляется только при первом добавлении устройства.
     """
     from fastapi.responses import JSONResponse
     from src.services.user import UserService
@@ -101,6 +102,7 @@ async def notify_device_connected(
     from src.core.utils.message_payload import MessagePayload
     from src.core.enums import SystemNotificationType
     from src.bot.keyboards import get_user_keyboard
+    from datetime import datetime, timezone, timedelta
     
     try:
         # Получаем Dishka контейнер из приложения
@@ -122,30 +124,36 @@ async def notify_device_connected(
             payload=MessagePayload(i18n_key="ntf-device-connected")
         )
         
-        # Получаем список устройств пользователя для отправки уведомления разработчикам
+        # Получаем список устройств пользователя
         devices = await remnawave_service.get_devices_user(user)
         
-        # Отправляем уведомление разработчикам о последнем подключенном устройстве
+        # Отправляем уведомление разработчикам только если устройство было добавлено недавно (менее 30 секунд назад)
         if devices:
-            latest_device = max(devices, key=lambda d: d.updated_at)
+            now = datetime.now(timezone.utc)
             
-            await notification_service.system_notify(
-                ntf_type=SystemNotificationType.USER_HWID,
-                payload=MessagePayload.not_deleted(
-                    i18n_key="ntf-event-user-hwid-added",
-                    i18n_kwargs={
-                        "user_id": str(user.telegram_id),
-                        "user_name": user.name,
-                        "username": user.username or False,
-                        "hwid": latest_device.hwid,
-                        "platform": latest_device.platform,
-                        "device_model": latest_device.device_model,
-                        "os_version": latest_device.os_version,
-                        "user_agent": latest_device.user_agent,
-                    },
-                    reply_markup=get_user_keyboard(user.telegram_id),
-                ),
-            )
+            # Ищем устройство, которое было создано недавно (это новое устройство)
+            for device in devices:
+                # Проверяем, было ли устройство создано в последние 30 секунд
+                if device.created_at and (now - device.created_at).total_seconds() < 30:
+                    # Это новое устройство - отправляем уведомление разработчикам
+                    await notification_service.system_notify(
+                        ntf_type=SystemNotificationType.USER_HWID,
+                        payload=MessagePayload.not_deleted(
+                            i18n_key="ntf-event-user-hwid-added",
+                            i18n_kwargs={
+                                "user_id": str(user.telegram_id),
+                                "user_name": user.name,
+                                "username": user.username or False,
+                                "hwid": device.hwid,
+                                "platform": device.platform,
+                                "device_model": device.device_model,
+                                "os_version": device.os_version,
+                                "user_agent": device.user_agent,
+                            },
+                            reply_markup=get_user_keyboard(user.telegram_id),
+                        ),
+                    )
+                    break  # Отправляем уведомление только для одного нового устройства
         
         return JSONResponse({"success": True})
     except Exception as e:
