@@ -570,11 +570,8 @@ async def invite_getter(
         # Support both Python format {url}/{name} and legacy $url/$name
         # Also support {space} for newline
         invite_message = invite_message.format(url=ref_link, name="VPN", space="\n") if "{url}" in invite_message else invite_message.replace("$url", ref_link).replace("$name", "VPN")
-        # Remove leading newline if present
-        if invite_message.startswith("\n"):
-            invite_message = invite_message[1:]
     else:
-        invite_message = f"\nJoin us! {ref_link}"
+        invite_message = f"\nДобро пожаловать!\n\n=> [Подключиться]({ref_link})"
     
     # Get pending referral balance (not issued rewards)
     referral_balance = await referral_service.get_pending_rewards_amount(

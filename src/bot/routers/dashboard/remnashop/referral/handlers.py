@@ -587,7 +587,7 @@ async def on_invite_message_reset(
     """Сброс сообщения приглашения на значение по умолчанию."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
-    default_message = "Добро пожаловать!\n\n⬇️ Подключайся ⬇️\n{url}"
+    default_message = "{space}Добро пожаловать!\n\n=> [Подключиться]({url})"
     
     settings = await settings_service.get()
     settings.referral.invite_message = default_message

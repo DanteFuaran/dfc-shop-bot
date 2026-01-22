@@ -81,7 +81,7 @@ class ReferralSettingsDto(TrackableDto):
     level: ReferralLevel = ReferralLevel.FIRST
     accrual_strategy: ReferralAccrualStrategy = ReferralAccrualStrategy.ON_EACH_PAYMENT
     reward: ReferralRewardSettingsDto = ReferralRewardSettingsDto()
-    invite_message: str = "Добро пожаловать!\n\n⬇️ Подключайся ⬇️\n{url}"
+    invite_message: str = "{space}Добро пожаловать!\n\n=> [Подключиться]({url})"
 
 
 class ExtraDeviceSettingsDto(TrackableDto):
