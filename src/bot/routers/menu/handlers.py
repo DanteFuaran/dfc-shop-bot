@@ -644,9 +644,9 @@ async def on_show_key(
     # Create message text with instruction and countdown
     def create_message_text(seconds_left: int) -> str:
         return (
-            f"Ключ подписки:\n\n"
-            f"<pre>{subscription_url}</pre>\n\n"
-            f"⏱ Сообщение закроется через {seconds_left}с"
+            f"<b>Ключ подписки:</b>\n"
+            f"<pre>{subscription_url}</pre>\n"
+            f"<i>⏱ Сообщение закроется через {seconds_left}с</i>"
         )
     
     # Send subscription URL message
@@ -658,7 +658,7 @@ async def on_show_key(
         )
         
         # Update message with countdown every second
-        for seconds_left in range(9, 0, -1):
+        for seconds_left in range(9, -1, -1):
             await asyncio.sleep(1)
             try:
                 await callback.bot.edit_message_text(
@@ -670,7 +670,7 @@ async def on_show_key(
             except Exception:
                 pass
         
-        # Delete message after 10 seconds
+        # Delete message when countdown reaches 0
         try:
             await key_msg.delete()
         except Exception:
