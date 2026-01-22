@@ -281,6 +281,32 @@ async def connect_to_happ(subscription_url: str, request: Request):
                 font-size: 16px;
                 color: #a0a0a0;
             }}
+            .buttons {{
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+                margin-top: 10px;
+            }}
+            .btn {{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 14px 24px;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: 500;
+                text-decoration: none;
+                color: white;
+                background: #00a8e8;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }}
+            .btn:hover {{
+                background: #0095cc;
+            }}
             @keyframes spin {{
                 to {{ transform: rotate(360deg); }}
             }}
@@ -293,21 +319,22 @@ async def connect_to_happ(subscription_url: str, request: Request):
         </div>
         
         <script>
-            // Немедленно открываем приложение
-            window.location.href = '{happ_url}';
+            // Немедленно открываем приложение через dedicate frame
+            var happ_iframe = document.createElement('iframe');
+            happ_iframe.src = '{happ_url}';
+            happ_iframe.style.display = 'none';
+            document.body.appendChild(happ_iframe);
             
             // Через 3 секунды показываем сообщение об успехе
             setTimeout(function() {{
                 document.getElementById('content').innerHTML = `
                     <div class="result-icon">✅</div>
                     <h1 class="result-title">Подписка была успешно добавлена</h1>
-                    <p class="result-description">Страница закроется автоматически...</p>
+                    <p class="result-description">Вы можете продолжить пользоваться приложением или вернуться в бот.</p>
+                    <div class="buttons">
+                        <a href="{bot_url}" class="btn">Вернуться в бот</a>
+                    </div>
                 `;
-                
-                // Через 5 секунд закрываем страницу
-                setTimeout(function() {{
-                    window.close();
-                }}, 5000);
             }}, 3000);
         </script>
     </body>
