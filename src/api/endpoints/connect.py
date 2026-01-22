@@ -175,12 +175,14 @@ async def notify_device_connected(
                         ),
                     )
                     break  # Отправляем уведомление только для одного нового устройства
+            
+            return JSONResponse({"status": "success", "new_devices": len(new_hwids)})
         
-        return JSONResponse({"success": True})
+        return JSONResponse({"status": "checked", "new_devices": 0})
     except Exception as e:
         from loguru import logger
         logger.error(f"Error sending device connected notification: {e}")
-        return JSONResponse({"success": False, "error": str(e)})
+        return JSONResponse({"status": "error", "error": str(e)})
 
 
 @router.get("/connect/{subscription_url:path}")
@@ -371,20 +373,9 @@ async def connect_to_happ(subscription_url: str, request: Request):
         </div>
         
         <script>
-            var initialDeviceCount = 0;
+            var deviceCheckStarted = false;
             var checkAttempts = 0;
             var maxAttempts = 15; // 15 попыток по 2 секунды = 30 секунд
-            
-            // Получаем начальное количество устройств
-            fetch('/api/v1/user-devices/{subscription_url_encoded}')
-                .then(response => response.json())
-                .then(data => {{
-                    initialDeviceCount = data.device_count || 0;
-                    console.log('Initial device count:', initialDeviceCount);
-                }})
-                .catch(err => {{
-                    console.error('Error getting initial device count:', err);
-                }});
             
             // Немедленно открываем приложение
             window.location.href = '{happ_url}';
@@ -393,64 +384,58 @@ async def connect_to_happ(subscription_url: str, request: Request):
             setTimeout(function() {{
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('checking').style.display = 'flex';
+                deviceCheckStarted = true;
                 
-                // Начинаем периодическую проверку количества устройств
+                // Начинаем периодическую проверку - отправляем уведомление каждый раз
+                // Эндпоинт на бэке сам определит новые устройства через Redis HWID-set
                 var checkInterval = setInterval(function() {{
                     checkAttempts++;
                     
-                    fetch('/api/v1/user-devices/{subscription_url_encoded}')
-                        .then(response => response.json())
-                        .then(data => {{
-                            var currentDeviceCount = data.device_count || 0;
-                            console.log('Check attempt', checkAttempts, 'Current device count:', currentDeviceCount);
-                            
-                            // Если количество устройств увеличилось - успех
-                            if (currentDeviceCount > initialDeviceCount) {{
+                    // Отправляем запрос для проверки и уведомления о новых устройствах
+                    fetch('/api/v1/notify-device-connected/{subscription_url_encoded}', {{
+                        method: 'POST'
+                    }})
+                    .then(response => response.json())
+                    .then(data => {{
+                        console.log('Check attempt', checkAttempts, 'Response:', data);
+                        
+                        // Если получили успешный ответ (статус 200)
+                        if (data.status === 'success' || data.status === 'checked') {{
+                            // После 3х попыток считаем, что устройство точно добавлено
+                            if (checkAttempts >= 3) {{
                                 clearInterval(checkInterval);
-                                
-                                // Отправляем уведомление в Telegram
-                                fetch('/api/v1/notify-device-connected/{subscription_url_encoded}', {{
-                                    method: 'POST'
-                                }})
-                                .then(response => response.json())
-                                .then(data => {{
-                                    console.log('Notification sent:', data);
-                                }})
-                                .catch(err => {{
-                                    console.error('Error sending notification:', err);
-                                }});
                                 
                                 // Закрываем окно/вкладку
                                 window.close();
                                 
-                                // Если window.close() не сработало (некоторые браузеры блокируют),
-                                // показываем сообщение о том, что окно можно закрыть
+                                // Если window.close() не сработало, показываем сообщение
                                 setTimeout(function() {{
                                     document.getElementById('checking').style.display = 'none';
                                     document.getElementById('success').innerHTML = `
                                         <div class="result-icon">✅</div>
                                         <h2 class="result-title">Устройство подключено!</h2>
-                                        <p class="result-description">Уведомление отправлено в бот. Вы можете закрыть эту вкладку.</p>
+                                        <p class="result-description">Вы можете закрыть эту вкладку.</p>
                                     `;
                                     document.getElementById('success').style.display = 'flex';
                                 }}, 500);
                             }}
-                            // Если достигли максимального количества попыток - ошибка
-                            else if (checkAttempts >= maxAttempts) {{
-                                clearInterval(checkInterval);
-                                document.getElementById('checking').style.display = 'none';
-                                document.getElementById('error').style.display = 'flex';
-                            }}
-                        }})
-                        .catch(err => {{
-                            console.error('Error checking device count:', err);
-                            // При ошибке API продолжаем попытки
-                            if (checkAttempts >= maxAttempts) {{
-                                clearInterval(checkInterval);
-                                document.getElementById('checking').style.display = 'none';
-                                document.getElementById('error').style.display = 'flex';
-                            }}
-                        }});
+                        }}
+                        // Если достигли максимального количества попыток
+                        else if (checkAttempts >= maxAttempts) {{
+                            clearInterval(checkInterval);
+                            document.getElementById('checking').style.display = 'none';
+                            document.getElementById('error').style.display = 'flex';
+                        }}
+                    }})
+                    .catch(err => {{
+                        console.error('Error checking devices:', err);
+                        // При ошибке API продолжаем попытки
+                        if (checkAttempts >= maxAttempts) {{
+                            clearInterval(checkInterval);
+                            document.getElementById('checking').style.display = 'none';
+                            document.getElementById('error').style.display = 'flex';
+                        }}
+                    }});
                 }}, 2000); // Проверяем каждые 2 секунды
             }}, 3000); // Начинаем проверку через 3 секунды
         </script>
