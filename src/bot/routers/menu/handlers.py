@@ -572,7 +572,6 @@ async def on_connect_app(
     callback: CallbackQuery,
     widget: Button,
     dialog_manager: DialogManager,
-    remnawave_service: FromDishka[RemnawaveService],
     i18n: FromDishka[TranslatorRunner],
 ) -> None:
     """Обработчик для добавления подписки в приложение Happ."""
@@ -586,23 +585,11 @@ async def on_connect_app(
         )
         return
     
-    try:
-        # Добавляем подписку в приложение
-        await remnawave_service.add_subscription_to_app(
-            user_id=user.telegram_id,
-            subscription_url=subscription.url,
-        )
-        
-        await callback.answer(
-            text=i18n.get("ntf-subscription-added-to-app"),
-            show_alert=True,
-        )
-    except Exception as e:
-        logger.error(f"Error adding subscription to app for user {user.telegram_id}: {e}")
-        await callback.answer(
-            text=i18n.get("ntf-error-adding-subscription"),
-            show_alert=True,
-        )
+    # Показываем URL подписки для добавления в приложение
+    await callback.answer(
+        text=i18n.get("ntf-open-app-with-subscription", url=subscription.url),
+        show_alert=False,
+    )
 
 
 @inject
