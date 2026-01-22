@@ -67,6 +67,18 @@ async def close_success_transfer(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
+@router.callback_query(F.data.startswith("copy_sub_key:"))
+async def copy_subscription_key(callback: CallbackQuery) -> None:
+    """Копирование ключа подписки в буфер обмена."""
+    subscription_url = callback.data.replace("copy_sub_key:", "")
+    
+    # Show alert with subscription URL for copying
+    await callback.answer(
+        text=subscription_url,
+        show_alert=False,
+    )
+
+
 @inject
 @router.message(F.text, StateFilter(MainMenu.BALANCE_AMOUNT))
 async def validate_balance_amount_input(
@@ -644,17 +656,23 @@ async def on_show_key(
     # Create message text with instruction and countdown
     def create_message_text(seconds_left: int) -> str:
         return (
-            f"Нажмите чтобы скопировать ссылку подписки:\n\n"
+            f"<b>📋 Ссылка подписки:</b>\n\n"
             f"<code>{subscription_url}</code>\n\n"
-            f"⏱ Сообщение закроется через {seconds_left}с"
+            f"<i>⏱ Сообщение закроется через {seconds_left}с</i>"
         )
     
-    # Send subscription URL message
+    # Send subscription URL message with copy button
     try:
         key_msg = await callback.bot.send_message(
             chat_id=callback.from_user.id,
             text=create_message_text(10),
             parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(
+                    text="📋 Копировать",
+                    callback_data=f"copy_sub_key:{subscription_url}"
+                )
+            ]])
         )
         
         # Update message with countdown every second
@@ -666,6 +684,12 @@ async def on_show_key(
                     message_id=key_msg.message_id,
                     text=create_message_text(seconds_left),
                     parse_mode="HTML",
+                    reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                        InlineKeyboardButton(
+                            text="📋 Копировать",
+                            callback_data=f"copy_sub_key:{subscription_url}"
+                        )
+                    ]])
                 )
             except Exception:
                 pass
