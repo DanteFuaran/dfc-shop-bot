@@ -103,6 +103,8 @@ async def notify_device_connected(
     from src.core.enums import SystemNotificationType
     from src.bot.keyboards import get_user_keyboard
     from redis.asyncio import Redis
+    from loguru import logger
+    import json
     
     try:
         # Получаем Dishka контейнер из приложения
@@ -127,42 +129,52 @@ async def notify_device_connected(
         
         # Получаем список устройств пользователя
         devices = await remnawave_service.get_devices_user(user)
-        current_device_count = len(devices)
         
-        # Ключ для хранения количества устройств в Redis
-        redis_key = f"device_count:{user.telegram_id}"
+        if not devices:
+            return JSONResponse({"success": True})
         
-        # Получаем предыдущее количество устройств из Redis
-        previous_count_str = await redis_client.get(redis_key)
-        previous_device_count = int(previous_count_str) if previous_count_str else 0
+        # Ключ для хранения списка известных HWID в Redis
+        redis_key = f"known_hwids:{user.telegram_id}"
         
-        # Сохраняем текущее количество устройств в Redis (с TTL 1 час)
-        await redis_client.set(redis_key, str(current_device_count), ex=3600)
+        # Получаем список известных HWID из Redis
+        known_hwids_str = await redis_client.get(redis_key)
+        known_hwids: set[str] = set(json.loads(known_hwids_str)) if known_hwids_str else set()
         
-        # Если количество устройств увеличилось - значит добавлено новое устройство
-        if devices and current_device_count > previous_device_count:
-            # Находим устройство с самым последним updated_at (это новое устройство)
-            from datetime import datetime, timezone
-            latest_device = max(devices, key=lambda d: d.updated_at if d.updated_at else datetime.min.replace(tzinfo=timezone.utc))
-            
-            # Отправляем уведомление разработчикам о добавлении устройства
-            await notification_service.system_notify(
-                ntf_type=SystemNotificationType.USER_HWID,
-                payload=MessagePayload.not_deleted(
-                    i18n_key="ntf-event-user-hwid-added",
-                    i18n_kwargs={
-                        "user_id": str(user.telegram_id),
-                        "user_name": user.name,
-                        "username": user.username or False,
-                        "hwid": latest_device.hwid,
-                        "platform": latest_device.platform,
-                        "device_model": latest_device.device_model,
-                        "os_version": latest_device.os_version,
-                        "user_agent": latest_device.user_agent,
-                    },
-                    reply_markup=get_user_keyboard(user.telegram_id),
-                ),
-            )
+        # Текущие HWID устройств
+        current_hwids = {device.hwid for device in devices}
+        
+        # Находим новые устройства (которых не было раньше)
+        new_hwids = current_hwids - known_hwids
+        
+        # Сохраняем текущий список HWID в Redis (с TTL 30 дней)
+        await redis_client.set(redis_key, json.dumps(list(current_hwids)), ex=30 * 24 * 3600)
+        
+        # Если есть новые устройства - отправляем уведомление
+        if new_hwids:
+            # Находим данные нового устройства
+            for device in devices:
+                if device.hwid in new_hwids:
+                    logger.info(f"New device detected for user {user.telegram_id}: {device.hwid}")
+                    
+                    # Отправляем уведомление разработчикам о добавлении устройства
+                    await notification_service.system_notify(
+                        ntf_type=SystemNotificationType.USER_HWID,
+                        payload=MessagePayload.not_deleted(
+                            i18n_key="ntf-event-user-hwid-added",
+                            i18n_kwargs={
+                                "user_id": str(user.telegram_id),
+                                "user_name": user.name,
+                                "username": user.username or False,
+                                "hwid": device.hwid,
+                                "platform": device.platform,
+                                "device_model": device.device_model,
+                                "os_version": device.os_version,
+                                "user_agent": device.user_agent,
+                            },
+                            reply_markup=get_user_keyboard(user.telegram_id),
+                        ),
+                    )
+                    break  # Отправляем уведомление только для одного нового устройства
         
         return JSONResponse({"success": True})
     except Exception as e:
