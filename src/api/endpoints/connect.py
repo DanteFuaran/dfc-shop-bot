@@ -190,7 +190,6 @@ async def connect_to_happ(subscription_url: str, request: Request):
     """
     Страница для подключения к Happ.
     Использует HTML с JavaScript для надежного открытия приложения.
-    После открытия HAPP показывает кнопки для возврата в бот или связи с поддержкой.
     """
     global _bot_username_cache
     from fastapi import HTTPException
@@ -225,10 +224,6 @@ async def connect_to_happ(subscription_url: str, request: Request):
     bot_url = f"https://t.me/{bot_username}" if bot_username else ""
     support_url = f"https://t.me/{support_username}"
     
-    # Кодируем URL для использования в fetch запросах
-    from urllib.parse import quote
-    subscription_url_encoded = quote(subscription_url, safe='')
-    
     html_content = f"""
     <!DOCTYPE html>
     <html>
@@ -252,11 +247,13 @@ async def connect_to_happ(subscription_url: str, request: Request):
                 background: #0a0e27;
                 color: #e8e8e8;
             }}
-            .spinner-container {{
+            .container {{
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 15px;
+                gap: 20px;
+                text-align: center;
+                max-width: 320px;
             }}
             .spinner {{
                 width: 50px;
@@ -265,21 +262,6 @@ async def connect_to_happ(subscription_url: str, request: Request):
                 border-radius: 50%;
                 border-top-color: #00a8e8;
                 animation: spin 1s ease-in-out infinite;
-            }}
-            .loading-text {{
-                font-size: 16px;
-                color: #a0a0a0;
-            }}
-            @keyframes spin {{
-                to {{ transform: rotate(360deg); }}
-            }}
-            .result-container {{
-                display: none;
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-                text-align: center;
-                max-width: 320px;
             }}
             .result-icon {{
                 font-size: 48px;
@@ -295,156 +277,42 @@ async def connect_to_happ(subscription_url: str, request: Request):
                 margin: 0;
                 line-height: 1.5;
             }}
-            .buttons {{
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-                width: 100%;
-                margin-top: 10px;
-            }}
-            .btn {{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                padding: 14px 24px;
-                border-radius: 12px;
+            .loading-text {{
                 font-size: 16px;
-                font-weight: 500;
-                text-decoration: none;
-                transition: all 0.2s ease;
+                color: #a0a0a0;
             }}
-            .btn-primary {{
-                background: #00a8e8;
-                color: white;
-            }}
-            .btn-primary:hover {{
-                background: #0095cc;
-            }}
-            .btn-secondary {{
-                background: rgba(255, 255, 255, 0.1);
-                color: #e8e8e8;
-            }}
-            .btn-secondary:hover {{
-                background: rgba(255, 255, 255, 0.15);
+            @keyframes spin {{
+                to {{ transform: rotate(360deg); }}
             }}
         </style>
     </head>
     <body>
-        <div class="spinner-container" id="loading">
+        <div class="container" id="content">
             <div class="spinner"></div>
             <p class="loading-text">Открываем приложение...</p>
         </div>
         
-        <div class="result-container" id="checking" style="display: none;">
-            <div class="spinner"></div>
-            <p class="loading-text">Проверяем подключение...</p>
-        </div>
-        
-        <div class="result-container" id="success" style="display: none;">
-            <div class="result-icon">✅</div>
-            <h1 class="result-title">Успешно!</h1>
-            <p class="result-description">
-                Устройство было успешно добавлено в список.
-                Можете вернуться в бот.
-            </p>
-            <div class="buttons">
-                <a href="{bot_url}" class="btn btn-primary">
-                    Готово
-                </a>
-            </div>
-        </div>
-        
-        <div class="result-container" id="error" style="display: none;">
-            <div class="result-icon">❌</div>
-            <h1 class="result-title">Ошибка подключения</h1>
-            <p class="result-description">
-                Устройство не было добавлено в список.
-                Обратитесь в поддержку для помощи.
-            </p>
-            <div class="buttons">
-                <a href="{support_url}" class="btn btn-primary">
-                    💬 Поддержка
-                </a>
-                <a href="{bot_url}" class="btn btn-secondary">
-                    Главное меню
-                </a>
-            </div>
-        </div>
-        
         <script>
-            var deviceCheckStarted = false;
-            var checkAttempts = 0;
-            var maxAttempts = 15; // 15 попыток по 2 секунды = 30 секунд
-            
             // Немедленно открываем приложение
             window.location.href = '{happ_url}';
             
-            // Через 3 секунды начинаем проверку
+            // Через 3 секунды показываем сообщение об успехе
             setTimeout(function() {{
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('checking').style.display = 'flex';
-                deviceCheckStarted = true;
+                document.getElementById('content').innerHTML = `
+                    <div class="result-icon">✅</div>
+                    <h1 class="result-title">Подписка была успешно добавлена</h1>
+                    <p class="result-description">Страница закроется автоматически...</p>
+                `;
                 
-                // Начинаем периодическую проверку - отправляем уведомление каждый раз
-                // Эндпоинт на бэке сам определит новые устройства через Redis HWID-set
-                var checkInterval = setInterval(function() {{
-                    checkAttempts++;
-                    
-                    // Отправляем запрос для проверки и уведомления о новых устройствах
-                    fetch('/api/v1/notify-device-connected/{subscription_url_encoded}', {{
-                        method: 'POST'
-                    }})
-                    .then(response => response.json())
-                    .then(data => {{
-                        console.log('Check attempt', checkAttempts, 'Response:', data);
-                        
-                        // Если получили успешный ответ (статус 200)
-                        if (data.status === 'success' || data.status === 'checked') {{
-                            // После 3х попыток считаем, что устройство точно добавлено
-                            if (checkAttempts >= 3) {{
-                                clearInterval(checkInterval);
-                                
-                                // Закрываем окно/вкладку
-                                window.close();
-                                
-                                // Если window.close() не сработало, показываем сообщение
-                                setTimeout(function() {{
-                                    document.getElementById('checking').style.display = 'none';
-                                    document.getElementById('success').innerHTML = `
-                                        <div class="result-icon">✅</div>
-                                        <h2 class="result-title">Устройство подключено!</h2>
-                                        <p class="result-description">Вы можете закрыть эту вкладку.</p>
-                                    `;
-                                    document.getElementById('success').style.display = 'flex';
-                                }}, 500);
-                            }}
-                        }}
-                        // Если достигли максимального количества попыток
-                        else if (checkAttempts >= maxAttempts) {{
-                            clearInterval(checkInterval);
-                            document.getElementById('checking').style.display = 'none';
-                            document.getElementById('error').style.display = 'flex';
-                        }}
-                    }})
-                    .catch(err => {{
-                        console.error('Error checking devices:', err);
-                        // При ошибке API продолжаем попытки
-                        if (checkAttempts >= maxAttempts) {{
-                            clearInterval(checkInterval);
-                            document.getElementById('checking').style.display = 'none';
-                            document.getElementById('error').style.display = 'flex';
-                        }}
-                    }});
-                }}, 2000); // Проверяем каждые 2 секунды
-            }}, 3000); // Начинаем проверку через 3 секунды
+                // Через 5 секунд закрываем страницу
+                setTimeout(function() {{
+                    window.close();
+                }}, 5000);
+            }}, 3000);
         </script>
     </body>
     </html>
     """
-    
-    # Заменяем subscription_url в JavaScript (нужно для корректной работы fetch)
-    html_content = html_content.replace("{subscription_url_encoded}", subscription_url)
     
     return HTMLResponse(content=html_content)
 
