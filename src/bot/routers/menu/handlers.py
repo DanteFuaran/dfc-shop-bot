@@ -568,6 +568,40 @@ async def show_reason(
 
 
 @inject
+async def on_connect_app(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    bot: Bot,
+) -> None:
+    """Обработчик для добавления подписки в приложение Happ."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    subscription = user.current_subscription
+    
+    if not subscription:
+        await callback.answer(
+            text="❌ У вас нет активной подписки.",
+            show_alert=True,
+        )
+        return
+    
+    # Формируем ссылку для открытия через WebApp
+    happ_add_url = f"happ://add/{subscription.url}"
+    
+    # Пытаемся открыть ссылку
+    await callback.answer()
+    
+    # Используем WebApp для открытия happ протокола
+    # Telegram не поддерживает happ://, поэтому показываем инструкцию
+    import asyncio
+    asyncio.create_task(
+        callback.message.reply(
+            f"📱 Откройте приложение Happ и добавьте подписку:\n\n<code>{happ_add_url}</code>"
+        )
+    )
+
+
+@inject
 async def on_show_qr(
     callback: CallbackQuery,
     widget: Button,

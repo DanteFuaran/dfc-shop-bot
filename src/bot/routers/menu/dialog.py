@@ -85,6 +85,7 @@ from .handlers import (
     on_promocode,
     on_show_qr,
     on_withdraw_points,
+    on_connect_app,
     show_reason,
 )
 
@@ -212,10 +213,10 @@ connect = Window(
         ),
     ),
     Row(
-        Url(
+        Button(
             text=I18nFormat("btn-menu-connect-open"),
-            url=Format("{happ_add_url}"),
             id="connect_happ",
+            on_click=on_connect_app,
         ),
     ),
     Row(
