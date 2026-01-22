@@ -16,13 +16,19 @@ from src.core.utils.formatters import format_username_to_url
 CALLBACK_CHANNEL_CONFIRM: Final[str] = "channel_confirm"
 CALLBACK_RULES_ACCEPT: Final[str] = "rules_accept"
 
+# Прямые ссылки на subscription URL без промежуточных страниц (как в snoups/remnashop)
 connect_buttons = (
-    Start(
+    WebApp(
         text=I18nFormat("btn-menu-connect"),
-        id="connect_menu",
-        state=MainMenu.CONNECT,
-        mode=StartMode.RESET_STACK,
-        when=F["connectable"],
+        url=Format("{url}"),
+        id="connect_miniapp",
+        when=F["is_app"] & F["connectable"],
+    ),
+    Url(
+        text=I18nFormat("btn-menu-connect"),
+        url=Format("{url}"),
+        id="connect_sub_page",
+        when=~F["is_app"] & F["connectable"],
     ),
 )
 
