@@ -132,7 +132,12 @@ menu = Window(
     ),
     # [Подключиться][Пригласить] (если есть подписка)
     Row(
-        *connect_buttons,
+        SwitchTo(
+            text=I18nFormat("btn-menu-connect"),
+            id="connect_menu",
+            state=MainMenu.CONNECT,
+            when=F["connectable"],
+        ),
         Button(
             text=I18nFormat("btn-menu-connect-not-available"),
             id="not_available",
