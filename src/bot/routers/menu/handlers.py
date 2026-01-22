@@ -568,6 +568,44 @@ async def show_reason(
 
 
 @inject
+async def on_connect_app(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    remnawave_service: FromDishka[RemnawaveService],
+    i18n: FromDishka[TranslatorRunner],
+) -> None:
+    """Обработчик для добавления подписки в приложение Happ."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    subscription = user.current_subscription
+    
+    if not subscription:
+        await callback.answer(
+            text=i18n.get("ntf-no-subscription"),
+            show_alert=True,
+        )
+        return
+    
+    try:
+        # Добавляем подписку в приложение
+        await remnawave_service.add_subscription_to_app(
+            user_id=user.telegram_id,
+            subscription_url=subscription.url,
+        )
+        
+        await callback.answer(
+            text=i18n.get("ntf-subscription-added-to-app"),
+            show_alert=True,
+        )
+    except Exception as e:
+        logger.error(f"Error adding subscription to app for user {user.telegram_id}: {e}")
+        await callback.answer(
+            text=i18n.get("ntf-error-adding-subscription"),
+            show_alert=True,
+        )
+
+
+@inject
 async def on_show_qr(
     callback: CallbackQuery,
     widget: Button,
