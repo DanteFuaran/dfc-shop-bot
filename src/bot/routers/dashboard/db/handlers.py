@@ -1573,6 +1573,29 @@ async def on_clear_all_confirm(
 
 
 @inject
+async def on_clear_users(
+    callback: CallbackQuery,
+    button,
+    manager: DialogManager,
+    notification_service: FromDishka[NotificationService],
+):
+    """Обработчик нажатия на кнопку 'Очистить пользователей' - первое предупреждение."""
+    user = manager.middleware_data.get(USER_KEY)
+    
+    # Отправляем предупреждающее уведомление
+    await notification_service.notify_user(
+        user=user,
+        payload=MessagePayload(
+            i18n_key="ntf-db-clear-users-warning",
+        ),
+    )
+    
+    # Переходим на окно финального подтверждения
+    from src.bot.states import DashboardDB
+    await manager.switch_to(DashboardDB.CLEAR_USERS_CONFIRM_FINAL)
+
+
+@inject
 async def on_clear_users_confirm(
     callback: CallbackQuery,
     button,
@@ -1580,7 +1603,7 @@ async def on_clear_users_confirm(
     notification_service: FromDishka[NotificationService],
     redis_client: FromDishka[Redis],
 ):
-    """Обработчик для подтверждения очистки пользователей."""
+    """Обработчик для финального подтверждения и выполнения очистки пользователей."""
     user = manager.middleware_data.get(USER_KEY)
     
     await notification_service.notify_user(

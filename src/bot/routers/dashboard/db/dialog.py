@@ -193,7 +193,7 @@ clear_users_confirm = Window(
         Button(
             text=I18nFormat("btn-db-clear-users"),
             id="confirm_clear_users",
-            on_click=on_clear_users_confirm,
+            on_click=on_clear_users,
         ),
     ),
     Row(
@@ -236,6 +236,28 @@ imports_menu = Window(
     state=DashboardDB.IMPORTS,
 )
 
+# Окно финального подтверждения очистки пользователей
+clear_users_confirm_final = Window(
+    Banner(BannerName.DASHBOARD),
+    I18nFormat("msg-db-clear-users-confirm-final"),
+    Row(
+        Button(
+            text=I18nFormat("btn-db-clear-users"),
+            id="final_clear_users",
+            on_click=on_clear_users_confirm,
+        ),
+    ),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-cancel"),
+            id="cancel",
+            state=DashboardDB.MAIN,
+        ),
+    ),
+    IgnoreUpdate(),
+    state=DashboardDB.CLEAR_USERS_CONFIRM_FINAL,
+)
+
 dialog = Dialog(
     db_management,
     db_load_window,
@@ -243,5 +265,6 @@ dialog = Dialog(
     db_sync_progress,
     clear_all_confirm,
     clear_users_confirm,
+    clear_users_confirm_final,
     imports_menu,
 )
