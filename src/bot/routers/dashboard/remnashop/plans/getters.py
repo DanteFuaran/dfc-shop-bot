@@ -151,9 +151,9 @@ async def description_getter(dialog_manager: DialogManager, **kwargs: Any) -> di
     else:
         description = plan.description
     
-    # Если пусто или None - показываем NODESC
-    if not description:
-        description = "NODESC"
+    # Если пусто или None или NODESC - показываем пустую строку
+    if not description or description == "NODESC":
+        description = ""
     
     return {"description": description}
 
