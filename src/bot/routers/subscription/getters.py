@@ -2043,7 +2043,7 @@ async def add_device_duration_getter(
     
     subscription = user.current_subscription
     
-    # Рассчитываем стоимость для обоих вариантов
+    # Рассчитываем стоимость для всех вариантов
     if subscription:
         # Вариант 1: До конца подписки
         price_full, days_full = calculate_device_price_until_subscription_end(
@@ -2052,7 +2052,11 @@ async def add_device_duration_getter(
             min_days=min_days,
         )
         
-        # Вариант 2: До конца месяца подписки
+        # Вариант 2: Полный месяц (30 дней)
+        price_full_month = device_price_monthly
+        days_full_month = 30
+        
+        # Вариант 3: До конца месяца подписки
         price_month, days_month = calculate_device_price_until_month_end(
             monthly_price=device_price_monthly,
             subscription_expire_at=subscription.expire_at,
@@ -2062,17 +2066,28 @@ async def add_device_duration_getter(
         # Если нет подписки, используем полную цену
         price_full = device_price_monthly
         days_full = 30
+        price_full_month = device_price_monthly
+        days_full_month = 30
         price_month = device_price_monthly
         days_month = 30
     
     # Умножаем на количество устройств
     total_price_full = price_full * device_count
+    total_price_full_month = price_full_month * device_count
     total_price_month = price_month * device_count
     
     # Применяем скидки через PricingService
     price_details_full = pricing_service.calculate(
         user=user,
         price=Decimal(total_price_full),
+        currency=Currency.RUB,
+        global_discount=global_discount,
+        context="extra_devices",
+    )
+    
+    price_details_full_month = pricing_service.calculate(
+        user=user,
+        price=Decimal(total_price_full_month),
         currency=Currency.RUB,
         global_discount=global_discount,
         context="extra_devices",
@@ -2087,6 +2102,7 @@ async def add_device_duration_getter(
     )
     
     discounted_price_full = int(price_details_full.final_amount)
+    discounted_price_full_month = int(price_details_full_month.final_amount)
     discounted_price_month = int(price_details_month.final_amount)
     has_discount = price_details_full.discount_percent > 0
     
@@ -2173,7 +2189,11 @@ async def add_device_duration_getter(
         "price_full": discounted_price_full,
         "price_full_original": total_price_full,
         "days_full": days_full,
-        # Вариант 2: До конца месяца
+        # Вариант 2: Полный месяц
+        "price_full_month": discounted_price_full_month,
+        "price_full_month_original": total_price_full_month,
+        "days_full_month": days_full_month,
+        # Вариант 3: До конца месяца
         "price_month": discounted_price_month,
         "price_month_original": total_price_month,
         "days_month": days_month,
@@ -2203,7 +2223,7 @@ async def add_device_payment_getter(
     
     # Получаем количество устройств и тип покупки из dialog_data
     device_count = dialog_manager.dialog_data.get("device_count", 1)
-    duration_type = dialog_manager.dialog_data.get("duration_type", "full")  # "full" или "month"
+    duration_type = dialog_manager.dialog_data.get("duration_type", "full")  # "full", "full_month" или "month"
     
     # Получаем уже рассчитанную цену из dialog_data (установлена на шаге выбора типа)
     # Если не установлена - рассчитываем заново
@@ -2226,6 +2246,9 @@ async def add_device_payment_getter(
                     subscription_expire_at=user.current_subscription.expire_at,
                     min_days=min_days,
                 )
+            elif duration_type == "full_month":
+                price_per_device = device_price_monthly
+                duration_days = 30
             else:
                 price_per_device, duration_days = calculate_device_price_until_subscription_end(
                     monthly_price=device_price_monthly,
@@ -2444,6 +2467,9 @@ async def add_device_confirm_getter(
                     subscription_expire_at=user.current_subscription.expire_at,
                     min_days=min_days,
                 )
+            elif duration_type == "full_month":
+                price_per_device = device_price_monthly
+                duration_days = 30
             else:
                 price_per_device, duration_days = calculate_device_price_until_subscription_end(
                     monthly_price=device_price_monthly,
