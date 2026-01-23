@@ -2,10 +2,10 @@
 
 # Создаем временную папку с уникальным именем
 CLONE_DIR=$(mktemp -d)
-echo "⏳ Производится подготовка к установке..."
+echo "📦 Подготовка к установке"
 
 # Клонируем репозиторий
-if ! git clone -b dev --depth 1 https://github.com/DanteFuaran/dfc-shop-bot.git "$CLONE_DIR"; then
+if ! git clone -b dev --depth 1 https://github.com/DanteFuaran/dfc-shop-bot.git "$CLONE_DIR" >/dev/null 2>&1; then
     echo "❌ Ошибка при клонировании репозитория"
     rm -rf "$CLONE_DIR"
     exit 1
