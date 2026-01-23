@@ -26,7 +26,6 @@ from .handlers import (
     sync_getter,
     on_clear_all,
     on_clear_users,
-    on_clear_all_confirm,
 )
 from src.bot.states import DashboardDB
 db_management = Window(
@@ -163,26 +162,6 @@ db_sync_progress = Window(
 )
 
 # Окно подтверждения полной очистки базы
-clear_all_confirm = Window(
-    Banner(BannerName.DASHBOARD),
-    I18nFormat("msg-db-clear-all-confirm"),
-    Row(
-        Button(
-            text=I18nFormat("btn-db-clear-all"),
-            id="confirm_clear_all",
-            on_click=on_clear_all_confirm,
-        ),
-    ),
-    Row(
-        SwitchTo(
-            text=I18nFormat("btn-cancel"),
-            id="cancel",
-            state=DashboardDB.MAIN,
-        ),
-    ),
-    IgnoreUpdate(),
-    state=DashboardDB.CLEAR_ALL_CONFIRM,
-)
 
 # Окно подтверждения очистки пользователей
 clear_users_confirm = Window(
@@ -240,7 +219,6 @@ dialog = Dialog(
     db_load_window,
     db_sync_window,
     db_sync_progress,
-    clear_all_confirm,
     clear_users_confirm,
     imports_menu,
 )
