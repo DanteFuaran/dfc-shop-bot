@@ -1578,34 +1578,25 @@ async def on_clear_users(
     button,
     manager: DialogManager,
     notification_service: FromDishka[NotificationService],
-):
-    """Обработчик нажатия на кнопку 'Очистить пользователей' - первое предупреждение."""
-    user = manager.middleware_data.get(USER_KEY)
-    
-    # Отправляем предупреждающее уведомление
-    await notification_service.notify_user(
-        user=user,
-        payload=MessagePayload(
-            i18n_key="ntf-db-clear-users-warning",
-        ),
-    )
-    
-    # Переходим на окно финального подтверждения
-    from src.bot.states import DashboardDB
-    await manager.switch_to(DashboardDB.CLEAR_USERS_CONFIRM_FINAL)
-
-
-@inject
-async def on_clear_users_confirm(
-    callback: CallbackQuery,
-    button,
-    manager: DialogManager,
-    notification_service: FromDishka[NotificationService],
     redis_client: FromDishka[Redis],
 ):
-    """Обработчик для финального подтверждения и выполнения очистки пользователей."""
+    """Обработчик нажатия на кнопку 'Очистить пользователей'."""
+    from src.bot.states import DashboardDB
     user = manager.middleware_data.get(USER_KEY)
+    current_state = manager.current_context().state
     
+    # Если первое нажатие (из MAIN или CLEAR_USERS_CONFIRM) - показываем предупреждение
+    if current_state != DashboardDB.CLEAR_USERS_CONFIRM:
+        await notification_service.notify_user(
+            user=user,
+            payload=MessagePayload(
+                i18n_key="ntf-db-clear-users-warning",
+            ),
+        )
+        await manager.switch_to(DashboardDB.CLEAR_USERS_CONFIRM)
+        return
+    
+    # Если второе нажатие (уже в CLEAR_USERS_CONFIRM) - выполняем удаление
     await notification_service.notify_user(
         user=user,
         payload=MessagePayload(i18n_key="ntf-db-clear-users-start"),
@@ -1688,17 +1679,9 @@ async def on_clear_users_confirm(
             await redis_client.flushall()
             logger.info(f"{log(user)} Users cleared successfully")
             
-            from src.bot.states import DashboardDB
-            
-            # Отправляем уведомление об успешном удалении
-            await notification_service.notify_user(
-                user=user,
-                payload=MessagePayload(
-                    i18n_key="ntf-db-clear-users-success",
-                    i18n_kwargs=counts,
-                ),
-            )
-            await manager.switch_to(DashboardDB.MAIN)
+            # Переходим на окно результатов
+            manager.dialog_data["clear_users_counts"] = counts
+            await manager.switch_to(DashboardDB.CLEAR_USERS_RESULT)
         else:
             logger.error(f"{log(user)} Failed to clear users: {error}")
             await notification_service.notify_user(
@@ -1719,3 +1702,26 @@ async def on_clear_users_confirm(
             ),
         )
         await manager.switch_to(DashboardDB.MAIN)
+
+
+async def on_clear_users_result_close(
+    callback: CallbackQuery,
+    button,
+    manager: DialogManager,
+):
+    """Обработчик закрытия окна результатов очистки пользователей."""
+    from src.bot.states import DashboardDB
+    await manager.switch_to(DashboardDB.MAIN)
+
+
+async def clear_users_result_getter(dialog_manager: DialogManager, **kwargs):
+    """Getter для окна результатов очистки пользователей."""
+    counts = dialog_manager.dialog_data.get("clear_users_counts", {})
+    return {
+        "users": counts.get("users", 0),
+        "subscriptions": counts.get("subscriptions", 0),
+        "transactions": counts.get("transactions", 0),
+        "activations": counts.get("activations", 0),
+        "referrals": counts.get("referrals", 0),
+        "rewards": counts.get("rewards", 0),
+    }
