@@ -4,7 +4,7 @@ from typing import Any
 
 from aiogram import Bot, F, Router
 from aiogram.filters import CommandStart, StateFilter
-from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message, InlineQuery, InlineQueryResultArticle, InputTextMessageContent, ChosenInlineResult
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 from aiogram_dialog import DialogManager, ShowMode, StartMode, SubManager
 from aiogram_dialog.widgets.kbd import Button, Select
 from dishka import FromDishka
@@ -1906,73 +1906,3 @@ async def on_delete_extra_device_purchase(
     )
     
     await callback.answer()
-
-
-# Inline query handler for referral invite
-@router.inline_query()
-@inject
-async def on_referral_inline_query(
-    inline_query: InlineQuery,
-    user: UserDto,
-    settings_service: FromDishka["SettingsService"],
-    referral_service: FromDishka["ReferralService"],
-    i18n: FromDishka[TranslatorRunner],
-    bot: FromDishka[Bot],
-) -> None:
-    """Handle inline query for referral invitations"""
-    from src.services.settings import SettingsService
-    from src.services.referral import ReferralService
-    
-    logger.info(f"{log(user)} Triggered referral inline query")
-    
-    if not inline_query.query.startswith("invite_"):
-        return  # Only handle invite queries
-    
-    try:
-        settings = await settings_service.get_referral_settings()
-        ref_link = await referral_service.get_ref_link(user.referral_code)
-        
-        # Get the invite message template and format it
-        invite_template = settings.invite_message
-        invite_message = invite_template.format(
-            url=ref_link,
-            name="VPN",
-            space="",  # Empty space for inline - don't show leading newline in preview
-        )
-        
-        # Create inline query result with HTML formatted message
-        result = InlineQueryResultArticle(
-            id="invite_1",
-            title=i18n.get("btn-menu-invite-send"),
-            description=i18n.get("msg-referral-invite-message") if hasattr(i18n, 'get') else "Пригласить друга",
-            input_message_content=InputTextMessageContent(
-                message_text=invite_message,
-                parse_mode="HTML",
-            ),
-        )
-        
-        await bot.answer_inline_query(
-            inline_query_id=inline_query.id,
-            results=[result],
-            is_personal=True,
-        )
-        
-        logger.info(f"{log(user)} Answered referral inline query with formatted message")
-        
-    except Exception as e:
-        logger.error(f"{log(user)} Error in referral inline query: {e}")
-        await bot.answer_inline_query(
-            inline_query_id=inline_query.id,
-            results=[],
-        )
-
-
-@router.chosen_inline_result()
-@inject
-async def on_referral_chosen_inline_result(
-    chosen_result: ChosenInlineResult,
-    user: UserDto,
-) -> None:
-    """Handle chosen inline result for referral invitations"""
-    logger.info(f"{log(user)} Chose inline referral result, sent to chat/user")
-    # The message is already sent by Telegram with HTML parsing enabled

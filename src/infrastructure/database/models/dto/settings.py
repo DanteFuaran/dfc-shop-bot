@@ -81,7 +81,7 @@ class ReferralSettingsDto(TrackableDto):
     level: ReferralLevel = ReferralLevel.FIRST
     accrual_strategy: ReferralAccrualStrategy = ReferralAccrualStrategy.ON_EACH_PAYMENT
     reward: ReferralRewardSettingsDto = ReferralRewardSettingsDto()
-    invite_message: str = "{space}Добро пожаловать!\n\n=> <a href=\"{url}\">Подключиться</a>"
+    invite_message: str = "{space}✨ TEST Online - Ваш приватный интернет!\n\n↘️ <b>Ссылка для подключения:</b>\n{url}"
 
 
 class ExtraDeviceSettingsDto(TrackableDto):
