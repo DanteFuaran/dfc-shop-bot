@@ -591,9 +591,14 @@ class PaymentGatewayService(BaseService):
                 else 0
             )
             device_limit_number = (
-                (plan_device_limit + subscription.extra_devices)
+                plan_device_limit
                 if plan_device_limit > 0 
                 else subscription.device_limit
+            )
+            purchased_devices = (
+                subscription.extra_devices
+                if plan_device_limit > 0
+                else 0
             )
             device_limit_bonus = max(
                 0, 
@@ -617,6 +622,7 @@ class PaymentGatewayService(BaseService):
                 "traffic_used": i18n_format_bytes_to_unit(0),  # TODO: получить real traffic used
                 "traffic_limit": i18n_format_traffic_limit(subscription.traffic_limit),
                 "device_limit_number": device_limit_number,
+                "purchased_devices": purchased_devices,
                 "device_limit_bonus": device_limit_bonus,
                 "extra_devices": subscription.extra_devices,
                 "expire_time": i18n_format_expire_time(subscription.expire_at),
