@@ -285,7 +285,6 @@ class AccessMode(UpperStrEnum):
 
 class Command(Enum):
     START = BotCommand(command="start", description="cmd-start")
-    SUPPORT = BotCommand(command="support", description="cmd-support")
 
 
 class Locale(StrEnum):
