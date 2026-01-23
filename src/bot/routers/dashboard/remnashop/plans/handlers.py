@@ -247,7 +247,10 @@ async def on_cancel_description(
     logger.debug(f"{log(user)} Canceling plan description input")
     
     # Удаляем pending описание при отмене
+    # Это восстановит старое значение, так как getter будет использовать adapter
     dialog_manager.dialog_data.pop("pending_plan_description", None)
+    dialog_manager.show_mode = ShowMode.NORMAL
+    await dialog_manager.switch_to(state=RemnashopPlans.CONFIGURATOR)
     logger.info(f"{log(user)} Cancelled plan description input")
 
 
@@ -297,6 +300,7 @@ async def on_cancel_tag(
     # Очищаем временный тег и возвращаемся в конфигуратор
     # Это восстановит старое значение, так как getter будет использовать adapter
     dialog_manager.dialog_data.pop("pending_tag", None)
+    dialog_manager.show_mode = ShowMode.NORMAL
     await dialog_manager.switch_to(RemnashopPlans.CONFIGURATOR)
     logger.info(f"{log(user)} Cancelled tag input")
 
