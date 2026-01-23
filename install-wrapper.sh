@@ -9,8 +9,8 @@ git clone -b dev --depth 1 https://github.com/DanteFuaran/dfc-shop-bot.git "$CLO
 
 # Переходим в папку и запускаем установку
 cd "$CLONE_DIR" || exit 1
-./install.sh
 
-# Удаляем временную папку после установки
-cd /opt || exit 1
-rm -rf "$CLONE_DIR"
+# Даём права на выполнение скрипту установки
+chmod +x ./install.sh
+
+# Запускаем скрипт установки
