@@ -1504,8 +1504,8 @@ btn-subscription-connect = 🚀 Подключиться
 btn-subscription-duration = { $final_amount -> 
     [0] { $period } | 🎁
     *[HAS] { $has_discount ->
-        [1] { $period } | { $final_amount } { $currency } ({ $original_amount } { $currency })
-        *[0] { $period } | { $final_amount } { $currency }
+        [1] { $period } | { $final_amount } ({ $original_amount })
+        *[0] { $period } | { $final_amount }
         }
     }
 

@@ -336,7 +336,7 @@ ntf-event-balance-topup =
     <blockquote>
     • <b>ID</b>: <code>{ $payment_id }</code>
     • <b>Способ оплаты</b>: { gateway-type }
-    • <b>Сумма</b>: { $final_amount } { $currency }
+    • <b>Сумма</b>: { $final_amount }
     </blockquote>
 
     { hdr-user }
@@ -350,7 +350,7 @@ ntf-event-extra-devices =
     <blockquote>
     • <b>ID</b>: <code>{ $payment_id }</code>
     • <b>Способ оплаты</b>: { gateway-type }
-    • <b>Сумма</b>: { $final_amount } { $currency }
+    • <b>Сумма</b>: { $final_amount }
     • <b>Скидка</b>: { $discount_percent }%
     • <b>Устройств</b>: +{ $device_count } шт.
     </blockquote>
