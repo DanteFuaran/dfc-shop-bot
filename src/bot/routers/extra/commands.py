@@ -9,7 +9,7 @@ import asyncio
 
 from src.core.config.app import AppConfig
 from src.core.enums import Command
-from src.core.utils.formatters import format_user_log as log, format_username_to_url
+from src.core.utils.formatters import format_user_log as log
 from src.infrastructure.database.models.dto import UserDto
 
 router = Router(name=__name__)
@@ -25,11 +25,13 @@ async def on_support_command(
 ) -> None:
     logger.info(f"{log(user)} Call 'support' command")
 
-    text = i18n.get("contact-support-help")
     support_username = config.bot.support_username.get_secret_value()
-    support_url = format_username_to_url(support_username, text)
+    clean_username = support_username.lstrip("@")
+    
+    # Create deep link to open support bot directly
+    support_url = f"tg://resolve?domain={clean_username}"
 
-    # Send clickable link and delete immediately
+    # Send deep link and delete immediately
     response = await message.answer(support_url)
     
     # Delete both the command message and the response after short delay
@@ -43,5 +45,6 @@ async def on_support_command(
         await message.delete()
     except Exception:
         pass
+
 
 
