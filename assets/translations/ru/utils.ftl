@@ -5,7 +5,7 @@ btn-test = Кнопка
 msg-test = Сообщение
 development = Временно недоступно!
 test-payment = Тестовый платеж
-unlimited = ♾️
+unlimited = ∞
 unknown = —
 expired = Закончилась
 
