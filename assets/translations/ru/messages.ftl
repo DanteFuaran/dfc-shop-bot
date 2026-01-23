@@ -667,43 +667,19 @@ msg-menu-invite =
 
     { hdr-subscription }{ frg-subscription-status-full }
 
-    <b>🏆 Награды:</b>
+    <b>🏆 Награда:</b>
     <blockquote>
-    • <b>Тип награды</b>: { $ref_reward_type ->
-        [MONEY] Деньги
-        [EXTRA_DAYS] Дни
-        *[OTHER] { $ref_reward_type }
-    }
-    • <b>Приведенный вами</b>: { $ref_reward_level_1_value }{ $ref_reward_strategy ->
-        [AMOUNT] { $ref_reward_type ->
-            [MONEY] ₽
-            [EXTRA_DAYS] { $ref_reward_level_1_value ->
-                [1] день
-                [2] дня
-                [3] дня
-                [4] дня
-                *[other] дней
-            }
-            *[OTHER] { space }
-        }
-        [PERCENT] %
-        *[OTHER] { space }
+    { $ref_reward_type ->
+        [EXTRA_DAYS] • { $ref_reward_level_1_value } дн. за каждые 100 р пополнения приглашенным
+        [MONEY] • { $ref_reward_level_1_value }% от суммы пополнения приглашенным
+        *[OTHER] • { $ref_reward_level_1_value } ₽
     }{ $ref_max_level ->
         [2] {""}
-    • <b>Приведенный другом</b>: { $ref_reward_level_2_value }{ $ref_reward_strategy ->
-        [AMOUNT] { $ref_reward_type ->
-            [MONEY] ₽
-            [EXTRA_DAYS] { $ref_reward_level_2_value ->
-                [1] день
-                [2] дня
-                [3] дня
-                [4] дня
-                *[other] дней
-            }
-            *[OTHER] { space }
-        }
-        [PERCENT] %
-        *[OTHER] { space }
+    
+    { $ref_reward_type ->
+        [EXTRA_DAYS] • { $ref_reward_level_2_value } дн. за каждые 100 р пополнения приглашенным приглашенными
+        [MONEY] • { $ref_reward_level_2_value }% от суммы пополнения приглашенным приглашенными
+        *[OTHER] • { $ref_reward_level_2_value } ₽
     }
         *[1] {""}
     }
@@ -713,10 +689,13 @@ msg-menu-invite =
     <blockquote>
     👥 Всего приглашенных: { $referrals }
     💳 Платежей по вашей ссылке: { $payments }
-    💳 Получено всего: { $total_bonus } ₽
+    💳 Получено всего: { $total_bonus }{ $ref_reward_type ->
+        [EXTRA_DAYS] { " " }дн.
+        *[OTHER] { " " }₽
+    }
     </blockquote>
 
-    <i>ℹ️ Награда начисляется при оплатах приведенного вами пользователя.</i>
+    <i>ℹ️ Награда начисляется при оплатах приведенных вами пользователей.</i>
 
 msg-menu-invite-about =
     <b>🎁 Подробнее о вознаграждении</b>
