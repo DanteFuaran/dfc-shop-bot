@@ -1486,8 +1486,7 @@ async def on_clear_all_confirm(
             (SELECT COUNT(*) FROM promocodes) as promocodes,
             (SELECT COUNT(*) FROM promocode_activations) as activations,
             (SELECT COUNT(*) FROM referrals) as referrals,
-            (SELECT COUNT(*) FROM referral_rewards) as rewards,
-            (SELECT COUNT(*) FROM notifications) as notifications;
+            (SELECT COUNT(*) FROM referral_rewards) as rewards;
         """
         
         # Получаем количество записей до удаления
@@ -1508,7 +1507,6 @@ async def on_clear_all_confirm(
                 'activations': int(values[4].strip()),
                 'referrals': int(values[5].strip()),
                 'rewards': int(values[6].strip()),
-                'notifications': int(values[7].strip()),
             }
         
         # SQL запрос для удаления всех данных
@@ -1521,7 +1519,6 @@ async def on_clear_all_confirm(
         DELETE FROM subscriptions;
         DELETE FROM users;
         DELETE FROM promocodes;
-        DELETE FROM notifications;
         COMMIT;
         """
         
@@ -1668,31 +1665,13 @@ async def on_clear_users_confirm(
             await redis_client.flushall()
             logger.info(f"{log(user)} Users cleared successfully")
             
-            await notification_service.notify_user(
-                user=user,
-                payload=MessagePayload(
-                    i18n_key="ntf-db-clear-users-success",
-                    i18n_kwargs=counts,
-                ),
-            )
+            from src.bot.states import DashboardDB
+            
+            # Показываем сообщение с количеством удаленных пользователей
+            await manager.switch_to(DashboardDB.CLEAR_USERS_SUCCESS, data=counts)
         else:
             logger.error(f"{log(user)} Failed to clear users: {error}")
-            await notification_service.notify_user(
-                user=user,
-                payload=MessagePayload(
-                    i18n_key="ntf-db-clear-users-failed",
-                    i18n_kwargs={"error": error},
-                ),
-            )
+            await manager.switch_to(DashboardDB.CLEAR_USERS_FAILED, data={"error": error})
     except Exception as e:
         logger.exception(f"{log(user)} Error clearing users: {e}")
-        await notification_service.notify_user(
-            user=user,
-            payload=MessagePayload(
-                i18n_key="ntf-db-clear-users-failed",
-                i18n_kwargs={"error": str(e)},
-            ),
-        )
-    
-    from src.bot.states import DashboardDB
-    await manager.switch_to(DashboardDB.MAIN)
+        await manager.switch_to(DashboardDB.CLEAR_USERS_FAILED, data={"error": str(e)})

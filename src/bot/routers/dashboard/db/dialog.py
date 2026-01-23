@@ -59,17 +59,9 @@ db_management = Window(
     ),
     Row(
         SwitchTo(
-            text=I18nFormat("btn-db-sync-from-panel"),
-            id="remnawave_import",
-            state=DashboardDB.SYNC,
-        ),
-    ),
-    Row(
-        Start(
-            text=I18nFormat("btn-dashboard-importer"),
-            id="importer",
-            state=DashboardImporter.MAIN,
-            when=F[MIDDLEWARE_DATA_KEY][IS_SUPER_DEV_KEY],
+            text=I18nFormat("btn-db-imports"),
+            id="imports",
+            state=DashboardDB.IMPORTS,
         ),
     ),
     Row(
@@ -215,6 +207,67 @@ clear_users_confirm = Window(
     state=DashboardDB.CLEAR_USERS_CONFIRM,
 )
 
+# Окно успешной очистки пользователей
+clear_users_success = Window(
+    Banner(BannerName.DASHBOARD),
+    I18nFormat("msg-db-clear-users-success"),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-close"),
+            id="close",
+            state=DashboardDB.MAIN,
+        ),
+        *main_menu_button,
+    ),
+    IgnoreUpdate(),
+    state=DashboardDB.CLEAR_USERS_SUCCESS,
+)
+
+# Окно ошибки при очистке пользователей
+clear_users_failed = Window(
+    Banner(BannerName.DASHBOARD),
+    I18nFormat("msg-db-clear-users-failed"),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-back"),
+            id="back",
+            state=DashboardDB.MAIN,
+        ),
+        *main_menu_button,
+    ),
+    IgnoreUpdate(),
+    state=DashboardDB.CLEAR_USERS_FAILED,
+)
+
+# Меню импортов
+imports_menu = Window(
+    Banner(BannerName.DASHBOARD),
+    I18nFormat("msg-db-imports"),
+    Column(
+        SwitchTo(
+            text=I18nFormat("btn-db-sync-from-panel"),
+            id="remnawave_import",
+            state=DashboardDB.SYNC,
+        ),
+        Start(
+            text=I18nFormat("btn-dashboard-importer"),
+            id="importer",
+            state=DashboardImporter.MAIN,
+            when=F[MIDDLEWARE_DATA_KEY][IS_SUPER_DEV_KEY],
+        ),
+    ),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-back"),
+            id="back",
+            state=DashboardDB.MAIN,
+        ),
+        *main_menu_button,
+    ),
+    IgnoreUpdate(),
+    state=DashboardDB.IMPORTS,
+)
+
 dialog = Dialog(
     db_management,
     db_load_window,
@@ -222,4 +275,7 @@ dialog = Dialog(
     db_sync_progress,
     clear_all_confirm,
     clear_users_confirm,
+    clear_users_success,
+    clear_users_failed,
+    imports_menu,
 )
