@@ -233,6 +233,19 @@ get_local_version() {
     fi
 }
 
+# Функция для сравнения версий (true если version1 < version2)
+version_less_than() {
+    local v1="$1"
+    local v2="$2"
+    
+    # Простое сравнение версий (для формата X.Y.Z)
+    # Преобразуем версии в числа для сравнения
+    local v1_num=$(echo "$v1" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+    local v2_num=$(echo "$v2" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+    
+    [ "$v1_num" -lt "$v2_num" ]
+}
+
 # Функция для проверки доступности обновлений
 check_updates_available() {
     # Создаем временный файл для хранения статуса и версии
@@ -257,7 +270,8 @@ check_updates_available() {
             
             # Сравниваем версии
             if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
-                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+                # Показываем обновление только если локальная версия НИЖЕ удаленной
+                if version_less_than "$LOCAL_VERSION" "$REMOTE_VERSION"; then
                     echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
                 else
                     echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
@@ -274,7 +288,8 @@ check_updates_available() {
             REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
             
             if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
-                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+                # Показываем обновление только если локальная версия НИЖЕ удаленной
+                if version_less_than "$LOCAL_VERSION" "$REMOTE_VERSION"; then
                     echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
                 else
                     echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
