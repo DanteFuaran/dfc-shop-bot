@@ -15,6 +15,7 @@ from src.core.enums import UserRole
 from src.core.i18n.keys import ByteUnitKey
 from src.core.i18n.translator import get_translated_kwargs
 from src.core.utils.formatters import (
+    format_price,
     i18n_format_bytes_to_unit,
     i18n_format_days,
     i18n_format_device_limit,
@@ -516,10 +517,9 @@ async def transaction_getter(
         "purchase_type": transaction.purchase_type,
         "transaction_status": transaction.status,
         "gateway_type": transaction.gateway_type,
-        "final_amount": transaction.pricing.final_amount,
-        "currency": transaction.currency.symbol,
+        "final_amount": format_price(transaction.pricing.final_amount, transaction.currency),
         "discount_percent": transaction.pricing.discount_percent,
-        "original_amount": transaction.pricing.original_amount,
+        "original_amount": format_price(transaction.pricing.original_amount, transaction.currency),
         "created_at": transaction.created_at.strftime(DATETIME_FORMAT),  # type: ignore[union-attr]
         "plan_name": transaction.plan.name,
         "plan_type": transaction.plan.type,

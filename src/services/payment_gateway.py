@@ -18,6 +18,7 @@ from src.core.enums import (
     TransactionStatus,
 )
 from src.core.utils.formatters import (
+    format_price,
     i18n_format_days,
     i18n_format_device_limit,
     i18n_format_traffic_limit,
@@ -603,9 +604,8 @@ class PaymentGatewayService(BaseService):
             i18n_kwargs = {
                 "payment_id": str(transaction.payment_id),
                 "gateway_type": transaction.gateway_type,
-                "final_amount": transaction.pricing.final_amount,
+                "final_amount": format_price(transaction.pricing.final_amount, transaction.currency),
                 "discount_percent": transaction.pricing.discount_percent,
-                "currency": transaction.currency.symbol,
                 "user_id": str(transaction.user.telegram_id),
                 "user_name": transaction.user.name,
                 "username": transaction.user.username or False,
@@ -649,8 +649,7 @@ class PaymentGatewayService(BaseService):
             i18n_kwargs = {
                 "payment_id": str(transaction.payment_id),
                 "gateway_type": transaction.gateway_type,
-                "final_amount": transaction.pricing.final_amount,
-                "currency": transaction.currency.symbol,
+                "final_amount": format_price(transaction.pricing.final_amount, transaction.currency),
                 "user_id": str(transaction.user.telegram_id),
                 "user_name": transaction.user.name,
                 "username": transaction.user.username or False,
@@ -712,10 +711,9 @@ class PaymentGatewayService(BaseService):
         i18n_kwargs = {
             "payment_id": str(transaction.payment_id),
             "gateway_type": transaction.gateway_type,
-            "final_amount": transaction.pricing.final_amount,
+            "final_amount": format_price(transaction.pricing.final_amount, transaction.currency),
             "discount_percent": transaction.pricing.discount_percent,
-            "original_amount": transaction.pricing.original_amount,
-            "currency": transaction.currency.symbol,
+            "original_amount": format_price(transaction.pricing.original_amount, transaction.currency),
             "user_id": str(transaction.user.telegram_id),
             "user_name": transaction.user.name,
             "username": transaction.user.username or False,

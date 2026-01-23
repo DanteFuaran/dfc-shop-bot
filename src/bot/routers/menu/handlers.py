@@ -1594,10 +1594,12 @@ async def on_balance_transfer_send(
     settings_service: FromDishka[SettingsService],
     notification_service: FromDishka[NotificationService],
     balance_transfer_service: FromDishka[BalanceTransferService],
+    referral_service: FromDishka[ReferralService],
     i18n: FromDishka[TranslatorRunner],
 ) -> None:
     """Отправка перевода - валидация и выполнение."""
     from src.services.balance_transfer import BalanceTransferService
+    from src.core.enums import ReferralRewardType
     
     # Ответим на callback как можно раньше чтобы не истёк ID
     await callback.answer()
@@ -1635,10 +1637,20 @@ async def on_balance_transfer_send(
     
     total = amount + commission
     
+    # Проверяем режим баланса и получаем реферальный баланс
+    is_balance_combined = await settings_service.is_balance_combined()
+    referral_balance = await referral_service.get_pending_rewards_amount(
+        telegram_id=user.telegram_id,
+        reward_type=ReferralRewardType.MONEY,
+    )
+    
+    # Вычисляем доступный баланс с учётом режима
+    available_balance = user.balance + referral_balance if is_balance_combined else user.balance
+    
     # Проверяем достаточно ли средств ПЕРЕД снятием
-    if total > user.balance:
+    if total > available_balance:
         error_msg = await callback.message.answer(
-            text=i18n.get("ntf-balance-transfer-insufficient", required=total, balance=user.balance),
+            text=i18n.get("ntf-balance-transfer-insufficient", required=total, balance=available_balance),
         )
         await asyncio.sleep(5)
         try:
@@ -1662,19 +1674,25 @@ async def on_balance_transfer_send(
     
     # ВСЕ ПРОВЕРКИ ПРОЙДЕНЫ - выполняем перевод
     try:
-        # Списываем у отправителя
-        success = await user_service.subtract_from_balance(user, total)
-        if not success:
-            # Этот случай не должен произойти, т.к. мы уже проверили баланс
-            error_msg = await callback.message.answer(
-                text=i18n.get("ntf-balance-transfer-error"),
+        # Списываем у отправителя с учетом режима баланса
+        from_main, from_bonus = await user_service.subtract_from_combined_balance(
+            user=user,
+            amount=total,
+            referral_balance=referral_balance,
+            is_combined=is_balance_combined,
+        )
+        
+        # Если списали с бонусного баланса, нужно вывести награды
+        if from_bonus > 0:
+            withdrawn = await referral_service.withdraw_pending_rewards(
+                telegram_id=user.telegram_id,
+                reward_type=ReferralRewardType.MONEY,
+                amount=from_bonus,
             )
-            await asyncio.sleep(5)
-            try:
-                await error_msg.delete()
-            except Exception:
-                pass
-            return
+            logger.info(
+                f"Withdrawn {withdrawn} from referral rewards for transfer "
+                f"(user={user.telegram_id}, total={total})"
+            )
         
         # Зачисляем получателю - в отдельном try-catch с откатом
         try:
@@ -1682,16 +1700,23 @@ async def on_balance_transfer_send(
         except Exception as e:
             # Откатываем снятие денег со счета отправителя
             logger.error(f"Failed to add balance to recipient: {e}. Rolling back sender balance.")
-            await user_service.add_to_balance(user, total)
+            # Возвращаем деньги на основной баланс
+            await user_service.add_to_balance(user, from_main)
+            # Если были списаны бонусные деньги, их откат сложнее - просто логируем ошибку
+            if from_bonus > 0:
+                logger.error(
+                    f"Cannot rollback bonus withdrawal of {from_bonus} for user {user.telegram_id}. "
+                    f"Manual intervention may be required."
+                )
             raise
         
         # Обновляем баланс в middleware_data
-        user.balance -= total
+        user.balance -= from_main
         dialog_manager.middleware_data[USER_KEY] = user
         
         logger.info(
             f"Balance transfer: {user.telegram_id} -> {recipient.telegram_id}, "
-            f"amount={amount}, commission={commission}"
+            f"amount={amount}, commission={commission}, from_main={from_main}, from_bonus={from_bonus}"
         )
         
         # Сохраняем запись о переводе в историю
@@ -1748,6 +1773,25 @@ async def on_balance_transfer_send(
         
         # Отправляем системное уведомление разработчику (не влияет на результат перевода)
         try:
+            # Вычисляем итоговый баланс отправителя с учетом режима
+            sender_balance_after = user.balance
+            if is_balance_combined:
+                # Обновляем реферальный баланс после вывода
+                referral_balance_after = await referral_service.get_pending_rewards_amount(
+                    telegram_id=user.telegram_id,
+                    reward_type=ReferralRewardType.MONEY,
+                )
+                sender_balance_after += referral_balance_after
+            
+            # Вычисляем итоговый баланс получателя с учетом режима
+            recipient_balance_after = recipient.balance
+            if is_balance_combined:
+                recipient_referral_balance = await referral_service.get_pending_rewards_amount(
+                    telegram_id=recipient.telegram_id,
+                    reward_type=ReferralRewardType.MONEY,
+                )
+                recipient_balance_after += recipient_referral_balance
+            
             await notification_service.system_notify(
                 ntf_type=SystemNotificationType.BALANCE_TRANSFER,
                 payload=MessagePayload.not_deleted(
@@ -1755,10 +1799,10 @@ async def on_balance_transfer_send(
                     i18n_kwargs={
                         "sender_id": str(user.telegram_id),
                         "sender_name": user.name or str(user.telegram_id),
-                        "sender_balance": user.balance,
+                        "sender_balance": sender_balance_after,
                         "recipient_id": str(recipient.telegram_id),
                         "recipient_name": recipient.name or str(recipient.telegram_id),
-                        "recipient_balance": recipient.balance,
+                        "recipient_balance": recipient_balance_after,
                         "amount": amount,
                         "commission": commission,
                         "total": total,

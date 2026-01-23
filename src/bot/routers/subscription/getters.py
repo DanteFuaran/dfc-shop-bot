@@ -466,10 +466,9 @@ async def duration_getter(
             {
                 "days": duration.days,
                 "period": i18n.get(key, **kw),
-                "final_amount": price.final_amount,
+                "final_amount": format_price(price.final_amount, currency),
                 "discount_percent": price.discount_percent,
-                "original_amount": price.original_amount,
-                "currency": currency.symbol,
+                "original_amount": format_price(price.original_amount, currency),
                 "extra_devices_cost": extra_devices_cost,
                 "has_discount": has_discount,
             }
@@ -991,6 +990,7 @@ async def confirm_getter(
         "period": i18n.get(key, **kw),
         "payment_method": selected_payment_method,
         "gateway_type": payment_gateway.type,
+        "currency": payment_gateway.currency.value,
         "final_amount": format_price(final_amount_for_display, payment_gateway.currency),
         "discount_percent": pricing.discount_percent,
         "original_amount": base_subscription_price_converted,
@@ -1004,8 +1004,8 @@ async def confirm_getter(
         # Данные пользователя для шапки
         "user_id": str(user.telegram_id),
         "user_name": user.name,
-        "balance": get_display_balance(user.balance, referral_balance, is_balance_combined),
-        "referral_balance": referral_balance,
+        "balance": format_price(int(get_display_balance(user.balance, referral_balance, is_balance_combined)), Currency.RUB),
+        "referral_balance": format_price(int(referral_balance), Currency.RUB),
         "referral_code": user.referral_code,
         "discount_value": discount_value,
         "discount_is_temporary": 1 if is_temporary_discount else 0,

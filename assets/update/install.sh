@@ -233,6 +233,19 @@ get_local_version() {
     fi
 }
 
+# Функция для сравнения версий (true если version1 < version2)
+version_less_than() {
+    local v1="$1"
+    local v2="$2"
+    
+    # Простое сравнение версий (для формата X.Y.Z)
+    # Преобразуем версии в числа для сравнения
+    local v1_num=$(echo "$v1" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+    local v2_num=$(echo "$v2" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+    
+    [ "$v1_num" -lt "$v2_num" ]
+}
+
 # Функция для проверки доступности обновлений
 check_updates_available() {
     # Создаем временный файл для хранения статуса и версии
@@ -244,40 +257,46 @@ check_updates_available() {
         # Получаем локальную версию из PROJECT_DIR (production)
         LOCAL_VERSION=$(get_local_version)
         
-        # Сначала пробуем GitHub API (самый надежный способ, избегает кэширования)
-        REMOTE_VERSION=""
+        # Создаём временную папку для проверки версии
+        TEMP_CHECK_DIR=$(mktemp -d)
         
-        # Извлекаем owner и repo из URL
-        REPO_OWNER=$(echo "$REPO_URL" | sed 's|.*github.com/||; s|/.*||')
-        REPO_NAME=$(echo "$REPO_URL" | sed 's|.*github.com/.*\/||; s|\.git$||')
-        
-        # Используем GitHub API для получения содержимого файла (без кэширования или с кэшем по ETag)
-        API_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/src/__version__.py?ref=${REPO_BRANCH}"
-        API_RESPONSE=$(curl -s -H "Accept: application/vnd.github.v3.raw" "$API_URL" 2>/dev/null)
-        
-        if [ -n "$API_RESPONSE" ]; then
-            REMOTE_VERSION=$(echo "$API_RESPONSE" | grep -oP '__version__ = "\K[^"]+' || echo "")
-        fi
-        
-        # Если GitHub API не сработал, пробуем git clone
-        if [ -z "$REMOTE_VERSION" ]; then
-            TEMP_CHECK_DIR=$(mktemp -d)
+        # Клонируем только последний коммит нужной ветки (быстро, ~500kb)
+        if git clone -b "$REPO_BRANCH" --depth 1 --single-branch "$REPO_URL" "$TEMP_CHECK_DIR" >/dev/null 2>&1; then
+            # Получаем удаленную версию из клонированного репозитория
+            REMOTE_VERSION=$(grep -oP '__version__ = "\K[^"]+' "$TEMP_CHECK_DIR/src/__version__.py" 2>/dev/null || echo "")
             
-            if git clone -b "$REPO_BRANCH" --depth 1 --single-branch "$REPO_URL" "$TEMP_CHECK_DIR" >/dev/null 2>&1; then
-                REMOTE_VERSION=$(grep -oP '__version__ = "\K[^"]+' "$TEMP_CHECK_DIR/src/__version__.py" 2>/dev/null || echo "")
-                rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
-            fi
-        fi
-        
-        # Сравниваем версии
-        if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
-            if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
-                echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+            # Удаляем временную папку
+            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
+            
+            # Сравниваем версии
+            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                # Показываем обновление только если локальная версия НИЖЕ удаленной
+                if version_less_than "$LOCAL_VERSION" "$REMOTE_VERSION"; then
+                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                else
+                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                fi
             else
-                echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                echo "0|unknown" > "$UPDATE_STATUS_FILE"
             fi
         else
-            echo "0|unknown" > "$UPDATE_STATUS_FILE"
+            # Если не удалось клонировать, пробуем старый способ через raw URL
+            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
+            
+            GITHUB_RAW_URL=$(echo "$REPO_URL" | sed 's|github.com|raw.githubusercontent.com|; s|\.git$||')
+            REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/src/__version__.py"
+            REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
+            
+            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                # Показываем обновление только если локальная версия НИЖЕ удаленной
+                if version_less_than "$LOCAL_VERSION" "$REMOTE_VERSION"; then
+                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                else
+                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
+                fi
+            else
+                echo "0|unknown" > "$UPDATE_STATUS_FILE"
+            fi
         fi
     } &
     CHECK_UPDATE_PID=$!
@@ -440,7 +459,7 @@ show_simple_menu() {
                         ;;
                     1)  # Выход
                         clear
-                        exit 0
+                        exit 2
                         ;;
                 esac
             fi
@@ -1518,6 +1537,7 @@ if [ "$1" != "--install" ]; then
     # Проверяем режим если скрипт вызван без аргументов --install
     if [ "$1" != "--prod" ] && [ "$1" != "-p" ]; then
         check_mode "$1"
+        exit $?
     fi
     
     if [ "$1" = "--prod" ] || [ "$1" = "-p" ]; then
@@ -1542,6 +1562,7 @@ fi
 # Проверяем режим если скрипт вызван без аргументов --install
 if [ "$1" != "--install" ] && [ "$1" != "--prod" ] && [ "$1" != "-p" ]; then
     check_mode "$1"
+    exit $?
 fi
 
 if [ "$1" = "--prod" ] || [ "$1" = "-p" ]; then

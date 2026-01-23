@@ -80,7 +80,26 @@ def format_days_to_datetime(value: int, year: int = 2099) -> datetime:
             last_day = monthrange(year, dt.month)[1]
             return dt.replace(year=year, day=min(dt.day, last_day))
 
-    return dt + timedelta(days=value)
+    # Проверяем, не превышает ли значение максимально допустимое для timedelta
+    # Максимум ~2,9 млн дней (datetime.max - datetime.min)
+    # Если значение слишком большое (например, 999999), считаем его безлимитным
+    MAX_SAFE_DAYS = 365 * 500  # ~500 лет - разумный максимум
+    if value > MAX_SAFE_DAYS:
+        try:
+            return dt.replace(year=year)
+        except ValueError:
+            last_day = monthrange(year, dt.month)[1]
+            return dt.replace(year=year, day=min(dt.day, last_day))
+    
+    try:
+        return dt + timedelta(days=value)
+    except OverflowError:
+        # Если все еще overflow, возвращаем максимальную дату
+        try:
+            return dt.replace(year=year)
+        except ValueError:
+            last_day = monthrange(year, dt.month)[1]
+            return dt.replace(year=year, day=min(dt.day, last_day))
 
 
 def format_device_count(value: Optional[int]) -> int:

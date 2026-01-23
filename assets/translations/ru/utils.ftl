@@ -23,8 +23,7 @@ contact-support-help = Здравствуйте! Мне нужна помощь.
 contact-support-paysupport = Здравствуйте! Я бы хотел запросить возврат средств.
 contact-support-withdraw-points = Здравствуйте! Я бы хотел запросить обмен баллов.
 cmd-start = Перезапустить бота
-cmd-paysupport = Возврат средств
-cmd-help = Помощь
+cmd-support = Помощь
 
 referral-invite-message =
     {space}
@@ -71,12 +70,12 @@ frg-user =
     }
     }
     { $is_balance_enabled ->
-        [1] • <b>Баланс</b>: { $balance } ₽
+        [1] • <b>Баланс</b>: { $balance }
         *[0] {""}
     }
     { $is_balance_separate ->
         [1] { $is_referral_enable ->
-            [1] • <b>Бонусы</b>: { $referral_balance } ₽
+            [1] • <b>Бонусы</b>: { $referral_balance }
             *[0] {""}
         }
         *[0] {""}
@@ -105,7 +104,7 @@ frg-user-details =
         [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
         *[0] {""}
     }
-    • <b>Баланс</b>: { $balance } ₽
+    • <b>Баланс</b>: { $balance }
     </blockquote>
 
 frg-user-discounts-details =
@@ -160,9 +159,9 @@ frg-payment-info =
     • <b>Сумма</b>: { frg-payment-amount }
     </blockquote>
 
-frg-payment-amount = { $final_amount } { $currency } { $discount_percent -> 
+frg-payment-amount = { $final_amount }{ $discount_percent -> 
     [0] { space }
-    *[more] { space } <strike>{ $original_amount } { $currency }</strike> (-{ $discount_percent }%)
+    *[more] { space } <strike>{ $original_amount }</strike> (-{ $discount_percent }%)
     }
 
 frg-plan-snapshot =
