@@ -465,6 +465,17 @@ plan_durations_add = Window(
     Banner(BannerName.DASHBOARD),
     I18nFormat("msg-plan-duration"),
     Row(
+        Button(text=Format("30 дней"), id="duration_30", on_click=lambda c, w, m: on_duration_input(c, m, "30")),
+        Button(text=Format("90 дней"), id="duration_90", on_click=lambda c, w, m: on_duration_input(c, m, "90")),
+    ),
+    Row(
+        Button(text=Format("180 дней"), id="duration_180", on_click=lambda c, w, m: on_duration_input(c, m, "180")),
+        Button(text=Format("365 дней"), id="duration_365", on_click=lambda c, w, m: on_duration_input(c, m, "365")),
+    ),
+    Row(
+        Button(text=Format("♾️ Неограниченно"), id="duration_unlimited", on_click=lambda c, w, m: on_duration_input(c, m, "-1")),
+    ),
+    Row(
         SwitchTo(
             text=I18nFormat("btn-cancel"),
             id="cancel",
@@ -513,6 +524,17 @@ plan_prices = Window(
 plan_price = Window(
     Banner(BannerName.DASHBOARD),
     I18nFormat("msg-plan-price", value=F["duration"], currency=F["currency"]),
+    Row(
+        Button(text=Format("100 ₽"), id="price_100", on_click=lambda c, w, m: on_price_input(c, m, "100")),
+        Button(text=Format("200 ₽"), id="price_200", on_click=lambda c, w, m: on_price_input(c, m, "200")),
+    ),
+    Row(
+        Button(text=Format("400 ₽"), id="price_400", on_click=lambda c, w, m: on_price_input(c, m, "400")),
+        Button(text=Format("800 ₽"), id="price_800", on_click=lambda c, w, m: on_price_input(c, m, "800")),
+    ),
+    Row(
+        Button(text=Format("5000 ₽"), id="price_5000", on_click=lambda c, w, m: on_price_input(c, m, "5000")),
+    ),
     Row(
         SwitchTo(
             text=I18nFormat("btn-cancel"),
