@@ -60,6 +60,7 @@ from .handlers import (
     on_currency_select,
     on_description_delete,
     on_description_accept,
+    on_cancel_description,
     on_description_input,
     on_devices_input,
     on_duration_input,
@@ -256,10 +257,10 @@ plan_description = Window(
         when=F["description"],
     ),
     Row(
-        SwitchTo(
+        Button(
             text=I18nFormat("btn-cancel"),
             id="cancel",
-            state=RemnashopPlans.CONFIGURATOR,
+            on_click=on_cancel_description,
         ),
         Button(
             text=I18nFormat("btn-accept"),
@@ -267,6 +268,14 @@ plan_description = Window(
             on_click=on_description_accept,
         ),
         when=F["has_pending_description"],
+    ),
+    Row(
+        Button(
+            text=I18nFormat("btn-cancel"),
+            id="cancel_no_pending",
+            on_click=on_cancel_description,
+        ),
+        when=~F["has_pending_description"],
     ),
     MessageInput(func=on_description_input),
     IgnoreUpdate(),

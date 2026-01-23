@@ -249,6 +249,20 @@ async def on_description_accept(
     logger.info(f"{log(user)} Successfully removed plan description")
 
 
+async def on_cancel_description(
+    callback: CallbackQuery,
+    widget: SwitchTo,
+    dialog_manager: DialogManager,
+) -> None:
+    """Отменить ввод описания и вернуться в конфигуратор."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    logger.debug(f"{log(user)} Canceling plan description input")
+    
+    # Удаляем pending описание при отмене
+    dialog_manager.dialog_data.pop("pending_plan_description", None)
+    logger.info(f"{log(user)} Cancelled plan description input")
+
+
 @inject
 async def on_tag_input(
     message: Message,
