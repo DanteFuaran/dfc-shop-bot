@@ -2090,6 +2090,12 @@ async def add_device_duration_getter(
     discounted_price_month = int(price_details_month.final_amount)
     has_discount = price_details_full.discount_percent > 0
     
+    # Проверяем, безлимитная ли подписка (год = 2099)
+    is_unlimited_subscription = subscription and subscription.expire_at.year == 2099
+    
+    # Если безлимитная подписка, не показываем вариант "до конца подписки"
+    show_full_option = not is_unlimited_subscription
+    
     # Проверяем, одинаковые ли варианты (если подписка меньше месяца)
     show_both_options = days_full != days_month
     
@@ -2175,6 +2181,8 @@ async def add_device_duration_getter(
         "has_discount": 1 if has_discount else 0,
         # Флаг для отображения обеих кнопок
         "show_both_options": 1 if show_both_options else 0,
+        # Флаг для отображения варианта "до конца подписки"
+        "show_full_option": 1 if show_full_option else 0,
         # Месячная цена для информации
         "device_price_monthly": device_price_monthly,
     }
