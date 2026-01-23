@@ -444,7 +444,7 @@ show_simple_menu() {
                         ;;
                     1)  # Выход
                         clear
-                        exit 0
+                        exit 2
                         ;;
                 esac
             fi
