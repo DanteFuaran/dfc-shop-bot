@@ -295,28 +295,6 @@ async def on_gateways_accept(
 
 
 @inject
-async def on_placement_cancel(
-    callback: CallbackQuery,
-    widget: Button,
-    dialog_manager: DialogManager,
-    payment_gateway_service: FromDishka[PaymentGatewayService],
-) -> None:
-    """Отменить изменения порядка шлюзов"""
-    user: UserDto = dialog_manager.middleware_data[USER_KEY]
-    
-    if "pending_placement" in dialog_manager.dialog_data:
-        # Восстанавливаем исходный порядок
-        for gateway_id, original_order in dialog_manager.dialog_data["pending_placement"].items():
-            gateway = await payment_gateway_service.get(gateway_id)
-            if gateway:
-                gateway.order_index = original_order
-                await payment_gateway_service.update(gateway)
-        
-        dialog_manager.dialog_data.pop("pending_placement", None)
-        logger.info(f"{log(user)} Cancelled placement changes")
-
-
-@inject
 async def on_placement_accept(
     callback: CallbackQuery,
     widget: Button,
@@ -346,6 +324,9 @@ async def on_currency_cancel(
         await settings_service.set_default_currency(original_currency)
         dialog_manager.dialog_data.pop("pending_currency", None)
         logger.info(f"{log(user)} Cancelled currency change")
+    
+    # Навигируем обратно в главное меню gateways
+    await dialog_manager.switch_to(RemnashopGateways.MAIN)
 
 
 @inject
@@ -387,6 +368,9 @@ async def on_placement_cancel(
         
         dialog_manager.dialog_data.pop("pending_placement", None)
         logger.info(f"{log(user)} Cancelled placement changes")
+    
+    # Навигируем обратно в главное меню gateways
+    await dialog_manager.switch_to(RemnashopGateways.MAIN)
 
 
 @inject
