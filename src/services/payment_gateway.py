@@ -591,7 +591,7 @@ class PaymentGatewayService(BaseService):
                 else 0
             )
             device_limit_number = (
-                plan_device_limit 
+                (plan_device_limit + subscription.extra_devices)
                 if plan_device_limit > 0 
                 else subscription.device_limit
             )
