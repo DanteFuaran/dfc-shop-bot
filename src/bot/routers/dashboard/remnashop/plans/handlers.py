@@ -219,6 +219,9 @@ async def on_description_delete(
     plan.description = None
     adapter.save(plan)
     logger.info(f"{log(user)} Successfully deleted plan description")
+    
+    # Возвращаемся в конфигуратор
+    await dialog_manager.switch_to(state=RemnashopPlans.CONFIGURATOR)
 
 
 async def on_description_accept(
