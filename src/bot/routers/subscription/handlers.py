@@ -1408,6 +1408,14 @@ async def on_add_device_duration_select(
         duration_type = "full"
     elif widget.widget_id == "duration_full_month":
         duration_type = "full_month"
+    elif widget.widget_id == "duration_months_1":
+        duration_type = "months_1"
+    elif widget.widget_id == "duration_months_3":
+        duration_type = "months_3"
+    elif widget.widget_id == "duration_months_6":
+        duration_type = "months_6"
+    elif widget.widget_id == "duration_months_12":
+        duration_type = "months_12"
     else:
         duration_type = "month"
     
@@ -1425,6 +1433,18 @@ async def on_add_device_duration_select(
         elif duration_type == "full_month":
             price_per_device = device_price_monthly
             duration_days = 30
+        elif duration_type == "months_1":
+            price_per_device = device_price_monthly
+            duration_days = 30
+        elif duration_type == "months_3":
+            price_per_device = device_price_monthly * 3
+            duration_days = 90
+        elif duration_type == "months_6":
+            price_per_device = device_price_monthly * 6
+            duration_days = 180
+        elif duration_type == "months_12":
+            price_per_device = device_price_monthly * 12
+            duration_days = 365
         else:
             price_per_device, duration_days = calculate_device_price_until_subscription_end(
                 monthly_price=device_price_monthly,

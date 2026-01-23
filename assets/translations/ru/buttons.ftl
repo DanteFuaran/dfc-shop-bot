@@ -1513,6 +1513,10 @@ btn-subscription-duration = { $final_amount ->
 btn-add-device-duration-full = До конца подписки ({ $days } д.) | { $price } ₽
 btn-add-device-duration-full-month = Полный месяц (30 д.) | { $price } ₽
 btn-add-device-duration-month = До конца цикла ({ $days } д.) | { $price } ₽
+btn-add-device-duration-months-1 = 1 месяц (30 д.) | { $price } ₽
+btn-add-device-duration-months-3 = 3 месяца (90 д.) | { $price } ₽
+btn-add-device-duration-months-6 = 6 месяцев (180 д.) | { $price } ₽
+btn-add-device-duration-months-12 = 12 месяцев (365 д.) | { $price } ₽
 
 
 # Promocodes

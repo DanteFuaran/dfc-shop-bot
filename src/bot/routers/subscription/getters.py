@@ -2076,6 +2076,23 @@ async def add_device_duration_getter(
     total_price_full_month = price_full_month * device_count
     total_price_month = price_month * device_count
     
+    # Вычисляем цены для месячных вариантов (для безлимитных подписок)
+    # 1 месяц = 30 дней
+    price_months_1 = device_price_monthly
+    total_price_months_1 = price_months_1 * device_count
+    
+    # 3 месяца = 90 дней
+    price_months_3 = device_price_monthly * 3
+    total_price_months_3 = price_months_3 * device_count
+    
+    # 6 месяцев = 180 дней
+    price_months_6 = device_price_monthly * 6
+    total_price_months_6 = price_months_6 * device_count
+    
+    # 12 месяцев = 365 дней
+    price_months_12 = device_price_monthly * 12
+    total_price_months_12 = price_months_12 * device_count
+    
     # Применяем скидки через PricingService
     price_details_full = pricing_service.calculate(
         user=user,
@@ -2101,9 +2118,45 @@ async def add_device_duration_getter(
         context="extra_devices",
     )
     
+    price_details_months_1 = pricing_service.calculate(
+        user=user,
+        price=Decimal(total_price_months_1),
+        currency=Currency.RUB,
+        global_discount=global_discount,
+        context="extra_devices",
+    )
+    
+    price_details_months_3 = pricing_service.calculate(
+        user=user,
+        price=Decimal(total_price_months_3),
+        currency=Currency.RUB,
+        global_discount=global_discount,
+        context="extra_devices",
+    )
+    
+    price_details_months_6 = pricing_service.calculate(
+        user=user,
+        price=Decimal(total_price_months_6),
+        currency=Currency.RUB,
+        global_discount=global_discount,
+        context="extra_devices",
+    )
+    
+    price_details_months_12 = pricing_service.calculate(
+        user=user,
+        price=Decimal(total_price_months_12),
+        currency=Currency.RUB,
+        global_discount=global_discount,
+        context="extra_devices",
+    )
+    
     discounted_price_full = int(price_details_full.final_amount)
     discounted_price_full_month = int(price_details_full_month.final_amount)
     discounted_price_month = int(price_details_month.final_amount)
+    discounted_price_months_1 = int(price_details_months_1.final_amount)
+    discounted_price_months_3 = int(price_details_months_3.final_amount)
+    discounted_price_months_6 = int(price_details_months_6.final_amount)
+    discounted_price_months_12 = int(price_details_months_12.final_amount)
     has_discount = price_details_full.discount_percent > 0
     
     # Проверяем, безлимитная ли подписка (год = 2099)
@@ -2112,8 +2165,11 @@ async def add_device_duration_getter(
     # Если безлимитная подписка, не показываем вариант "до конца подписки"
     show_full_option = not is_unlimited_subscription
     
-    # Проверяем, одинаковые ли варианты (если подписка меньше месяца)
-    show_both_options = days_full != days_month
+    # Показываем обычные варианты (месяц и до конца цикла) только для обычных подписок
+    show_regular_options = not is_unlimited_subscription
+    
+    # Показываем месячные варианты (1, 3, 6, 12 месяцев) только для безлимитных подписок
+    show_unlimited_options = is_unlimited_subscription
     
     # Вычисляем информацию о скидке для отображения
     from datetime import datetime, timezone
@@ -2197,12 +2253,21 @@ async def add_device_duration_getter(
         "price_month": discounted_price_month,
         "price_month_original": total_price_month,
         "days_month": days_month,
+        # Варианты месячных подписок (для безлимитных)
+        "price_months_1": discounted_price_months_1,
+        "price_months_1_original": total_price_months_1,
+        "price_months_3": discounted_price_months_3,
+        "price_months_3_original": total_price_months_3,
+        "price_months_6": discounted_price_months_6,
+        "price_months_6_original": total_price_months_6,
+        "price_months_12": discounted_price_months_12,
+        "price_months_12_original": total_price_months_12,
         # Общие данные о скидке
         "has_discount": 1 if has_discount else 0,
-        # Флаг для отображения обеих кнопок
-        "show_both_options": 1 if show_both_options else 0,
-        # Флаг для отображения варианта "до конца подписки"
+        # Флаги для отображения вариантов
         "show_full_option": 1 if show_full_option else 0,
+        "show_regular_options": 1 if show_regular_options else 0,
+        "show_unlimited_options": 1 if show_unlimited_options else 0,
         # Месячная цена для информации
         "device_price_monthly": device_price_monthly,
     }
@@ -2223,7 +2288,7 @@ async def add_device_payment_getter(
     
     # Получаем количество устройств и тип покупки из dialog_data
     device_count = dialog_manager.dialog_data.get("device_count", 1)
-    duration_type = dialog_manager.dialog_data.get("duration_type", "full")  # "full", "full_month" или "month"
+    duration_type = dialog_manager.dialog_data.get("duration_type", "full")  # "full", "full_month", "month", "months_1", "months_3", "months_6", "months_12"
     
     # Получаем уже рассчитанную цену из dialog_data (установлена на шаге выбора типа)
     # Если не установлена - рассчитываем заново
@@ -2249,6 +2314,18 @@ async def add_device_payment_getter(
             elif duration_type == "full_month":
                 price_per_device = device_price_monthly
                 duration_days = 30
+            elif duration_type == "months_1":
+                price_per_device = device_price_monthly
+                duration_days = 30
+            elif duration_type == "months_3":
+                price_per_device = device_price_monthly * 3
+                duration_days = 90
+            elif duration_type == "months_6":
+                price_per_device = device_price_monthly * 6
+                duration_days = 180
+            elif duration_type == "months_12":
+                price_per_device = device_price_monthly * 12
+                duration_days = 365
             else:
                 price_per_device, duration_days = calculate_device_price_until_subscription_end(
                     monthly_price=device_price_monthly,
@@ -2470,6 +2547,18 @@ async def add_device_confirm_getter(
             elif duration_type == "full_month":
                 price_per_device = device_price_monthly
                 duration_days = 30
+            elif duration_type == "months_1":
+                price_per_device = device_price_monthly
+                duration_days = 30
+            elif duration_type == "months_3":
+                price_per_device = device_price_monthly * 3
+                duration_days = 90
+            elif duration_type == "months_6":
+                price_per_device = device_price_monthly * 6
+                duration_days = 180
+            elif duration_type == "months_12":
+                price_per_device = device_price_monthly * 12
+                duration_days = 365
             else:
                 price_per_device, duration_days = calculate_device_price_until_subscription_end(
                     monthly_price=device_price_monthly,
