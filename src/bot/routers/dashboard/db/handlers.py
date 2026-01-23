@@ -1484,7 +1484,13 @@ async def on_clear_all(
             (SELECT COUNT(*) FROM referral_rewards) as rewards,
             (SELECT COUNT(*) FROM plans) as plans,
             (SELECT COUNT(*) FROM plan_durations) as plan_durations,
-            (SELECT COUNT(*) FROM plan_prices) as plan_prices;
+            (SELECT COUNT(*) FROM plan_prices) as plan_prices,
+            (SELECT COUNT(*) FROM balance_transfers) as balance_transfers,
+            (SELECT COUNT(*) FROM broadcast_messages) as broadcast_messages,
+            (SELECT COUNT(*) FROM broadcasts) as broadcasts,
+            (SELECT COUNT(*) FROM extra_device_purchases) as extra_device_purchases,
+            (SELECT COUNT(*) FROM payment_gateways) as payment_gateways,
+            (SELECT COUNT(*) FROM settings) as settings;
         """
         
         # Получаем количество записей до удаления
@@ -1508,6 +1514,12 @@ async def on_clear_all(
                 'plans': int(values[7].strip()),
                 'plan_durations': int(values[8].strip()),
                 'plan_prices': int(values[9].strip()),
+                'balance_transfers': int(values[10].strip()),
+                'broadcast_messages': int(values[11].strip()),
+                'broadcasts': int(values[12].strip()),
+                'extra_device_purchases': int(values[13].strip()),
+                'payment_gateways': int(values[14].strip()),
+                'settings': int(values[15].strip()),
             }
         
         # SQL запрос для удаления всех данных
@@ -1516,6 +1528,11 @@ async def on_clear_all(
         BEGIN;
         DELETE FROM plan_prices;
         DELETE FROM plan_durations;
+        DELETE FROM balance_transfers;
+        DELETE FROM broadcast_messages;
+        DELETE FROM broadcasts;
+        DELETE FROM extra_device_purchases;
+        DELETE FROM payment_gateways;
         DELETE FROM referral_rewards;
         DELETE FROM referrals;
         DELETE FROM promocode_activations;
@@ -1524,6 +1541,7 @@ async def on_clear_all(
         DELETE FROM users;
         DELETE FROM promocodes;
         DELETE FROM plans;
+        DELETE FROM settings;
         COMMIT;
         """
         
