@@ -1481,7 +1481,10 @@ async def on_clear_all(
             (SELECT COUNT(*) FROM promocodes) as promocodes,
             (SELECT COUNT(*) FROM promocode_activations) as activations,
             (SELECT COUNT(*) FROM referrals) as referrals,
-            (SELECT COUNT(*) FROM referral_rewards) as rewards;
+            (SELECT COUNT(*) FROM referral_rewards) as rewards,
+            (SELECT COUNT(*) FROM plans) as plans,
+            (SELECT COUNT(*) FROM plan_durations) as plan_durations,
+            (SELECT COUNT(*) FROM plan_prices) as plan_prices;
         """
         
         # Получаем количество записей до удаления
@@ -1502,11 +1505,17 @@ async def on_clear_all(
                 'activations': int(values[4].strip()),
                 'referrals': int(values[5].strip()),
                 'rewards': int(values[6].strip()),
+                'plans': int(values[7].strip()),
+                'plan_durations': int(values[8].strip()),
+                'plan_prices': int(values[9].strip()),
             }
         
         # SQL запрос для удаления всех данных
+        # Порядок удаления важен из-за внешних ключей!
         delete_query = """
         BEGIN;
+        DELETE FROM plan_prices;
+        DELETE FROM plan_durations;
         DELETE FROM referral_rewards;
         DELETE FROM referrals;
         DELETE FROM promocode_activations;
@@ -1514,147 +1523,7 @@ async def on_clear_all(
         DELETE FROM subscriptions;
         DELETE FROM users;
         DELETE FROM promocodes;
-        COMMIT;
-        """
-        
-        # Выполняем очистку
-        delete_cmd = [
-            'psql', '-h', db_host, '-p', db_port, '-U', db_user, '-d', db_name,
-            '-c', delete_query
-        ]
-        result = subprocess.run(delete_cmd, capture_output=True, text=True, env=env)
-        
-        if result.returncode != 0:
-            return False, result.stderr, counts
-        
-        return True, None, counts
-    
-    try:
-        success, error, counts = await loop.run_in_executor(None, clear_all_db)
-        
-        if success:
-            # Очищаем кэш Redis
-            await redis_client.flushall()
-            logger.info(f"{log(user)} Database cleared successfully")
-            
-            # Отправляем уведомление об успехе с статистикой и кнопкой закрытия
-            await notification_service.notify_user(
-                user=user,
-                payload=MessagePayload.not_deleted(
-                    i18n_key="ntf-db-clear-all-success",
-                    i18n_kwargs=counts,
-                    add_close_button=True,
-                ),
-            )
-        else:
-            logger.error(f"{log(user)} Failed to clear database: {error}")
-            await notification_service.notify_user(
-                user=user,
-                payload=MessagePayload(
-                    i18n_key="ntf-db-clear-all-failed",
-                    i18n_kwargs={"error": error},
-                ),
-            )
-    except Exception as e:
-        logger.exception(f"{log(user)} Error clearing database: {e}")
-        await notification_service.notify_user(
-            user=user,
-            payload=MessagePayload(
-                i18n_key="ntf-db-clear-all-failed",
-                i18n_kwargs={"error": str(e)},
-            ),
-        )
-
-
-@inject
-async def on_clear_users(
-    callback: CallbackQuery,
-    button,
-    manager: DialogManager,
-    notification_service: FromDishka[NotificationService],
-    redis_client: FromDishka[Redis],
-):
-    """Обработчик нажатия на кнопку 'Очистить пользователей'."""
-    user = manager.middleware_data.get(USER_KEY)
-    
-    # Проверяем флаг в dialog_data
-    warning_shown = manager.dialog_data.get("clear_users_warning_shown", False)
-    
-    # Если первое нажатие - показываем предупреждение
-    if not warning_shown:
-        await notification_service.notify_user(
-            user=user,
-            payload=MessagePayload(
-                i18n_key="ntf-db-clear-users-warning",
-            ),
-        )
-        manager.dialog_data["clear_users_warning_shown"] = True
-        return
-    
-    # Если второе нажатие - выполняем удаление
-    manager.dialog_data["clear_users_warning_shown"] = False
-    await notification_service.notify_user(
-        user=user,
-        payload=MessagePayload(i18n_key="ntf-db-clear-users-start"),
-    )
-    
-    loop = asyncio.get_event_loop()
-    
-    def clear_all_db():
-        """Полная очистка базы данных."""
-        import os as os_module
-        
-        db_password = os_module.getenv('DATABASE_PASSWORD', 'remnashop')
-        db_user = os_module.getenv('DATABASE_USER', 'remnashop')
-        db_name = os_module.getenv('DATABASE_NAME', 'remnashop')
-        db_host = os_module.getenv('DATABASE_HOST', 'remnashop-db')
-        db_port = os_module.getenv('DATABASE_PORT', '5432')
-        
-        env = os_module.environ.copy()
-        env['PGPASSWORD'] = db_password
-        
-        # SQL запрос для подсчета записей перед удалением
-        count_query = """
-        SELECT 
-            (SELECT COUNT(*) FROM users) as users,
-            (SELECT COUNT(*) FROM subscriptions) as subscriptions,
-            (SELECT COUNT(*) FROM transactions) as transactions,
-            (SELECT COUNT(*) FROM promocodes) as promocodes,
-            (SELECT COUNT(*) FROM promocode_activations) as activations,
-            (SELECT COUNT(*) FROM referrals) as referrals,
-            (SELECT COUNT(*) FROM referral_rewards) as rewards;
-        """
-        
-        # Получаем количество записей до удаления
-        count_cmd = [
-            'psql', '-h', db_host, '-p', db_port, '-U', db_user, '-d', db_name,
-            '-t', '-c', count_query
-        ]
-        result = subprocess.run(count_cmd, capture_output=True, text=True, env=env)
-        
-        counts = {}
-        if result.returncode == 0:
-            values = result.stdout.strip().split('|')
-            counts = {
-                'users': int(values[0].strip()),
-                'subscriptions': int(values[1].strip()),
-                'transactions': int(values[2].strip()),
-                'promocodes': int(values[3].strip()),
-                'activations': int(values[4].strip()),
-                'referrals': int(values[5].strip()),
-                'rewards': int(values[6].strip()),
-            }
-        
-        # SQL запрос для удаления всех данных
-        delete_query = """
-        BEGIN;
-        DELETE FROM referral_rewards;
-        DELETE FROM referrals;
-        DELETE FROM promocode_activations;
-        DELETE FROM transactions;
-        DELETE FROM subscriptions;
-        DELETE FROM users;
-        DELETE FROM promocodes;
+        DELETE FROM plans;
         COMMIT;
         """
         
