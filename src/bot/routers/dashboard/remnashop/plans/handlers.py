@@ -204,15 +204,15 @@ async def on_description_delete(
     widget: Button,
     dialog_manager: DialogManager,
 ) -> None:
-    """Удалить описание - установить pending_plan_description в пустое значение, будет применено при Accept."""
+    """Удалить описание - установить pending_plan_description в NODESC, будет применено при Accept."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     logger.debug(f"{log(user)} Attempting to delete plan description")
     
-    # Устанавливаем pending_plan_description в пустую строку для явного удаления
-    dialog_manager.dialog_data["pending_plan_description"] = ""
+    # Устанавливаем pending_plan_description в NODESC для явного удаления
+    dialog_manager.dialog_data["pending_plan_description"] = "NODESC"
     # Возвращаемся на экран настроек описания, чтобы показать изменения
     await dialog_manager.switch_to(RemnashopPlans.DESCRIPTION)
-    logger.info(f"{log(user)} Set pending_plan_description to empty string")
+    logger.info(f"{log(user)} Set pending_plan_description to NODESC")
 
 
 async def on_description_accept(
@@ -1191,8 +1191,8 @@ async def on_confirm_plan(  # noqa: C901
     
     if "pending_plan_description" in dialog_manager.dialog_data:
         pending_desc = dialog_manager.dialog_data.pop("pending_plan_description")
-        # Пустая строка = удаление описания
-        plan_dto.description = None if pending_desc == "" else pending_desc
+        # NODESC = удаление описания
+        plan_dto.description = None if pending_desc == "NODESC" else pending_desc
     
     if "pending_plan_type" in dialog_manager.dialog_data:
         plan_dto.type = dialog_manager.dialog_data.pop("pending_plan_type")
