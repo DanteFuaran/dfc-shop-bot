@@ -148,11 +148,12 @@ async def description_getter(dialog_manager: DialogManager, **kwargs: Any) -> di
     # Используем pending_plan_description если было введено, иначе текущее описание
     if "pending_plan_description" in dialog_manager.dialog_data:
         description = dialog_manager.dialog_data["pending_plan_description"]
-        # Пустая строка = удаление
-        if description == "":
-            description = False
     else:
-        description = plan.description or False
+        description = plan.description
+    
+    # Если пусто или None - показываем NODESC
+    if not description:
+        description = "NODESC"
     
     return {"description": description}
 

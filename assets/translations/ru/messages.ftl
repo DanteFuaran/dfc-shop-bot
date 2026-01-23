@@ -1544,13 +1544,9 @@ msg-plan-name =
 msg-plan-description =
     <b>💬 Изменить описание</b>
 
-    { $description ->
-    [0] { space }
-    *[HAS]
     <blockquote>
-    { $description }
+    Описание: { $description }
     </blockquote>
-    }
 
     Введите новое описание плана.
 
