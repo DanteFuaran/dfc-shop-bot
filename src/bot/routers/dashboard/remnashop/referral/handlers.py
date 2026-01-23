@@ -587,7 +587,7 @@ async def on_invite_message_reset(
     """Сброс сообщения приглашения на значение по умолчанию."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
-    default_message = "{space}✨ TEST Online - Ваш приватный интернет!\n\n↘️ Подключиться: {url}"
+    default_message = "{space}✨ TEST Online - Ваш приватный интернет!\n\n↘️ Подключиться:\n{url}"
     
     settings = await settings_service.get()
     settings.referral.invite_message = default_message
