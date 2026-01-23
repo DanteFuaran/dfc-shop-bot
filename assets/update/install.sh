@@ -3,6 +3,7 @@ set -e
 
 # Переменные для отслеживания состояния установки
 INSTALL_STARTED=false
+INSTALL_COMPLETED=false
 SOURCE_DIR=""
 CLEANUP_DIRS=()
 TEMP_REPO=""
@@ -243,44 +244,40 @@ check_updates_available() {
         # Получаем локальную версию из PROJECT_DIR (production)
         LOCAL_VERSION=$(get_local_version)
         
-        # Создаём временную папку для проверки версии
-        TEMP_CHECK_DIR=$(mktemp -d)
+        # Сначала пробуем GitHub API (самый надежный способ, избегает кэширования)
+        REMOTE_VERSION=""
         
-        # Клонируем только последний коммит нужной ветки (быстро, ~500kb)
-        if git clone -b "$REPO_BRANCH" --depth 1 --single-branch "$REPO_URL" "$TEMP_CHECK_DIR" >/dev/null 2>&1; then
-            # Получаем удаленную версию из клонированного репозитория
-            REMOTE_VERSION=$(grep -oP '__version__ = "\K[^"]+' "$TEMP_CHECK_DIR/src/__version__.py" 2>/dev/null || echo "")
+        # Извлекаем owner и repo из URL
+        REPO_OWNER=$(echo "$REPO_URL" | sed 's|.*github.com/||; s|/.*||')
+        REPO_NAME=$(echo "$REPO_URL" | sed 's|.*github.com/.*\/||; s|\.git$||')
+        
+        # Используем GitHub API для получения содержимого файла (без кэширования или с кэшем по ETag)
+        API_URL="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/src/__version__.py?ref=${REPO_BRANCH}"
+        API_RESPONSE=$(curl -s -H "Accept: application/vnd.github.v3.raw" "$API_URL" 2>/dev/null)
+        
+        if [ -n "$API_RESPONSE" ]; then
+            REMOTE_VERSION=$(echo "$API_RESPONSE" | grep -oP '__version__ = "\K[^"]+' || echo "")
+        fi
+        
+        # Если GitHub API не сработал, пробуем git clone
+        if [ -z "$REMOTE_VERSION" ]; then
+            TEMP_CHECK_DIR=$(mktemp -d)
             
-            # Удаляем временную папку
-            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
-            
-            # Сравниваем версии
-            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
-                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
-                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
-                else
-                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
-                fi
+            if git clone -b "$REPO_BRANCH" --depth 1 --single-branch "$REPO_URL" "$TEMP_CHECK_DIR" >/dev/null 2>&1; then
+                REMOTE_VERSION=$(grep -oP '__version__ = "\K[^"]+' "$TEMP_CHECK_DIR/src/__version__.py" 2>/dev/null || echo "")
+                rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
+            fi
+        fi
+        
+        # Сравниваем версии
+        if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+            if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+                echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
             else
-                echo "0|unknown" > "$UPDATE_STATUS_FILE"
+                echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
             fi
         else
-            # Если не удалось клонировать, пробуем старый способ через raw URL
-            rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
-            
-            GITHUB_RAW_URL=$(echo "$REPO_URL" | sed 's|github.com|raw.githubusercontent.com|; s|\.git$||')
-            REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/src/__version__.py"
-            REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
-            
-            if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
-                if [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
-                    echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
-                else
-                    echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
-                fi
-            else
-                echo "0|unknown" > "$UPDATE_STATUS_FILE"
-            fi
+            echo "0|unknown" > "$UPDATE_STATUS_FILE"
         fi
     } &
     CHECK_UPDATE_PID=$!
@@ -1463,41 +1460,34 @@ cleanup_on_error() {
     tput cnorm >/dev/null 2>&1 || true
     tput sgr0 >/dev/null 2>&1 || true
     
-    if [ $exit_code -ne 0 ] || [ "$INSTALL_STARTED" = true ]; then
-        echo
+    # Если установка не завершена успешно, выполняем очистку
+    if [ "$INSTALL_COMPLETED" != "true" ]; then
+        # Очищаем экран
+        clear
+        
         echo -e "${RED}════════════════════════════════════════${NC}"
-        echo -e "${RED}  ⚠️ УСТАНОВКА ПРЕРВАНА ИЛИ ОШИБКА${NC}"
+        echo -e "${RED}  ⚠️  ОШИБКА УСТАНОВКИ ПРИЛОЖЕНИЯ${NC}"
         echo -e "${RED}════════════════════════════════════════${NC}"
         echo
-        echo -e "${WHITE}🧹 Выполняю очистку...${NC}"
         
         # Удаляем исходную папку с клоном репозитория
         if [ -n "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/opt/dfc-shop-bot" ] && [ "$SOURCE_DIR" != "/" ] && [ -d "$SOURCE_DIR" ]; then
             rm -rf "$SOURCE_DIR" 2>/dev/null || true
-            echo -e "${GREEN}✓ Удален клон репозитория${NC}"
         fi
         
-        # Удаляем целевую папку если установка не завершена
-        if [ "$INSTALL_STARTED" = true ] && [ -d "$PROJECT_DIR" ]; then
-            # Сохраняем .env если он существует и был заполнен
-            ENV_BACKUP=""
-            if [ -f "$ENV_FILE" ]; then
-                ENV_BACKUP=$(cat "$ENV_FILE" 2>/dev/null || true)
-            fi
-            
-            # Останавливаем контейнеры если они запущены
-            if command -v docker &> /dev/null; then
-                cd "$PROJECT_DIR" 2>/dev/null && docker compose down 2>/dev/null || true
-            fi
-            
-            # Удаляем проектную папку
+        # Останавливаем контейнеры если они запущены
+        if command -v docker &> /dev/null && [ -d "$PROJECT_DIR" ]; then
+            cd "$PROJECT_DIR" 2>/dev/null && docker compose down >/dev/null 2>&1 || true
+        fi
+        
+        # ВСЕГДА удаляем папку /opt/dfc-shop-bot при ошибке или прерывании
+        if [ -d "$PROJECT_DIR" ]; then
             rm -rf "$PROJECT_DIR" 2>/dev/null || true
-            echo -e "${GREEN}✓ Удалена папка проекта${NC}"
         fi
         
-        echo -e "${GREEN}✅ Очистка завершена${NC}"
+        echo -e "${GREEN}✅ Очистка временных файлов приложения${NC}"
         echo
-        echo -e "${YELLOW}ℹ Попробуйте запустить установку снова${NC}"
+        echo -e "${WHITE}Попробуйте запустить установку снова${NC}"
         echo
     fi
     
@@ -1512,16 +1502,13 @@ cleanup_on_error() {
 
 # Установка trap для обработки ошибок, прерываний и выхода
 trap cleanup_on_error EXIT
-trap 'INSTALL_STARTED=false; exit 130' INT TERM
+trap 'exit 130' INT TERM
 
 # Автоматически даем права на выполнение самому себе
 chmod +x "$0" 2>/dev/null || true
 
-# Показать курсор
+# Скрыть курсор
 tput civis >/dev/null 2>&1 || true
-
-# Показать курсор при выходе
-trap 'tput cnorm >/dev/null 2>&1 || true; tput sgr0 >/dev/null 2>&1 || true' EXIT
 
 # Режим установки: dev или prod
 INSTALL_MODE="dev"
@@ -1757,12 +1744,12 @@ if [ "$COPY_FILES" = true ]; then
       chmod +x "$PROJECT_DIR/assets/update/install.sh"
       
       # Сохраняем версию в .version файл
-      local version=$(grep -oP '__version__ = "\K[^"]+' "$SOURCE_DIR/src/__version__.py" 2>/dev/null || echo "")
+      version=$(grep -oP '__version__ = "\K[^"]+' "$SOURCE_DIR/src/__version__.py" 2>/dev/null || echo "")
       if [ -n "$version" ]; then
           echo "$version" > "$PROJECT_DIR/assets/update/.version"
       fi
-    ) &
-    show_spinner "Копирование конфигурации"
+    )
+    wait  # Ждем завершения копирования без спиннера
 fi
 
 # 5. Создание .env файла
@@ -2023,6 +2010,7 @@ fi
 
 # Отмечаем успешное завершение установки
 INSTALL_STARTED=false
+INSTALL_COMPLETED=true
 
 # Создание глобальной команды dfc-shop-bot
 (
