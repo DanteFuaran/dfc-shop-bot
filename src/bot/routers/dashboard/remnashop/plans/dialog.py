@@ -465,17 +465,6 @@ plan_durations_add = Window(
     Banner(BannerName.DASHBOARD),
     I18nFormat("msg-plan-duration"),
     Row(
-        Button(text=Format("30 дней"), id="duration_30", on_click=lambda c, w, m: on_duration_input(c, m, "30")),
-        Button(text=Format("90 дней"), id="duration_90", on_click=lambda c, w, m: on_duration_input(c, m, "90")),
-    ),
-    Row(
-        Button(text=Format("180 дней"), id="duration_180", on_click=lambda c, w, m: on_duration_input(c, m, "180")),
-        Button(text=Format("365 дней"), id="duration_365", on_click=lambda c, w, m: on_duration_input(c, m, "365")),
-    ),
-    Row(
-        Button(text=Format("♾️ Неограниченно"), id="duration_unlimited", on_click=lambda c, w, m: on_duration_input(c, m, "-1")),
-    ),
-    Row(
         SwitchTo(
             text=I18nFormat("btn-cancel"),
             id="cancel",

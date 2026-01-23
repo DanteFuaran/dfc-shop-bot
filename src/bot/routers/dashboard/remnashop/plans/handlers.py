@@ -35,7 +35,7 @@ async def on_plan_create(
     widget: Button,
     dialog_manager: DialogManager,
 ) -> None:
-    """Переход к созданию нового плана с очисткой всех данных."""
+    """Переход к созданию нового плана с предустановленными длительностями."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     logger.info(f"{log(user)} Started creating new plan")
     
@@ -50,6 +50,36 @@ async def on_plan_create(
     # Очищаем сохранённый план (ключ от DialogDataAdapter)
     dialog_manager.dialog_data.pop("plandto", None)
     
+    # Создаем новый план с предустановленными длительностями
+    from src.core.enums import Currency
+    
+    preset_durations = [
+        (30, 100),    # 30 дней - 100 ₽
+        (90, 200),    # 90 дней - 200 ₽
+        (180, 400),   # 180 дней - 400 ₽
+        (365, 800),   # 365 дней - 800 ₽
+        (-1, 5000),   # Неограниченно - 5000 ₽
+    ]
+    
+    new_plan = PlanDto()
+    new_plan.durations = [
+        PlanDurationDto(
+            days=days,
+            prices=[
+                PlanPriceDto(
+                    currency=currency,
+                    price=price if currency == Currency.RUB else 0,
+                )
+                for currency in Currency
+            ],
+        )
+        for days, price in preset_durations
+    ]
+    
+    adapter = DialogDataAdapter(dialog_manager)
+    adapter.save(new_plan)
+    
+    logger.info(f"{log(user)} Created new plan with preset durations")
     await dialog_manager.switch_to(state=RemnashopPlans.CONFIGURATOR)
 
 
