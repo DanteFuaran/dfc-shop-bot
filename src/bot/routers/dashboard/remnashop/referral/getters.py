@@ -80,7 +80,7 @@ async def referral_getter(
             if reward_type == ReferralRewardType.MONEY:
                 return f"{value} ₽"
             else:  # EXTRA_DAYS
-                return f"{value} дн."
+                return f"{value} дн. за каждые 100 Р"
     
     # Форматируем отображение награды в зависимости от количества уровней
     if level.value == 1:
