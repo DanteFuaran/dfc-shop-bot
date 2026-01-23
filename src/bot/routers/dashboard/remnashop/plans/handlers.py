@@ -239,7 +239,7 @@ async def on_description_accept(
 
 async def on_cancel_description(
     callback: CallbackQuery,
-    widget: SwitchTo,
+    widget: Button,
     dialog_manager: DialogManager,
 ) -> None:
     """Отменить ввод описания и вернуться в конфигуратор."""
