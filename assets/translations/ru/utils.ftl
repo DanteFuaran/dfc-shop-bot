@@ -23,8 +23,7 @@ contact-support-help = Здравствуйте! Мне нужна помощь.
 contact-support-paysupport = Здравствуйте! Я бы хотел запросить возврат средств.
 contact-support-withdraw-points = Здравствуйте! Я бы хотел запросить обмен баллов.
 cmd-start = Перезапустить бота
-cmd-paysupport = Возврат средств
-cmd-help = Помощь
+cmd-support = Помощь
 
 referral-invite-message =
     {space}
