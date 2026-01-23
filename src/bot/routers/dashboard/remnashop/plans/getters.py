@@ -150,7 +150,10 @@ async def description_getter(dialog_manager: DialogManager, **kwargs: Any) -> di
     if description is None:
         description = plan.description or False
     
-    return {"description": description}
+    # Проверяем, есть ли pending описание для отображения кнопки Принять
+    has_pending_description = "pending_plan_description" in dialog_manager.dialog_data
+    
+    return {"description": description, "has_pending_description": has_pending_description}
 
 
 async def tag_getter(dialog_manager: DialogManager, **kwargs: Any) -> dict[str, Any]:

@@ -205,6 +205,11 @@ async def on_description_delete(
     dialog_manager: DialogManager,
 ) -> None:
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    logger.debug(f"{log(user)} Attempting to delete plan description")
+    
+    # Удаляем pending описание если оно было
+    dialog_manager.dialog_data.pop("pending_plan_description", None)
+    
     adapter = DialogDataAdapter(dialog_manager)
     plan = adapter.load(PlanDto)
 
@@ -213,6 +218,31 @@ async def on_description_delete(
 
     plan.description = None
     adapter.save(plan)
+    logger.info(f"{log(user)} Successfully deleted plan description")
+
+
+async def on_description_accept(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Принять новое описание и вернуться в конфигуратор."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    logger.debug(f"{log(user)} Accepting plan description")
+    
+    adapter = DialogDataAdapter(dialog_manager)
+    plan = adapter.load(PlanDto)
+
+    if not plan:
+        raise ValueError("PlanDto not found in dialog data")
+
+    # Если есть pending описание, применяем его
+    if "pending_plan_description" in dialog_manager.dialog_data:
+        plan.description = dialog_manager.dialog_data.pop("pending_plan_description")
+        adapter.save(plan)
+        logger.info(f"{log(user)} Successfully updated plan description")
+    
+    await dialog_manager.switch_to(state=RemnashopPlans.CONFIGURATOR)
     logger.info(f"{log(user)} Successfully removed plan description")
 
 
