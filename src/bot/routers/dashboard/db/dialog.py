@@ -138,7 +138,7 @@ db_sync_window = Window(
         SwitchTo(
             text=I18nFormat("btn-back"),
             id="back",
-            state=DashboardDB.MAIN,
+            state=DashboardDB.IMPORTS,
         ),
         *main_menu_button,
     ),
@@ -154,7 +154,7 @@ db_sync_progress = Window(
         SwitchTo(
             text=I18nFormat("btn-back"),
             id="back",
-            state=DashboardDB.MAIN,
+            state=DashboardDB.IMPORTS,
         ),
         *main_menu_button,
     ),
