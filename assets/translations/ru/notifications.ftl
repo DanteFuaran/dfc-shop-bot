@@ -555,7 +555,15 @@ ntf-event-user-referral-reward =
     <b>💰 Вам начислена награда!</b>
     
     <blockquote>
-    Пользователь <b>{ $name }</b> совершил платеж. Вы получили <b>{ $value }{ $currency }</b> на реферальный баланс!
+    Пользователь <b>{ $name }</b> совершил платеж. Вы получили <b>{ $value }{ $reward_type ->
+        [MONEY] { space }{ $currency }
+        [EXTRA_DAYS] { space }доп. { $value ->
+            [one] день
+            [few] дня
+            *[other] дней
+            }
+        *[OTHER] { $currency }
+    }</b> на реферальный баланс!
     </blockquote>
 
 ntf-event-user-referral-reward-error =
