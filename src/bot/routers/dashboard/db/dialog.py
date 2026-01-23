@@ -207,38 +207,6 @@ clear_users_confirm = Window(
     state=DashboardDB.CLEAR_USERS_CONFIRM,
 )
 
-# Окно успешной очистки пользователей
-clear_users_success = Window(
-    Banner(BannerName.DASHBOARD),
-    I18nFormat("msg-db-clear-users-success"),
-    Row(
-        SwitchTo(
-            text=I18nFormat("btn-close"),
-            id="close",
-            state=DashboardDB.MAIN,
-        ),
-        *main_menu_button,
-    ),
-    IgnoreUpdate(),
-    state=DashboardDB.CLEAR_USERS_SUCCESS,
-)
-
-# Окно ошибки при очистке пользователей
-clear_users_failed = Window(
-    Banner(BannerName.DASHBOARD),
-    I18nFormat("msg-db-clear-users-failed"),
-    Row(
-        SwitchTo(
-            text=I18nFormat("btn-back"),
-            id="back",
-            state=DashboardDB.MAIN,
-        ),
-        *main_menu_button,
-    ),
-    IgnoreUpdate(),
-    state=DashboardDB.CLEAR_USERS_FAILED,
-)
-
 # Меню импортов
 imports_menu = Window(
     Banner(BannerName.DASHBOARD),
@@ -275,7 +243,5 @@ dialog = Dialog(
     db_sync_progress,
     clear_all_confirm,
     clear_users_confirm,
-    clear_users_success,
-    clear_users_failed,
     imports_menu,
 )

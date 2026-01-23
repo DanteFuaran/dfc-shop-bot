@@ -1667,11 +1667,32 @@ async def on_clear_users_confirm(
             
             from src.bot.states import DashboardDB
             
-            # Показываем сообщение с количеством удаленных пользователей
-            await manager.switch_to(DashboardDB.CLEAR_USERS_SUCCESS, data=counts)
+            # Отправляем уведомление об успешном удалении
+            await notification_service.notify_user(
+                user=user,
+                payload=MessagePayload(
+                    i18n_key="ntf-db-clear-users-success",
+                    i18n_kwargs=counts,
+                ),
+            )
+            await manager.switch_to(DashboardDB.MAIN)
         else:
             logger.error(f"{log(user)} Failed to clear users: {error}")
-            await manager.switch_to(DashboardDB.CLEAR_USERS_FAILED, data={"error": error})
+            await notification_service.notify_user(
+                user=user,
+                payload=MessagePayload(
+                    i18n_key="ntf-db-clear-users-failed",
+                    i18n_kwargs={"error": error},
+                ),
+            )
+            await manager.switch_to(DashboardDB.MAIN)
     except Exception as e:
         logger.exception(f"{log(user)} Error clearing users: {e}")
-        await manager.switch_to(DashboardDB.CLEAR_USERS_FAILED, data={"error": str(e)})
+        await notification_service.notify_user(
+            user=user,
+            payload=MessagePayload(
+                i18n_key="ntf-db-clear-users-failed",
+                i18n_kwargs={"error": str(e)},
+            ),
+        )
+        await manager.switch_to(DashboardDB.MAIN)
