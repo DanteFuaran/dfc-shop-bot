@@ -1524,6 +1524,7 @@ async def on_clear_all(
         
         # SQL запрос для удаления всех данных
         # Порядок удаления важен из-за внешних ключей!
+        # НЕ удаляем payment_gateways - они должны остаться!
         delete_query = """
         BEGIN;
         DELETE FROM plan_prices;
@@ -1532,7 +1533,6 @@ async def on_clear_all(
         DELETE FROM broadcast_messages;
         DELETE FROM broadcasts;
         DELETE FROM extra_device_purchases;
-        DELETE FROM payment_gateways;
         DELETE FROM referral_rewards;
         DELETE FROM referrals;
         DELETE FROM promocode_activations;
