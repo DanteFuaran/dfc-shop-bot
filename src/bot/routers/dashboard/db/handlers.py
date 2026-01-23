@@ -1681,10 +1681,10 @@ async def on_clear_users(
             await redis_client.flushall()
             logger.info(f"{log(user)} Users cleared successfully")
             
-            # Отправляем уведомление об успехе с статистикой
+            # Отправляем уведомление об успехе с статистикой и кнопкой закрытия
             await notification_service.notify_user(
                 user=user,
-                payload=MessagePayload(
+                payload=MessagePayload.not_deleted(
                     i18n_key="ntf-db-clear-users-success",
                     i18n_kwargs={
                         "users": counts.get("users", 0),
@@ -1694,6 +1694,7 @@ async def on_clear_users(
                         "referrals": counts.get("referrals", 0),
                         "rewards": counts.get("rewards", 0),
                     },
+                    add_close_button=True,
                 ),
             )
         else:
