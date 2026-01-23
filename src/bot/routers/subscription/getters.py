@@ -466,10 +466,9 @@ async def duration_getter(
             {
                 "days": duration.days,
                 "period": i18n.get(key, **kw),
-                "final_amount": price.final_amount,
+                "final_amount": format_price(price.final_amount, currency),
                 "discount_percent": price.discount_percent,
-                "original_amount": price.original_amount,
-                "currency": currency.symbol,
+                "original_amount": format_price(price.original_amount, currency),
                 "extra_devices_cost": extra_devices_cost,
                 "has_discount": has_discount,
             }
