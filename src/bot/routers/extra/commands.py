@@ -5,6 +5,7 @@ from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 from fluentogram import TranslatorRunner
 from loguru import logger
+import asyncio
 
 from src.core.config.app import AppConfig
 from src.core.enums import Command
@@ -28,6 +29,19 @@ async def on_support_command(
     support_username = config.bot.support_username.get_secret_value()
     support_url = format_username_to_url(support_username, text)
 
-    # Send clickable link directly in message
-    await message.answer(support_url)
+    # Send clickable link and delete immediately
+    response = await message.answer(support_url)
+    
+    # Delete both the command message and the response after short delay
+    try:
+        await asyncio.sleep(0.5)
+        await response.delete()
+    except Exception:
+        pass
+    
+    try:
+        await message.delete()
+    except Exception:
+        pass
+
 
