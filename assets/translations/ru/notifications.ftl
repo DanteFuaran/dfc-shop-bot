@@ -126,7 +126,7 @@ ntf-balance-transfer-received =
     <blockquote>• <i>{ $message }</i>
     }
     </blockquote>
-ntf-balance-transfer-insufficient = <i>⚠️ Недостаточно средств! Требуется: { $required } ₽, на балансе: { $balance } ₽</i>
+ntf-balance-transfer-insufficient = <i>⚠️ Недостаточно средств! Требуется: { $required }, на балансе: { $balance }</i>
 ntf-balance-transfer-invalid-id = <i>⚠️ Telegram ID должен содержать только цифры!</i>
 ntf-balance-transfer-user-not-found = <i>⚠️ Пользователь не найден!</i>
 ntf-balance-transfer-self = <i>⚠️ Нельзя перевести средства самому себе!</i>

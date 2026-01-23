@@ -571,7 +571,7 @@ msg-balance-transfer =
 
     <b>👤 Ваш профиль:</b>
     <blockquote>
-    • Ваш баланс: <b>{ $balance } ₽</b>
+    • Ваш баланс: <b>{ $balance }</b>
     • Комиссия: { $commission_display }
     </blockquote>
 
@@ -682,9 +682,9 @@ msg-menu-invite =
             }
         }
     }
-    • <b>Баланс</b>: { $balance } ₽
+    • <b>Баланс</b>: { $balance }
     { $is_balance_separate ->
-        [1] • <b>Бонусы</b>: { $referral_balance } ₽
+        [1] • <b>Бонусы</b>: { $referral_balance }
         *[0] {""}
     }
     </blockquote>
@@ -1146,7 +1146,7 @@ msg-user-balance-menu =
     <b>💰 Баланс пользователя</b>
 
     <b>Основной баланс:</b> { $current_balance } ₽
-    <b>Реферальный баланс:</b> { $referral_balance } ₽
+    <b>Реферальный баланс:</b> { $referral_balance }
 
     Выберите тип баланса для редактирования:
 
@@ -2144,15 +2144,15 @@ msg-promocode-access = <b>📦 Доступ к тарифам</b>
 msg-bonus-activate =
     <b>💎 Активация бонусов</b>
 
-    Доступно бонусов: <b>{ $referral_balance } ₽</b>
+    Доступно бонусов: <b>{ $referral_balance }</b>
     Выбранная сумма: <b>{ $current_bonus_amount } ₽</b>
 
 msg-bonus-activate-custom =
     <b>💎 Активация бонусов</b>
 
-    Доступно бонусов: <b>{ $referral_balance } ₽</b>
+    Доступно бонусов: <b>{ $referral_balance }</b>
 
-    Введите сумму для активации (от 1 до { $referral_balance } ₽):
+    Введите сумму для активации (от 1 до { $referral_balance }):
 
 # Terms of Service Settings
 msg-dashboard-settings-tos =

@@ -105,7 +105,7 @@ frg-user-details =
         [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
         *[0] {""}
     }
-    • <b>Баланс</b>: { $balance } ₽
+    • <b>Баланс</b>: { $balance }
     </blockquote>
 
 frg-user-discounts-details =

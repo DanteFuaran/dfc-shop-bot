@@ -1004,8 +1004,8 @@ async def confirm_getter(
         # Данные пользователя для шапки
         "user_id": str(user.telegram_id),
         "user_name": user.name,
-        "balance": get_display_balance(user.balance, referral_balance, is_balance_combined),
-        "referral_balance": referral_balance,
+        "balance": format_price(int(get_display_balance(user.balance, referral_balance, is_balance_combined)), Currency.RUB),
+        "referral_balance": format_price(int(referral_balance), Currency.RUB),
         "referral_code": user.referral_code,
         "discount_value": discount_value,
         "discount_is_temporary": 1 if is_temporary_discount else 0,
