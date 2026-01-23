@@ -1773,6 +1773,25 @@ async def on_balance_transfer_send(
         
         # Отправляем системное уведомление разработчику (не влияет на результат перевода)
         try:
+            # Вычисляем итоговый баланс отправителя с учетом режима
+            sender_balance_after = user.balance
+            if is_balance_combined:
+                # Обновляем реферальный баланс после вывода
+                referral_balance_after = await referral_service.get_pending_rewards_amount(
+                    telegram_id=user.telegram_id,
+                    reward_type=ReferralRewardType.MONEY,
+                )
+                sender_balance_after += referral_balance_after
+            
+            # Вычисляем итоговый баланс получателя с учетом режима
+            recipient_balance_after = recipient.balance
+            if is_balance_combined:
+                recipient_referral_balance = await referral_service.get_pending_rewards_amount(
+                    telegram_id=recipient.telegram_id,
+                    reward_type=ReferralRewardType.MONEY,
+                )
+                recipient_balance_after += recipient_referral_balance
+            
             await notification_service.system_notify(
                 ntf_type=SystemNotificationType.BALANCE_TRANSFER,
                 payload=MessagePayload.not_deleted(
@@ -1780,10 +1799,10 @@ async def on_balance_transfer_send(
                     i18n_kwargs={
                         "sender_id": str(user.telegram_id),
                         "sender_name": user.name or str(user.telegram_id),
-                        "sender_balance": user.balance,
+                        "sender_balance": sender_balance_after,
                         "recipient_id": str(recipient.telegram_id),
                         "recipient_name": recipient.name or str(recipient.telegram_id),
-                        "recipient_balance": recipient.balance,
+                        "recipient_balance": recipient_balance_after,
                         "amount": amount,
                         "commission": commission,
                         "total": total,
