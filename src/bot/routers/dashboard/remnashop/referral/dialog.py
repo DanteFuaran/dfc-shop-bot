@@ -210,6 +210,7 @@ reward_strategy = Window(
             text=I18nFormat("btn-referral-strategy-percent", selected=F["strategy_percent_selected"]),
             id="strategy_PERCENT",
             on_click=on_reward_strategy_select,
+            when=F["show_percent_strategy"],  # Скрыть для типа EXTRA_DAYS
         ),
     ),
     Row(

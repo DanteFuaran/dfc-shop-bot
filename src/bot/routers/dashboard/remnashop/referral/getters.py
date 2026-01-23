@@ -167,13 +167,26 @@ async def reward_strategy_getter(
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Геттер для окна выбора формы начисления."""
+    from src.core.enums import ReferralRewardType
+    
     settings = await settings_service.get_referral_settings()
     current = _ensure_initialized(dialog_manager, settings)
     
     current_strategy = current.get("reward_strategy", settings.reward.strategy.value)
+    reward_type = current.get("reward_type", settings.reward.type.value)
+    
+    # Для EXTRA_DAYS показываем только AMOUNT (Фиксированная)
+    # Для MONEY показываем оба варианта
+    show_percent_strategy = reward_type != ReferralRewardType.EXTRA_DAYS.value
+    
+    # Если выбран EXTRA_DAYS и текущая стратегия PERCENT, автоматически переключаемся на AMOUNT
+    if not show_percent_strategy and current_strategy == ReferralRewardStrategy.PERCENT.value:
+        current_strategy = ReferralRewardStrategy.AMOUNT.value
+        current["reward_strategy"] = current_strategy
     
     return {
         "current_strategy": current_strategy,
+        "show_percent_strategy": show_percent_strategy,
         # Возвращаем числа, как в Переводах
         "strategy_fixed_selected": 1 if current_strategy == ReferralRewardStrategy.AMOUNT.value else 0,
         "strategy_percent_selected": 1 if current_strategy == ReferralRewardStrategy.PERCENT.value else 0,

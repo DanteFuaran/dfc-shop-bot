@@ -86,6 +86,8 @@ async def on_reward_type_select(
     dialog_manager: DialogManager,
 ) -> None:
     """Выбор типа награды (радиокнопка)."""
+    from src.core.enums import ReferralRewardType, ReferralRewardStrategy
+    
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
     # Извлекаем тип из widget_id (type_MONEY или type_EXTRA_DAYS)
@@ -99,6 +101,14 @@ async def on_reward_type_select(
     
     current["reward_type"] = reward_type
     current["editing_field"] = "reward_type"  # Отслеживаем какое поле редактируется
+    
+    # Если выбран тип EXTRA_DAYS, автоматически устанавливаем AMOUNT стратегию
+    if reward_type == ReferralRewardType.EXTRA_DAYS.value:
+        current["reward_strategy"] = ReferralRewardStrategy.AMOUNT.value
+        # Сбрасываем награды при смене стратегии
+        current["reward_level_1"] = 0
+        current["reward_level_2"] = 0
+    
     dialog_manager.dialog_data["current_referral"] = current
     
     logger.debug(f"{log(user)} Selected reward type: {reward_type}")
