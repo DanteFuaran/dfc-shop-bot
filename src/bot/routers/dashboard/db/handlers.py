@@ -1581,22 +1581,24 @@ async def on_clear_users(
     redis_client: FromDishka[Redis],
 ):
     """Обработчик нажатия на кнопку 'Очистить пользователей'."""
-    from src.bot.states import DashboardDB
     user = manager.middleware_data.get(USER_KEY)
-    current_state = manager.current_context().state
     
-    # Если первое нажатие (из MAIN или CLEAR_USERS_CONFIRM) - показываем предупреждение
-    if current_state != DashboardDB.CLEAR_USERS_CONFIRM:
+    # Проверяем флаг в dialog_data
+    warning_shown = manager.dialog_data.get("clear_users_warning_shown", False)
+    
+    # Если первое нажатие - показываем предупреждение
+    if not warning_shown:
         await notification_service.notify_user(
             user=user,
             payload=MessagePayload(
                 i18n_key="ntf-db-clear-users-warning",
             ),
         )
-        await manager.switch_to(DashboardDB.CLEAR_USERS_CONFIRM)
+        manager.dialog_data["clear_users_warning_shown"] = True
         return
     
-    # Если второе нажатие (уже в CLEAR_USERS_CONFIRM) - выполняем удаление
+    # Если второе нажатие - выполняем удаление
+    manager.dialog_data["clear_users_warning_shown"] = False
     await notification_service.notify_user(
         user=user,
         payload=MessagePayload(i18n_key="ntf-db-clear-users-start"),
@@ -1679,9 +1681,21 @@ async def on_clear_users(
             await redis_client.flushall()
             logger.info(f"{log(user)} Users cleared successfully")
             
-            # Переходим на окно результатов
-            manager.dialog_data["clear_users_counts"] = counts
-            await manager.switch_to(DashboardDB.CLEAR_USERS_RESULT)
+            # Отправляем уведомление об успехе с статистикой
+            await notification_service.notify_user(
+                user=user,
+                payload=MessagePayload(
+                    i18n_key="ntf-db-clear-users-success",
+                    i18n_kwargs={
+                        "users": counts.get("users", 0),
+                        "subscriptions": counts.get("subscriptions", 0),
+                        "transactions": counts.get("transactions", 0),
+                        "activations": counts.get("activations", 0),
+                        "referrals": counts.get("referrals", 0),
+                        "rewards": counts.get("rewards", 0),
+                    },
+                ),
+            )
         else:
             logger.error(f"{log(user)} Failed to clear users: {error}")
             await notification_service.notify_user(
@@ -1691,7 +1705,6 @@ async def on_clear_users(
                     i18n_kwargs={"error": error},
                 ),
             )
-            await manager.switch_to(DashboardDB.MAIN)
     except Exception as e:
         logger.exception(f"{log(user)} Error clearing users: {e}")
         await notification_service.notify_user(
@@ -1701,27 +1714,3 @@ async def on_clear_users(
                 i18n_kwargs={"error": str(e)},
             ),
         )
-        await manager.switch_to(DashboardDB.MAIN)
-
-
-async def on_clear_users_result_close(
-    callback: CallbackQuery,
-    button,
-    manager: DialogManager,
-):
-    """Обработчик закрытия окна результатов очистки пользователей."""
-    from src.bot.states import DashboardDB
-    await manager.switch_to(DashboardDB.MAIN)
-
-
-async def clear_users_result_getter(dialog_manager: DialogManager, **kwargs):
-    """Getter для окна результатов очистки пользователей."""
-    counts = dialog_manager.dialog_data.get("clear_users_counts", {})
-    return {
-        "users": counts.get("users", 0),
-        "subscriptions": counts.get("subscriptions", 0),
-        "transactions": counts.get("transactions", 0),
-        "activations": counts.get("activations", 0),
-        "referrals": counts.get("referrals", 0),
-        "rewards": counts.get("rewards", 0),
-    }

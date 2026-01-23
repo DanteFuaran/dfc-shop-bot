@@ -27,8 +27,6 @@ from .handlers import (
     on_clear_all,
     on_clear_users,
     on_clear_all_confirm,
-    on_clear_users_result_close,
-    clear_users_result_getter,
 )
 from src.bot.states import DashboardDB
 db_management = Window(
@@ -237,22 +235,6 @@ imports_menu = Window(
     state=DashboardDB.IMPORTS,
 )
 
-# Окно результатов очистки пользователей
-clear_users_result = Window(
-    Banner(BannerName.DASHBOARD),
-    I18nFormat("msg-db-clear-users-result"),
-    Row(
-        Button(
-            text=I18nFormat("btn-close"),
-            id="close_result",
-            on_click=on_clear_users_result_close,
-        ),
-    ),
-    IgnoreUpdate(),
-    state=DashboardDB.CLEAR_USERS_RESULT,
-    getter=clear_users_result_getter,
-)
-
 dialog = Dialog(
     db_management,
     db_load_window,
@@ -260,6 +242,5 @@ dialog = Dialog(
     db_sync_progress,
     clear_all_confirm,
     clear_users_confirm,
-    clear_users_result,
     imports_menu,
 )

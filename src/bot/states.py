@@ -71,8 +71,7 @@ class DashboardDB(StatesGroup):
     SYNC = State()  # Меню синхронизации
     SYNC_PROGRESS = State()  # Процесс синхронизации
     CLEAR_ALL_CONFIRM = State()  # Подтверждение полной очистки
-    CLEAR_USERS_CONFIRM = State()  # Первое нажатие очистки пользователей
-    CLEAR_USERS_RESULT = State()  # Результат очистки пользователей
+    CLEAR_USERS_CONFIRM = State()  # Окно подтверждения очистки пользователей
     IMPORTS = State()  # Меню импортов
 
 
