@@ -1510,20 +1510,9 @@ btn-subscription-duration = { $final_amount ->
     }
 
 # Extra device duration buttons
-btn-add-device-duration-full = Купить устройство на { $days } { $days ->
-    [1] д.
-    [2] д.
-    [3] д.
-    [4] д.
-    *[other] д.
-} | { $price } ₽
-btn-add-device-duration-month = Купить устройство на { $days } { $days ->
-    [1] д.
-    [2] д.
-    [3] д.
-    [4] д.
-    *[other] д.
-} | { $price } ₽
+btn-add-device-duration-full = До конца подписки ({ $days } д.) | { $price } ₽
+btn-add-device-duration-full-month = Полный месяц (30 д.) | { $price } ₽
+btn-add-device-duration-month = До конца цикла ({ $days } д.) | { $price } ₽
 
 
 # Promocodes

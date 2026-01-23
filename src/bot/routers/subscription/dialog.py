@@ -598,6 +598,16 @@ add_device_duration = Window(
     Row(
         Button(
             text=I18nFormat(
+                "btn-add-device-duration-full-month",
+                price=F["price_full_month"],
+            ),
+            id="duration_full_month",
+            on_click=on_add_device_duration_select,
+        ),
+    ),
+    Row(
+        Button(
+            text=I18nFormat(
                 "btn-add-device-duration-month",
                 days=F["days_month"],
                 price=F["price_month"],

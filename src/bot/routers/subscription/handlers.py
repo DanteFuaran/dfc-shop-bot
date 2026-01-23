@@ -1404,7 +1404,12 @@ async def on_add_device_duration_select(
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
     # Определяем тип покупки по id кнопки
-    duration_type = "full" if widget.widget_id == "duration_full" else "month"
+    if widget.widget_id == "duration_full":
+        duration_type = "full"
+    elif widget.widget_id == "duration_full_month":
+        duration_type = "full_month"
+    else:
+        duration_type = "month"
     
     device_count = dialog_manager.dialog_data.get("device_count", 1)
     device_price_monthly = await settings_service.get_extra_device_price()
@@ -1417,6 +1422,9 @@ async def on_add_device_duration_select(
                 subscription_expire_at=user.current_subscription.expire_at,
                 min_days=min_days,
             )
+        elif duration_type == "full_month":
+            price_per_device = device_price_monthly
+            duration_days = 30
         else:
             price_per_device, duration_days = calculate_device_price_until_subscription_end(
                 monthly_price=device_price_monthly,
