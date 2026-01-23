@@ -211,7 +211,7 @@ async def on_description_delete(
     # Устанавливаем pending_plan_description в None вместо прямого сохранения
     dialog_manager.dialog_data["pending_plan_description"] = None
     # Возвращаемся на экран настроек описания, чтобы показать изменения
-    await dialog_manager.switch_to(RemnashopPlans.PLAN_DESCRIPTION)
+    await dialog_manager.switch_to(RemnashopPlans.DESCRIPTION)
     logger.info(f"{log(user)} Set pending_plan_description to None")
 
 
@@ -333,7 +333,7 @@ async def on_tag_delete(
     # Устанавливаем pending_tag в None вместо прямого сохранения
     dialog_manager.dialog_data["pending_tag"] = None
     # Возвращаемся на экран настроек тега, чтобы показать изменения
-    await dialog_manager.switch_to(RemnashopPlans.PLAN_TAG)
+    await dialog_manager.switch_to(RemnashopPlans.TAG)
     logger.info(f"{log(user)} Set pending_tag to None")
 
 
