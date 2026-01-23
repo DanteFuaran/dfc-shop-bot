@@ -1676,11 +1676,6 @@ msg-subscription-renew-success = ℹ️<i>Ваша подписка продле
 msg-subscription-details =
     <b>💳 Покупаемая подписка:</b>
     <blockquote>
-    { $description ->
-    [0] { empty }
-    *[HAS]
-    { $description }
-    }
     • <b>Тариф:</b> { $plan_name }
     • <b>Лимит трафика</b>: { $traffic }
     { $devices ->
@@ -1701,6 +1696,15 @@ msg-subscription-details =
     }
     </blockquote>
 
+    { $description ->
+    [0] {""}
+    *[HAS] {""}
+    ℹ️ <b>Подробное описание:</b>
+    <blockquote>
+    { $description }
+    </blockquote>
+
+    }
 
 msg-subscription-duration =
     { hdr-user-profile }
@@ -1719,6 +1723,15 @@ msg-subscription-duration =
         *[0] {""}
     }
     </blockquote>
+    { $description ->
+    [0] {""}
+    *[HAS] {""}
+    
+    ℹ️ <b>Подробное описание:</b>
+    <blockquote>
+    { $description }
+    </blockquote>
+    }
     { $has_extra_devices_cost ->
         [1] {""}
     
@@ -1746,6 +1759,16 @@ msg-subscription-payment-method =
     }
     • <b>Длительность:</b> { $period }
     </blockquote>
+
+    { $description ->
+    [0] {""}
+    *[HAS] {""}
+    ℹ️ <b>Подробное описание:</b>
+    <blockquote>
+    { $description }
+    </blockquote>
+
+    }
 
     <b>💳 Выберите способ оплаты</b>
 
