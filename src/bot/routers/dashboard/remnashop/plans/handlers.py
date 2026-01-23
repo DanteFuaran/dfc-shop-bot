@@ -204,24 +204,13 @@ async def on_description_delete(
     widget: Button,
     dialog_manager: DialogManager,
 ) -> None:
+    """Удалить описание - установить pending_plan_description в None, будет применено при Accept."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     logger.debug(f"{log(user)} Attempting to delete plan description")
     
-    # Удаляем pending описание если оно было
-    dialog_manager.dialog_data.pop("pending_plan_description", None)
-    
-    adapter = DialogDataAdapter(dialog_manager)
-    plan = adapter.load(PlanDto)
-
-    if not plan:
-        raise ValueError("PlanDto not found in dialog data")
-
-    plan.description = None
-    adapter.save(plan)
-    logger.info(f"{log(user)} Successfully deleted plan description")
-    
-    # Возвращаемся в конфигуратор
-    await dialog_manager.switch_to(state=RemnashopPlans.CONFIGURATOR)
+    # Устанавливаем pending_plan_description в None вместо прямого сохранения
+    dialog_manager.dialog_data["pending_plan_description"] = None
+    logger.info(f"{log(user)} Set pending_plan_description to None")
 
 
 async def on_description_accept(
@@ -246,7 +235,6 @@ async def on_description_accept(
         logger.info(f"{log(user)} Successfully updated plan description")
     
     await dialog_manager.switch_to(state=RemnashopPlans.CONFIGURATOR)
-    logger.info(f"{log(user)} Successfully removed plan description")
 
 
 async def on_cancel_description(
@@ -307,6 +295,7 @@ async def on_cancel_tag(
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
     # Очищаем временный тег и возвращаемся в конфигуратор
+    # Это восстановит старое значение, так как getter будет использовать adapter
     dialog_manager.dialog_data.pop("pending_tag", None)
     await dialog_manager.switch_to(RemnashopPlans.CONFIGURATOR)
     logger.info(f"{log(user)} Cancelled tag input")
@@ -333,16 +322,13 @@ async def on_tag_delete(
     widget: Button,
     dialog_manager: DialogManager,
 ) -> None:
+    """Удалить тег - установить pending_tag в None, будет применен при Accept."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
-    adapter = DialogDataAdapter(dialog_manager)
-    plan = adapter.load(PlanDto)
-
-    if not plan:
-        raise ValueError("PlanDto not found in dialog data")
-
-    plan.tag = None
-    adapter.save(plan)
-    logger.info(f"{log(user)} Successfully removed plan tag")
+    logger.debug(f"{log(user)} Attempting to delete plan tag")
+    
+    # Устанавливаем pending_tag в None вместо прямого сохранения
+    dialog_manager.dialog_data["pending_tag"] = None
+    logger.info(f"{log(user)} Set pending_tag to None")
 
 
 async def on_type_select(
