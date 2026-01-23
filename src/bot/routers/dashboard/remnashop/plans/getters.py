@@ -163,7 +163,7 @@ async def tag_getter(dialog_manager: DialogManager, **kwargs: Any) -> dict[str, 
     # Используем pending_tag если был введен, иначе текущий тег плана
     tag = dialog_manager.dialog_data.get("pending_tag")
     if tag is None:
-        tag = plan.tag or False
+        tag = plan.tag or "NOTAG"
     
     return {"tag": tag}
 
