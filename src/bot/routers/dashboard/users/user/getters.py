@@ -71,6 +71,7 @@ async def user_getter(
         "status": None,
         "is_trial": False,
         "has_subscription": subscription is not None,
+        "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
     }
 
     if subscription:
