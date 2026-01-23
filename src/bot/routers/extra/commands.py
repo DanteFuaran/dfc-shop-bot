@@ -6,13 +6,10 @@ from dishka.integrations.aiogram_dialog import inject
 from fluentogram import TranslatorRunner
 from loguru import logger
 
-from src.bot.keyboards import get_contact_support_keyboard
 from src.core.config.app import AppConfig
 from src.core.enums import Command
-from src.core.utils.formatters import format_user_log as log
-from src.core.utils.message_payload import MessagePayload
+from src.core.utils.formatters import format_user_log as log, format_username_to_url
 from src.infrastructure.database.models.dto import UserDto
-from src.services.notification import NotificationService
 
 router = Router(name=__name__)
 
@@ -24,17 +21,12 @@ async def on_support_command(
     user: UserDto,
     config: AppConfig,
     i18n: FromDishka[TranslatorRunner],
-    notification_service: FromDishka[NotificationService],
 ) -> None:
     logger.info(f"{log(user)} Call 'support' command")
 
     text = i18n.get("contact-support-help")
     support_username = config.bot.support_username.get_secret_value()
+    support_url = format_username_to_url(support_username, text)
 
-    await notification_service.notify_user(
-        user=user,
-        payload=MessagePayload.not_deleted(
-            i18n_key="ntf-command-help",
-            reply_markup=get_contact_support_keyboard(support_username, text),
-        ),
-    )
+    # Redirect to support directly via URL
+    await message.answer(text, disable_web_page_preview=True)
