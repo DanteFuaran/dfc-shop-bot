@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.filters import Command as FilterCommand
-from aiogram.types import Message
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 from fluentogram import TranslatorRunner
@@ -28,5 +28,15 @@ async def on_support_command(
     support_username = config.bot.support_username.get_secret_value()
     support_url = format_username_to_url(support_username, text)
 
-    # Redirect to support directly via URL
-    await message.answer(text, disable_web_page_preview=True)
+    # Create inline keyboard with support button (same as menu button)
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=i18n.get("btn-contact-support"), url=support_url)]
+        ]
+    )
+
+    # Send message with support button
+    await message.answer(
+        text=i18n.get("ntf-command-help"),
+        reply_markup=keyboard
+    )
