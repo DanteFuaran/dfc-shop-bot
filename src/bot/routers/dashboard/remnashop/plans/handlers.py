@@ -210,6 +210,8 @@ async def on_description_delete(
     
     # Устанавливаем pending_plan_description в None вместо прямого сохранения
     dialog_manager.dialog_data["pending_plan_description"] = None
+    # Возвращаемся на экран настроек описания, чтобы показать изменения
+    await dialog_manager.switch_to(RemnashopPlans.PLAN_DESCRIPTION)
     logger.info(f"{log(user)} Set pending_plan_description to None")
 
 
@@ -249,7 +251,6 @@ async def on_cancel_description(
     # Удаляем pending описание при отмене
     # Это восстановит старое значение, так как getter будет использовать adapter
     dialog_manager.dialog_data.pop("pending_plan_description", None)
-    dialog_manager.show_mode = ShowMode.NORMAL
     await dialog_manager.switch_to(state=RemnashopPlans.CONFIGURATOR)
     logger.info(f"{log(user)} Cancelled plan description input")
 
@@ -300,7 +301,6 @@ async def on_cancel_tag(
     # Очищаем временный тег и возвращаемся в конфигуратор
     # Это восстановит старое значение, так как getter будет использовать adapter
     dialog_manager.dialog_data.pop("pending_tag", None)
-    dialog_manager.show_mode = ShowMode.NORMAL
     await dialog_manager.switch_to(RemnashopPlans.CONFIGURATOR)
     logger.info(f"{log(user)} Cancelled tag input")
 
@@ -332,6 +332,8 @@ async def on_tag_delete(
     
     # Устанавливаем pending_tag в None вместо прямого сохранения
     dialog_manager.dialog_data["pending_tag"] = None
+    # Возвращаемся на экран настроек тега, чтобы показать изменения
+    await dialog_manager.switch_to(RemnashopPlans.PLAN_TAG)
     logger.info(f"{log(user)} Set pending_tag to None")
 
 
