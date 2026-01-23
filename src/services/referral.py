@@ -572,15 +572,13 @@ class ReferralService(BaseService):
                 # Для денег: просто фиксированное значение
                 reward_amount = config_value
             elif reward_type == ReferralRewardType.EXTRA_DAYS:
-                # Для дней: рассчитываем по эквиваленту месячной подписки (450 рублей)
-                monthly_price = 450  # Стоимость месячной подписки
+                # Для дней: рассчитываем за каждые 100 рублей
+                # Если выбрано 5 дней, то за 100₽ = 5 дней, за 200₽ = 10 дней и т.д.
                 transaction_amount = transaction.pricing.final_amount
-                
-                # Количество дней = config_value * (сумма платежа / 450)
-                reward_amount = max(1, int(Decimal(config_value) * Decimal(transaction_amount) / Decimal(monthly_price)))
+                reward_amount = max(1, int(Decimal(config_value) * Decimal(transaction_amount) / Decimal(100)))
                 logger.info(
                     f"Calculated EXTRA_DAYS reward: {reward_amount} days for transaction amount {transaction_amount} "
-                    f"with config value {config_value} (monthly price {monthly_price})"
+                    f"with config value {config_value} days per 100₽"
                 )
             else:
                 logger.warning(f"Unsupported reward type '{reward_type}' for AMOUNT strategy")
