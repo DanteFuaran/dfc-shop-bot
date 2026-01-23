@@ -25,11 +25,8 @@ async def on_support_command(
 ) -> None:
     logger.info(f"{log(user)} Call 'support' command")
 
-    support_username = config.bot.support_username.get_secret_value()
-    clean_username = support_username.lstrip("@")
-    
-    # Create deep link to open support bot directly
-    support_url = f"tg://resolve?domain={clean_username}"
+    # Direct link to support bot
+    support_url = "tg://resolve?domain=test3_support_bot"
 
     # Send deep link and delete immediately
     response = await message.answer(support_url)
