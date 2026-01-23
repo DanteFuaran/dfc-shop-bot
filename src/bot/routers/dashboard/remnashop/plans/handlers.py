@@ -204,15 +204,15 @@ async def on_description_delete(
     widget: Button,
     dialog_manager: DialogManager,
 ) -> None:
-    """Удалить описание - установить pending_plan_description в None, будет применено при Accept."""
+    """Удалить описание - установить pending_plan_description в пустое значение, будет применено при Accept."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     logger.debug(f"{log(user)} Attempting to delete plan description")
     
-    # Устанавливаем pending_plan_description в None вместо прямого сохранения
-    dialog_manager.dialog_data["pending_plan_description"] = None
+    # Устанавливаем pending_plan_description в пустую строку для явного удаления
+    dialog_manager.dialog_data["pending_plan_description"] = ""
     # Возвращаемся на экран настроек описания, чтобы показать изменения
     await dialog_manager.switch_to(RemnashopPlans.DESCRIPTION)
-    logger.info(f"{log(user)} Set pending_plan_description to None")
+    logger.info(f"{log(user)} Set pending_plan_description to empty string")
 
 
 async def on_description_accept(
@@ -326,15 +326,15 @@ async def on_tag_delete(
     widget: Button,
     dialog_manager: DialogManager,
 ) -> None:
-    """Удалить тег - установить pending_tag в None, будет применен при Accept."""
+    """Удалить тег - установить pending_tag в NOTAG, будет применен при Accept."""
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     logger.debug(f"{log(user)} Attempting to delete plan tag")
     
-    # Устанавливаем pending_tag в None вместо прямого сохранения
-    dialog_manager.dialog_data["pending_tag"] = None
+    # Устанавливаем pending_tag в "NOTAG" вместо None для явного удаления
+    dialog_manager.dialog_data["pending_tag"] = "NOTAG"
     # Возвращаемся на экран настроек тега, чтобы показать изменения
     await dialog_manager.switch_to(RemnashopPlans.TAG)
-    logger.info(f"{log(user)} Set pending_tag to None")
+    logger.info(f"{log(user)} Set pending_tag to NOTAG")
 
 
 async def on_type_select(
@@ -1190,7 +1190,9 @@ async def on_confirm_plan(  # noqa: C901
         plan_dto.name = dialog_manager.dialog_data.pop("pending_plan_name")
     
     if "pending_plan_description" in dialog_manager.dialog_data:
-        plan_dto.description = dialog_manager.dialog_data.pop("pending_plan_description")
+        pending_desc = dialog_manager.dialog_data.pop("pending_plan_description")
+        # Пустая строка = удаление описания
+        plan_dto.description = None if pending_desc == "" else pending_desc
     
     if "pending_plan_type" in dialog_manager.dialog_data:
         plan_dto.type = dialog_manager.dialog_data.pop("pending_plan_type")
@@ -1199,7 +1201,9 @@ async def on_confirm_plan(  # noqa: C901
         plan_dto.availability = dialog_manager.dialog_data.pop("pending_plan_availability")
     
     if "pending_tag" in dialog_manager.dialog_data:
-        plan_dto.tag = dialog_manager.dialog_data.pop("pending_tag")
+        pending_tag = dialog_manager.dialog_data.pop("pending_tag")
+        # Преобразуем "NOTAG" в None для удаления тега
+        plan_dto.tag = None if pending_tag == "NOTAG" else pending_tag
     
     if "pending_internal_squads" in dialog_manager.dialog_data:
         plan_dto.internal_squads = dialog_manager.dialog_data.pop("pending_internal_squads")

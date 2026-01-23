@@ -146,8 +146,12 @@ async def description_getter(dialog_manager: DialogManager, **kwargs: Any) -> di
         raise ValueError("PlanDto not found in dialog data")
 
     # Используем pending_plan_description если было введено, иначе текущее описание
-    description = dialog_manager.dialog_data.get("pending_plan_description")
-    if description is None:
+    if "pending_plan_description" in dialog_manager.dialog_data:
+        description = dialog_manager.dialog_data["pending_plan_description"]
+        # Пустая строка = удаление
+        if description == "":
+            description = False
+    else:
         description = plan.description or False
     
     return {"description": description}
