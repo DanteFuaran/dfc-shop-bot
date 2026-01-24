@@ -20,6 +20,7 @@ REPO_BRANCH="dev2"
 
 # Статус обновлений
 UPDATE_AVAILABLE=0
+AVAILABLE_VERSION="unknown"
 CHECK_UPDATE_PID=""
 UPDATE_STATUS_FILE=""
 
@@ -268,10 +269,14 @@ check_updates_available() {
             # Удаляем временную папку
             rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
             
-            # Сравниваем версии
+            # Сравниваем версии (inline без вызова функции, т.к. подоболочка не наследует функции)
             if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                # Преобразуем версии в числа для сравнения
+                local_num=$(echo "$LOCAL_VERSION" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+                remote_num=$(echo "$REMOTE_VERSION" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+                
                 # Показываем обновление только если локальная версия НИЖЕ удаленной
-                if version_less_than "$LOCAL_VERSION" "$REMOTE_VERSION"; then
+                if [ "$local_num" -lt "$remote_num" ]; then
                     echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
                 else
                     echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
@@ -304,25 +309,16 @@ check_updates_available() {
 
 wait_for_update_check() {
     if [ -n "$CHECK_UPDATE_PID" ]; then
-        # Ждём завершения с таймаутом 10 сек
-        timeout 10 wait $CHECK_UPDATE_PID 2>/dev/null || true
+        wait $CHECK_UPDATE_PID 2>/dev/null || true
     fi
     
-    # Даём файлу немного времени на запись если процесс ещё пишет
-    local retry_count=0
-    while [ $retry_count -lt 20 ]; do
-        if [ -n "$UPDATE_STATUS_FILE" ] && [ -f "$UPDATE_STATUS_FILE" ]; then
-            local update_info=$(cat "$UPDATE_STATUS_FILE" 2>/dev/null || echo "0|unknown")
-            if [ -n "$update_info" ]; then
-                UPDATE_AVAILABLE=$(echo "$update_info" | cut -d'|' -f1)
-                AVAILABLE_VERSION=$(echo "$update_info" | cut -d'|' -f2)
-                rm -f "$UPDATE_STATUS_FILE" 2>/dev/null || true
-                break
-            fi
-        fi
-        sleep 0.1
-        ((retry_count++))
-    done
+    # Читаем результат из файла (формат: status|version)
+    if [ -n "$UPDATE_STATUS_FILE" ] && [ -f "$UPDATE_STATUS_FILE" ]; then
+        local update_info=$(cat "$UPDATE_STATUS_FILE" 2>/dev/null || echo "0|unknown")
+        UPDATE_AVAILABLE=$(echo "$update_info" | cut -d'|' -f1)
+        AVAILABLE_VERSION=$(echo "$update_info" | cut -d'|' -f2)
+        rm -f "$UPDATE_STATUS_FILE" 2>/dev/null || true
+    fi
 }
 
 # Функция для проверки режима (установка или меню)
