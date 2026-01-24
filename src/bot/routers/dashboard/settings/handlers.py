@@ -2563,6 +2563,8 @@ async def on_language_select(
         selected_locale = locale_map[locale_code]
         settings = await settings_service.get()
         
+        logger.info(f"{log(user)} Changing language from {settings.bot_locale} to {selected_locale}")
+        
         # Всегда обновляем глобальный язык бота
         settings.bot_locale = selected_locale
         await settings_service.update(settings)
@@ -2570,6 +2572,8 @@ async def on_language_select(
         # Перезагружаем настройки из кеша и обновляем в middleware_data
         updated_settings = await settings_service.get()
         dialog_manager.middleware_data[SETTINGS_KEY] = updated_settings
+        
+        logger.info(f"{log(user)} Updated middleware_data with new locale: {updated_settings.bot_locale}")
         
         # Принудительно обновляем диалог чтобы применить новый язык
         dialog_manager.show_mode = ShowMode.EDIT

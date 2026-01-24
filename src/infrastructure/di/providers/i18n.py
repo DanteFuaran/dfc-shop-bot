@@ -51,10 +51,8 @@ class I18nProvider(Provider):
         # Всегда используем глобальный язык бота из настроек
         if settings:
             locale = settings.bot_locale
-            logger.debug(f"Using bot_locale={locale}")
         else:
             # Настройки не загружены - используем дефолтную локаль
             locale = config.default_locale
-            logger.debug(f"Settings not loaded, using default locale={locale}")
 
         return hub.get_translator_by_locale(locale=locale)

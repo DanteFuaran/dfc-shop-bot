@@ -5,12 +5,10 @@ from aiogram_dialog.api.protocols import DialogManager
 from aiogram_dialog.widgets.common import WhenCondition
 from aiogram_dialog.widgets.text import Text
 from dishka import AsyncContainer
-from fluentogram import TranslatorHub, TranslatorRunner
-from loguru import logger
+from fluentogram import TranslatorRunner
 from magic_filter import MagicFilter
 
-from src.core.config import AppConfig
-from src.core.constants import CONTAINER_KEY, SETTINGS_KEY
+from src.core.constants import CONTAINER_KEY
 from src.core.i18n.translator import get_translated_kwargs
 from src.core.utils.formatters import i18n_postprocess_text
 
@@ -46,27 +44,15 @@ class I18nFormat(Text):
             else:
                 mapped[key] = transformer
 
-        logger.debug(f"Key '{self.key}' transformed mapping: {mapped}")
         return {**data, **mapped}
 
     async def _render_text(self, data: dict[str, Any], dialog_manager: DialogManager) -> str:
         container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
-        hub: TranslatorHub = await container.get(TranslatorHub)
-        config: AppConfig = await container.get(AppConfig)
-        
-        # Получаем актуальную локаль напрямую из middleware_data
-        # (она обновляется при смене языка в on_language_select)
-        settings = dialog_manager.middleware_data.get(SETTINGS_KEY)
-        if settings:
-            locale = settings.bot_locale
-        else:
-            locale = config.default_locale
-        
-        # Получаем транслятор для актуальной локали
-        i18n: TranslatorRunner = hub.get_translator_by_locale(locale=locale)
+        i18n: TranslatorRunner = await container.get(TranslatorRunner)
 
         if self.mapping:
             data = await self._transform(data, dialog_manager)
 
         data = get_translated_kwargs(i18n, data)
-        return i18n_postprocess_text(text=i18n.get(self.key.format_map(data), **data))
+        translated_text = i18n.get(self.key.format_map(data), **data)
+        return i18n_postprocess_text(text=translated_text)
