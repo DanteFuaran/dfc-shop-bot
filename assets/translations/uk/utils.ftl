@@ -15,7 +15,7 @@ hdr-finances = 💰 Фінанси
 hdr-gateways = 🌐 Платіжні системи
 hdr-gateway = 🌐 Платіжна система
 hdr-balance = 💰 Баланс
-hdr-subscription = 💳 Підписка
+hdr-subscription = <b>💳 Підписка</b>
 hdr-connect = 🚀 Підключення
 hdr-devices = 📱 Пристрої
 hdr-invite = 👥 Запросити
@@ -147,7 +147,7 @@ unit-eur = €
 unit-uah = ₴
 unit-percent = %
 
-unlimited = безлімітно
+unlimited = ∞
 
 
 # Types

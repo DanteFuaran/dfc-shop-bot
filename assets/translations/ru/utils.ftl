@@ -35,7 +35,7 @@ referral-invite-message =
 # Headers
 hdr-user = <b>👤 Пользователь:</b>
 hdr-user-profile = <b>👤 Ваш профиль:</b>
-hdr-subscription = <b>📋 Ваша подписка:</b>
+hdr-subscription = <b>� Подписка</b>
 hdr-plan = <b>📦 План:</b>
 hdr-payment = <b>💰 Платеж:</b>
 hdr-error = <b>⚠️ Ошибка:</b>

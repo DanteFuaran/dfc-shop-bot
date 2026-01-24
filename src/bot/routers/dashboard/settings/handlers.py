@@ -2562,8 +2562,16 @@ async def on_language_select(
     if locale_code in locale_map:
         selected_locale = locale_map[locale_code]
         
+        # Сохраняем ИСХОДНЫЙ язык при первом выборе (для отмены)
+        if "original_locale" not in dialog_manager.dialog_data:
+            current_settings = await settings_service.get()
+            dialog_manager.dialog_data["original_locale"] = current_settings.bot_locale
+        
         # Сохраняем выбранный язык в dialog_data (временно)
         dialog_manager.dialog_data["pending_locale"] = selected_locale
+        
+        # Временно меняем locale в event для переключения интерфейса
+        callback.from_user.language_code = selected_locale.value
         
         # Обновляем язык в middleware_data для немедленного обновления интерфейса
         settings = await settings_service.get()
@@ -2589,13 +2597,25 @@ async def on_language_cancel(
     
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
-    # Очищаем pending_locale
-    if "pending_locale" in dialog_manager.dialog_data:
-        del dialog_manager.dialog_data["pending_locale"]
+    # Восстанавливаем исходный язык из dialog_data
+    original_locale = dialog_manager.dialog_data.get("original_locale")
     
-    # Восстанавливаем настоящий язык из БД
-    settings = await settings_service.get()
-    dialog_manager.middleware_data[SETTINGS_KEY] = settings
+    if original_locale:
+        # Восстанавливаем исходный язык в event
+        callback.from_user.language_code = original_locale.value
+        
+        # Восстанавливаем язык в middleware_data
+        settings = await settings_service.get()
+        settings.bot_locale = original_locale
+        dialog_manager.middleware_data[SETTINGS_KEY] = settings
+    else:
+        # Если не было изменений, просто перезагружаем из БД
+        settings = await settings_service.get()
+        dialog_manager.middleware_data[SETTINGS_KEY] = settings
+    
+    # Очищаем временные данные
+    dialog_manager.dialog_data.pop("pending_locale", None)
+    dialog_manager.dialog_data.pop("original_locale", None)
     
     logger.info(f"{log(user)} Cancelled language selection")
     await dialog_manager.switch_to(DashboardSettings.MAIN)
@@ -2631,8 +2651,9 @@ async def on_language_apply(
         updated_settings = await settings_service.get()
         dialog_manager.middleware_data[SETTINGS_KEY] = updated_settings
         
-        # Очищаем pending_locale
-        del dialog_manager.dialog_data["pending_locale"]
+        # Очищаем временные данные
+        dialog_manager.dialog_data.pop("pending_locale", None)
+        dialog_manager.dialog_data.pop("original_locale", None)
         
         logger.info(f"{log(user)} Changed bot language to {pending_locale}")
         

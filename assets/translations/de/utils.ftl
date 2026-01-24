@@ -15,7 +15,7 @@ hdr-finances = 💰 Finances
 hdr-gateways = 🌐 Payment Systems
 hdr-gateway = 🌐 Payment System
 hdr-balance = 💰 Balance
-hdr-subscription = 💳 Subscription
+hdr-subscription = <b>💳 Subscription</b>
 hdr-connect = 🚀 Connect
 hdr-devices = 📱 Devices
 hdr-invite = 👥 Invite
@@ -147,7 +147,7 @@ unit-eur = €
 unit-uah = ₴
 unit-percent = %
 
-unlimited = unlimited
+unlimited = ∞
 
 
 # Types
