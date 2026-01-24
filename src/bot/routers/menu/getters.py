@@ -607,6 +607,9 @@ async def invite_getter(
     reward_level_1_value = reward_config.get(ReferralLevel.FIRST, 0)
     reward_level_2_value = reward_config.get(ReferralLevel.SECOND, 0)
 
+    # Проверяем, включен ли функционал баланса
+    is_balance_enabled = await settings_service.is_balance_enabled()
+    
     return {
         "user_id": str(user.telegram_id),
         "user_name": user.name,
@@ -623,6 +626,7 @@ async def invite_getter(
         "payments": payments,
         "is_points_reward": settings.reward.is_money,
         "has_balance": (referral_balance > 0) and is_balance_separate,  # Показываем только в режиме SEPARATE
+        "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,  # Флаг раздельного режима баланса
         "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         "referral_link": ref_link,
