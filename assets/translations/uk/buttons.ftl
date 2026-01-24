@@ -1,53 +1,53 @@
 # Dashboard
-btn-dashboard-broadcast = 📢 Рассылка
+btn-dashboard-broadcast = 📢 Розсилка
 btn-dashboard-statistics = 📊 Статистика
-btn-dashboard-users = 👥 Пользователи
-btn-dashboard-plans = 📦 Тарифные планы
-btn-dashboard-promocodes = 🎟 Промокоды
+btn-dashboard-users = 👥 Користувачі
+btn-dashboard-plans = 📦 Тарифні плани
+btn-dashboard-promocodes = 🎟 Промокоди
 btn-dashboard-remnawave = 🌊 Панель
 btn-dashboard-remnashop = 🛍 Телеграм
-btn-dashboard-access = 🔓 Режим доступа
-btn-dashboard-features = ⚙️ Функционал
-btn-dashboard-importer = 📥 X-UI Импорт
+btn-dashboard-access = 🔓 Режим доступу
+btn-dashboard-features = ⚙️ Функції
+btn-dashboard-importer = 📥 Імпорт X-UI
 
 # Database Management
-btn-dashboard-db = 🗄 Управление БД
-btn-db-save = 💾 Сохранить
-btn-db-load = 📦 Загрузить
-btn-db-convert = 🔄 Конвертировать
-btn-db-sync = 🔄 Синхронизация
-btn-db-sync-from-bot = 📤 Импорт из Бота в Remnawave
-btn-db-sync-from-panel = 📥 Remnawave Импорт
-btn-db-sync-remnawave-to-bot = 📥 Импорт из Remnawave в Бота
-btn-db-sync-bot-to-remnawave = 📤 Импорт из Бота в Remnawave
-btn-db-clear-all = 🗑 Очистить всё
-btn-db-clear-users = 👥 Очистить пользователей
-btn-db-imports = 📥 Импорты
+btn-dashboard-db = 🗄 Управління базою
+btn-db-save = 💾 Зберегти
+btn-db-load = 📦 Завантажити
+btn-db-convert = 🔄 Конвертувати
+btn-db-sync = 🔄 Синхронізація
+btn-db-sync-from-bot = 📤 Імпорт з бота в Remnawave
+btn-db-sync-from-panel = 📥 Імпорт Remnawave
+btn-db-sync-remnawave-to-bot = 📥 Імпорт з Remnawave в бота
+btn-db-sync-bot-to-remnawave = 📤 Імпорт з бота в Remnawave
+btn-db-clear-all = 🗑 Очистити все
+btn-db-clear-users = 👥 Очистити користувачів
+btn-db-imports = 📥 Імпорти
 
 # Settings
-btn-dashboard-settings = ⚙️ Настройки
-btn-settings-extra-devices = 📱 Доп. устройства
+btn-dashboard-settings = ⚙️ Налаштування
+btn-settings-extra-devices = 📱 Додаткові пристрої
 btn-settings-balance = 💰 Баланс
-btn-settings-transfers = 💸 Переводы
-btn-settings-notifications = 🔔 Уведомления
-btn-settings-access = 🔓 Режим доступа
-btn-settings-referral = 👥 Реф. система
-btn-settings-promocodes = 🏷️ Промокоды
-btn-settings-community = 👥 Сообщество
-btn-settings-community-set-url = 📝 Назначить группу
-btn-settings-tos = 📜 Соглашение
-btn-tos-set-url = Назначить источник
-btn-settings-global-discount = 🏷️ Глобальная скидка
-btn-settings-finances = 💰 Финансы
-btn-settings-currency-rates = 💱 Курс валют
-btn-settings-language = 🌐 Язык
+btn-settings-transfers = 💸 Перекази
+btn-settings-notifications = 🔔 Сповіщення
+btn-settings-access = 🔓 Режим доступу
+btn-settings-referral = 👥 Реферальна система
+btn-settings-promocodes = 🏷️ Промокоди
+btn-settings-community = 👥 Спільнота
+btn-settings-community-set-url = 📝 Встановити групу
+btn-settings-tos = 📜 Угода
+btn-tos-set-url = Встановити джерело
+btn-settings-global-discount = 🏷️ Глобальна знижка
+btn-settings-finances = 💰 Фінанси
+btn-settings-currency-rates = 💱 Курси валют
+btn-settings-language = 🌐 Мова
 btn-language-ru = { $selected ->
-    [1] 🔘 Русский
-    *[0] ⚪ Русский
+    [1] 🔘 Російська
+    *[0] ⚪ Російська
     }
 btn-language-uk = { $selected ->
-    [1] 🔘 Украинский
-    *[0] ⚪ Украинский
+    [1] 🔘 Українська
+    *[0] ⚪ Українська
     }
 btn-language-en = { $selected ->
     [1] 🔘 English
@@ -58,109 +58,109 @@ btn-language-de = { $selected ->
     *[0] ⚪ Deutsch
     }
 btn-finances-sync = { $enabled ->
-    [1] 🟢 Синхронизация курса
-    *[0] 🔴 Синхронизация курса
+    [1] 🟢 Синхронізація курсів
+    *[0] 🔴 Синхронізація курсів
     }
-btn-finances-currency-rates = 💱 Курс валют
-btn-finances-gateways = 🌐 Платежные системы
+btn-finances-currency-rates = 💱 Курси валют
+btn-finances-gateways = 🌐 Платіжні системи
 btn-finances-balance-mode-combined = { $selected ->
-    [1] 🔘 Сумма
-    *[0] ⚪ Сумма
+    [1] 🔘 Об'єднаний
+    *[0] ⚪ Об'єднаний
     }
 btn-finances-balance-mode-separate = { $selected ->
-    [1] 🔘 Раздельно
-    *[0] ⚪ Раздельно
+    [1] 🔘 Роздільний
+    *[0] ⚪ Роздільний
     }
 btn-balance-mode-combined = { $selected ->
-    [1] 🔘 Сумма
-    *[0] ⚪ Сумма
+    [1] 🔘 Об'єднаний
+    *[0] ⚪ Об'єднаний
     }
 btn-balance-mode-separate = { $selected ->
-    [1] 🔘 Раздельно
-    *[0] ⚪ Раздельно
+    [1] 🔘 Роздільний
+    *[0] ⚪ Роздільний
     }
 btn-currency-auto-toggle = { $enabled ->
-    [1] 🟢 Автоматически
-    *[0] 🔴 Автоматически
+    [1] 🟢 Автоматично
+    *[0] 🔴 Автоматично
     }
 btn-settings-toggle = { $enabled ->
     [1] 🟢
     *[0] 🔴
     }
 btn-toggle-setting = { $name }: { $enabled ->
-    [1] ✅ Включены
-    *[0] 🔴 Выключены
+    [1] ✅ Увімкнено
+    *[0] 🔴 Вимкнено
     }
 btn-setting-value = { $name }: { $value }
 btn-commission-type-percent = 
     { $selected ->
-    [1] 🔘 Процентная
-    *[0] ⚪ Процентная
+    [1] 🔘 Відсоток
+    *[0] ⚪ Відсоток
     }
 btn-commission-type-fixed = 
     { $selected ->
-    [1] 🔘 Фиксированная
-    *[0] ⚪ Фиксированная
+    [1] 🔘 Фіксована
+    *[0] ⚪ Фіксована
     }
-btn-commission-value = 💵 Комиссия: { $value } { $unit }
+btn-commission-value = 💵 Комісія: { $value } { $unit }
 
 unit-percent-or-rub = { $commission_type ->
     [percent] %
     *[fixed] ₽
     }
 
-# Глобальная скидка
+# Global Discount
 btn-discount-type-percent = 
     { $selected ->
-    [1] 🔘 Процентная
-    *[0] ⚪ Процентная
+    [1] 🔘 Відсоток
+    *[0] ⚪ Відсоток
     }
 btn-discount-type-fixed = 
     { $selected ->
-    [1] 🔘 Фиксированная
-    *[0] ⚪ Фиксированная
+    [1] 🔘 Фіксована
+    *[0] ⚪ Фіксована
     }
-btn-discount-value = 🏷️ Скидка: { $value } { $unit }
+btn-discount-value = 🏷️ Знижка: { $value } { $unit }
 
 unit-discount-percent-or-rub = { $discount_type ->
     [percent] %
     *[fixed] ₽
     }
 
-# Режим складывания скидок
+# Discount Stacking Mode
 btn-global-discount-mode = ⚙️ Режим
-btn-global-discount-apply-to = 📌 Влияние
+btn-global-discount-apply-to = 📌 Застосовується до
 
-# Режимы в подменю (радиокнопки)
+# Mode submenu (radio buttons)
 btn-discount-mode-max = { $selected ->
-    [1] 🔘 Максимальная
-    *[0] ⚪ Максимальная
+    [1] 🔘 Максимальна
+    *[0] ⚪ Максимальна
     }
 btn-discount-mode-stack = { $selected ->
-    [1] 🔘 Сложенная
-    *[0] ⚪ Сложенная
+    [1] 🔘 Накладається
+    *[0] ⚪ Накладається
     }
 
-# На что влияет скидка (чекбоксы)
+# What the discount applies to (checkboxes)
 btn-apply-to-subscription = { $enabled ->
-    [1] ✅ Подписка
-    *[0] ⬜ Подписка
+    [1] ✅ Підписка
+    *[0] ⬜ Підписка
     }
 btn-apply-to-extra-devices = { $enabled ->
-    [1] ✅ Доп.устройства
-    *[0] ⬜ Доп.устройства
+    [1] ✅ Додаткові пристрої
+    *[0] ⬜ Додаткові пристрої
     }
 btn-apply-to-transfer-commission = { $enabled ->
-    [1] ✅ Комиссия переводов
-    *[0] ⬜ Комиссия переводов
+    [1] ✅ Комісія переказу
+    *[0] ⬜ Комісія переказу
     }
 
 btn-discount-free = { $selected ->
-    [1] [🚫 Нет скидки]
-    *[0] 🚫 Нет скидки
+    [1] [🚫 Без знижки]
+    *[0] 🚫 Без знижки
     }
 
-# Скидка - Процентные значения
+# Discount - Percentage Values
 btn-discount-5 = { $selected ->
     [1] [5%]
     *[0] 5%
@@ -242,7 +242,7 @@ btn-discount-100 = { $selected ->
     *[0] 100%
     }
 
-# Скидка - Фиксированные значения (рубли)
+# Discount - Fixed Values (rubles)
 btn-discount-50-rub = { $selected ->
     [1] [50 ₽]
     *[0] 50 ₽
@@ -306,38 +306,38 @@ btn-discount-1000-rub = { $selected ->
 
 # Back
 btn-back = ⬅️ Назад
-btn-main-menu = 🏠 Главное меню
-btn-back-main-menu = 🏠 Главное меню
-btn-back-dashboard = ⚙️ Панель управления
-btn-back-users = 👥 Пользователи
+btn-main-menu = 🏠 Головне меню
+btn-back-main-menu = 🏠 Головне меню
+btn-back-dashboard = ⚙️ Панель керування
+btn-back-users = 👥 Користувачі
 btn-done = ✅ Готово
 
 
-# Телеграм
-btn-remnashop-release-latest = 👀 Посмотреть
-btn-remnashop-how-upgrade = ❓ Как обновить
+# Telegram
+btn-remnashop-release-latest = 👀 Переглянути
+btn-remnashop-how-upgrade = ❓ Як оновити
 btn-remnashop-github = ⭐ GitHub
 btn-remnashop-telegram = 👪 Telegram
-btn-remnashop-donate = 💰 Поддержать разработчика
-btn-remnashop-guide = ❓ Инструкция
+btn-remnashop-donate = 💰 Підтримати розробника
+btn-remnashop-guide = ❓ Інструкція
 
 
 # Other
-btn-rules-accept = ✅ Принять правила
-btn-channel-join = ❤️ Перейти в канал
-btn-channel-confirm = ✅ Подтвердить
-btn-notification-close = ❌ Закрыть
-btn-goto-main-menu = 🏠 В главное меню
-btn-contact-support = 📩 Перейти в поддержку
-btn-cancel = ❌ Отмена
-btn-accept = ✅ Принять
-btn-confirm = ✅ Подтвердить
-btn-confirm-payment = ✅ Подтвердить оплату
-btn-select-all = 📋 Все подписки
+btn-rules-accept = ✅ Прийняти правила
+btn-channel-join = ❤️ Перейти до каналу
+btn-channel-confirm = ✅ Підтвердити
+btn-notification-close = ❌ Закрити
+btn-goto-main-menu = 🏠 До головного меню
+btn-contact-support = 📩 Перейти в підтримку
+btn-cancel = ❌ Скасувати
+btn-accept = ✅ Прийняти
+btn-confirm = ✅ Підтвердити
+btn-confirm-payment = ✅ Підтвердити оплату
+btn-select-all = 📋 Усі підписки
 btn-select-all-toggle =
     { $all_selected ->
-    [1] ✅ Все подписки
-    *[0] ⬜ Все подписки
+    [1] ✅ Усі підписки
+    *[0] ⬜ Усі підписки
     }
 
 btn-squad-choice = { $selected -> 
@@ -352,12 +352,12 @@ btn-role-choice = { $selected ->
 
 
 # Menu
-btn-menu-connect = 🚀 Подключиться
-btn-menu-connect-open = 🔗 Подключиться
-btn-menu-connect-subscribe = 📄 Страница подписки
-btn-menu-connect-qr = 📱 QR Код
-btn-menu-connect-key = 🔑 Показать ключ
-btn-menu-download = 📥 Скачать приложение
+btn-menu-connect = 🚀 Підключитися
+btn-menu-connect-open = 🔗 Підключення
+btn-menu-connect-subscribe = 📄 Сторінка підписки
+btn-menu-connect-qr = 📱 QR-код
+btn-menu-connect-key = 🔑 Показати ключ
+btn-menu-download = 📥 Завантажити додаток
 btn-menu-download-android = 📱 Android
 btn-menu-download-windows = 🖥 Windows
 btn-menu-download-iphone = 🍎 iPhone
@@ -365,59 +365,59 @@ btn-menu-download-macos = 💻 macOS
 
 btn-menu-connect-not-available =
     ⚠️ { $status -> 
-    [LIMITED] Превышен лимит трафика
-    [EXPIRED] Подписка истекла
-    *[OTHER] Подписка отсутствует
+    [LIMITED] Ліміт трафіку вичерпано
+    [EXPIRED] Підписка закінчилася
+    *[OTHER] Немає підписки
     }
 
 btn-menu-trial = { $is_referral_trial ->
-    [1] 📢 Реферальная подписка
-    *[0] 🎁 Пробная подписка
+    [1] 📢 Реферальна підписка
+    *[0] 🎁 Пробна підписка
     }
-btn-menu-devices = 📱 Мои устройства
-btn-menu-devices-empty = ⚠️ Нет привязанных устройств
-btn-menu-add-device = ➕ Добавить устройство
-btn-menu-extra-devices = 📱 Управление доп. устройствами
-btn-extra-device-item = { $device_count } шт. • { $price } ₽/мес • { $expires_at }
-btn-extra-device-disable-auto-renew = ❌ Отключить автопродление
-btn-extra-device-delete = 🗑 Удалить сейчас
-btn-menu-try-free = 🎁 Попробовать бесплатно
-btn-menu-subscription = 💳 Подписка
-btn-menu-connect-subscribe = 🔗 Подключиться
-btn-menu-topup = ➕ Пополнить
-btn-menu-invite = 👥 Пригласить
-btn-menu-invite-about = ❓ Подробнее о наградах
-btn-menu-invite-copy = 🔗 Ссылка приглашения
-btn-menu-invite-send = 📩 Пригласить
+btn-menu-devices = 📱 Мої пристрої
+btn-menu-devices-empty = ⚠️ Немає прив'язаних пристроїв
+btn-menu-add-device = ➕ Додати пристрій
+btn-menu-extra-devices = 📱 Управління додатковими пристроями
+btn-extra-device-item = { $device_count } шт. • { $price } ₽/міс • { $expires_at }
+btn-extra-device-disable-auto-renew = ❌ Вимкнути автопродовження
+btn-extra-device-delete = 🗑 Видалити зараз
+btn-menu-try-free = 🎁 Спробувати безкоштовно
+btn-menu-subscription = 💳 Підписка
+btn-menu-connect-subscribe = 🔗 Підключитися
+btn-menu-topup = ➕ Поповнити
+btn-menu-invite = 👥 Запросити
+btn-menu-invite-about = ❓ Детальніше про нагороди
+btn-menu-invite-copy = 🔗 Посилання для запрошення
+btn-menu-invite-send = 📩 Запросити
 btn-menu-invite-qr = 🧾 QR-код
-btn-menu-invite-withdraw-points = 💰 Вывести баланс
-btn-menu-invite-withdraw-balance = 💸 Активировать бонусы
+btn-menu-invite-withdraw-points = 💰 Вивести баланс
+btn-menu-invite-withdraw-balance = 💸 Активувати бонуси
 btn-menu-promocode = 🎟 Промокод
-btn-menu-support = 🆘 Помощь
-btn-menu-tos = 📋 Соглашение
-btn-menu-community = 👥 Сообщество
-btn-menu-dashboard = 🛠 Панель управления
+btn-menu-support = 🆘 Допомога
+btn-menu-tos = 📋 Угода
+btn-menu-community = 👥 Спільнота
+btn-menu-dashboard = 🛠 Панель керування
 
 # Balance
-btn-balance-topup = ➕ Пополнить
-btn-balance-withdraw = ➖ Вывести
-btn-balance-transfer = 💸 Перевести
+btn-balance-topup = ➕ Поповнити
+btn-balance-withdraw = ➖ Вивести
+btn-balance-transfer = 💸 Переказати
 btn-balance-gateway = 
     { $gateway_type ->
-    [YOOMONEY] 💳 Банковская карта
-    [YOOKASSA] 💳 ЮKassa
+    [YOOMONEY] 💳 Банківська картка
+    [YOOKASSA] 💳 YooKassa
     [CRYPTOMUS] 🔐 Cryptomus
     [HELEKET] 💎 Heleket
-    [TELEGRAM_STARS] ⭐ Телеграм
+    [TELEGRAM_STARS] ⭐ Telegram
     *[OTHER] 💳 { $gateway_type }
     }
-btn-balance-custom-amount = ✏️ Своя сумма
-btn-balance-pay = ✅ Оплатить
-btn-balance-transfer-recipient = 👤 Получатель
-btn-balance-transfer-amount = 💵 Сумма: { $amount } ₽
-btn-balance-transfer-message = 💬 Сообщение
-btn-balance-transfer-send = ✅ Отправить
-btn-balance-transfer-history = 📜 История пользователей
+btn-balance-custom-amount = ✏️ Своя сума
+btn-balance-pay = ✅ Сплатити
+btn-balance-transfer-recipient = 👤 Отримувач
+btn-balance-transfer-amount = 💵 Сума: { $amount } ₽
+btn-balance-transfer-message = 💬 Повідомлення
+btn-balance-transfer-send = ✅ Надіслати
+btn-balance-transfer-history = 📜 Історія користувача
 btn-transfer-amount-100 = { $selected ->
     [1] [100 ₽]
     *[0] 100 ₽
@@ -444,21 +444,21 @@ btn-transfer-amount-5000 = { $selected ->
     }
 
 # Bonus Activation
-btn-bonus-custom-amount = ✏️ Своя сумма
+btn-bonus-custom-amount = ✏️ Своя сума
 
 # Dashboard
 btn-dashboard-statistics = 📊 Статистика
-btn-dashboard-users = 👥 Пользователи
-btn-dashboard-broadcast = 📢 Рассылка
-btn-dashboard-promocodes = 🎟 Промокоды
-btn-dashboard-access = 🔓 Режим доступа
-btn-dashboard-features = ⚙️ Функционал
+btn-dashboard-users = 👥 Користувачі
+btn-dashboard-broadcast = 📢 Розсилка
+btn-dashboard-promocodes = 🎟 Промокоди
+btn-dashboard-access = 🔓 Режим доступу
+btn-dashboard-features = ⚙️ Функції
 btn-dashboard-remnawave = 🌊 Панель
 btn-dashboard-remnashop = 🛍 Телеграм
-btn-dashboard-importer = 📥 Импорт пользователей
-btn-dashboard-save-db = 💾 Сохранить БД
-btn-db-export = 📤 Экспорт
-btn-db-import = 📥 Импорт
+btn-dashboard-importer = 📥 Імпорт користувачів
+btn-dashboard-save-db = 💾 Зберегти БД
+btn-db-export = 📤 Експорт
+btn-db-import = 📥 Імпорт
 
 # Features
 btn-feature-toggle =
@@ -467,54 +467,54 @@ btn-feature-toggle =
     *[0] ⬜ { $name }
     }
 
-btn-extra-devices-menu = 📱 Доп. устройства
-btn-extra-devices-price = 💰 Стоимость: { $price } ₽
-btn-extra-devices-min-days = ⏳ Минимум дней: { $days }
+btn-extra-devices-menu = 📱 Додаткові пристрої
+btn-extra-devices-price = 💰 Вартість: { $price } ₽
+btn-extra-devices-min-days = ⏳ Мін. днів: { $days }
 btn-extra-devices-one-time = 
     { $selected ->
-    [1] 🔘 Единоразово
-    *[0] ⚪ Единоразово
+    [1] 🔘 Одноразово
+    *[0] ⚪ Одноразово
     }
 btn-extra-devices-monthly = 
     { $selected ->
-    [1] 🔘 Ежемесячно
-    *[0] ⚪ Ежемесячно
+    [1] 🔘 Щомісяця
+    *[0] ⚪ Щомісяця
     }
 
-# Дни для минимального срока
+# Days for minimum period
 btn-days-1 = { $selected ->
     [1] [1 день]
     *[0] 1 день
 }
 btn-days-3 = { $selected ->
-    [1] [3 дня]
-    *[0] 3 дня
+    [1] [3 дні]
+    *[0] 3 дні
 }
 btn-days-5 = { $selected ->
-    [1] [5 дней]
-    *[0] 5 дней
+    [1] [5 днів]
+    *[0] 5 днів
 }
 btn-days-7 = { $selected ->
-    [1] [7 дней]
-    *[0] 7 дней
+    [1] [7 днів]
+    *[0] 7 днів
 }
 btn-days-10 = { $selected ->
-    [1] [10 дней]
-    *[0] 10 дней
+    [1] [10 днів]
+    *[0] 10 днів
 }
 btn-days-14 = { $selected ->
-    [1] [14 дней]
-    *[0] 14 дней
+    [1] [14 днів]
+    *[0] 14 днів
 }
 btn-days-30 = { $selected ->
-    [1] [30 дней]
-    *[0] 30 дней
+    [1] [30 днів]
+    *[0] 30 днів
 }
 
-# Цены доп. устройств
+# Extra device prices
 btn-price-free = { $selected ->
-    [1] [Бесплатно]
-    *[0] Бесплатно
+    [1] [Безкоштовно]
+    *[0] Безкоштовно
     }
 btn-price-100 = { $selected ->
     [1] [100 ₽]
@@ -556,15 +556,15 @@ btn-price-1000 = { $selected ->
     [1] [1000 ₽]
     *[0] 1000 ₽
     }
-btn-manual-input = ✏️ Ручной ввод
+btn-manual-input = ✏️ Ручне введення
 btn-commission-free = { $selected ->
-    [1] [🆓 Бесплатно]
-    *[0] 🆓 Бесплатно
+    [1] [🆓 Безкоштовно]
+    *[0] 🆓 Безкоштовно
     }
-btn-commission-cancel = ❌ Отмена
-btn-commission-accept = ✅ Принять
+btn-commission-cancel = ❌ Скасувати
+btn-commission-accept = ✅ Прийняти
 
-# Комиссия в переводах - Процентные значения
+# Transfer commission - Percentage values
 btn-commission-1 = { $selected ->
     [1] [1%]
     *[0] 1%
@@ -710,7 +710,7 @@ btn-commission-100 = { $selected ->
     *[0] 100%
     }
 
-# Комиссия в переводах - Фиксированные значения
+# Transfer commission - Fixed values
 btn-commission-50-rub = { $selected ->
     [1] [50 ₽]
     *[0] 50 ₽
@@ -792,10 +792,10 @@ btn-commission-1000-rub = { $selected ->
     *[0] 1000 ₽
     }
 
-# Минимум и максимум в переводах
+# Transfer min and max amounts
 btn-amount-no-limit = { $selected ->
-    [1] [🔓 Без ограничений]
-    *[0] 🔓 Без ограничений
+    [1] [🔓 Без обмежень]
+    *[0] 🔓 Без обмежень
     }
 btn-amount-10 = { $selected ->
     [1] [10 ₽]
@@ -837,14 +837,14 @@ btn-amount-500000 = { $selected ->
     [1] [500000 ₽]
     *[0] 500000 ₽
     }
-btn-amount-cancel = ❌ Отмена
-btn-amount-accept = ✅ Принять
+btn-amount-cancel = ❌ Скасувати
+btn-amount-accept = ✅ Прийняти
 
 
-# Бонусы активации
+# Bonus activation
 btn-bonus-activate-all = { $selected ->
-    [true] [Активировать всё ({ $referral_balance } ₽)]
-    *[other] Активировать всё ({ $referral_balance } ₽)
+    [true] [Активувати все ({ $referral_balance } ₽)]
+    *[other] Активувати все ({ $referral_balance } ₽)
 }
 btn-bonus-amount-100 = { $selected ->
     [true] [100 ₽]
@@ -893,7 +893,7 @@ btn-statistics-page =
     [4] 📦
     [5] 🎁
     [6] 👪
-    *[OTHER] page
+    *[OTHER] сторінка
     }
 
 btn-statistics-current-page =
@@ -904,50 +904,50 @@ btn-statistics-current-page =
     [4] [📦]
     [5] [🎁]
     [6] [👪]
-    *[OTHER] [page]
+    *[OTHER] [сторінка]
     }
 
 
 # Users
-btn-users-search = 🔍 Поиск пользователя
-btn-users-recent-registered = 🆕 Последние зарегистрированные
-btn-users-recent-activity = 📝 Последние взаимодействующие
-btn-users-all = 👥 Все пользователи
-btn-users-blacklist = 🚫 Черный список
-btn-users-unblock-all = 🔓 Разблокировать всех
+btn-users-search = 🔍 Пошук користувача
+btn-users-recent-registered = 🆕 Нещодавно зареєстровані
+btn-users-recent-activity = 📝 Нещодавно активні
+btn-users-all = 👥 Усі користувачі
+btn-users-blacklist = 🚫 Чорний список
+btn-users-unblock-all = 🔓 Розблокувати всіх
 
 
 # User
-btn-user-discount = 💸 Постоянная скидка
-btn-user-points = 💰 Изменить баланс
-btn-user-main-balance = 💰 Основной баланс
-btn-user-referral-balance = 🎁 Бонусный баланс
-btn-user-balance = 💳 Финансы
-btn-user-subscription = 📋 Подписка
+btn-user-discount = 💸 Постійна знижка
+btn-user-points = 💰 Змінити баланс
+btn-user-main-balance = 💰 Основний баланс
+btn-user-referral-balance = 🎁 Бонусний баланс
+btn-user-balance = 💳 Фінанси
+btn-user-subscription = 📋 Підписка
 btn-user-statistics = 📊 Статистика
-btn-user-message = 📩 Написать сообщение
-btn-user-role = 👮‍♂️ Изменить роль
-btn-user-transactions = 🧾 Оплаты
-btn-user-give-access = 🔑 Доступ к планам
-btn-user-current-subscription = 💳 Текущая подписка
-btn-user-change-subscription = 🎁 Изменить подписку
-btn-user-subscription-traffic-limit = 🌐 Лимит трафика
-btn-user-subscription-device-limit = 📱 Добавить устройства
-btn-user-subscription-expire-time = ⏳ Время истечения
-btn-user-subscription-squads = 🔗 Сквады
-btn-user-subscription-traffic-reset = 🔄 Сбросить трафик
-btn-user-subscription-devices = 🧾 Список устройств
-btn-user-subscription-url = 📋 Скопировать ссылку
-btn-user-subscription-set = ✅ Установить подписку
-btn-user-subscription-delete = ❌ Удалить
-btn-user-message-preview = 👀 Предпросмотр
-btn-user-message-confirm = ✅ Отправить
-btn-user-sync = 🌀 Синхронизировать
-btn-user-sync-remnawave = 🌊 Использовать данные Remnawave
-btn-user-sync-remnashop = 🛍 Использовать данные Remnashop
-btn-user-give-subscription = 🎁 Выдать подписку
-btn-user-subscription-internal-squads = ⏺️ Внутренние сквады
-btn-user-subscription-external-squads = ⏹️ Внешний сквад
+btn-user-message = 📩 Надіслати повідомлення
+btn-user-role = 👮‍♂️ Змінити роль
+btn-user-transactions = 🧾 Платежі
+btn-user-give-access = 🔑 Доступ до планів
+btn-user-current-subscription = 💳 Поточна підписка
+btn-user-change-subscription = 🎁 Змінити підписку
+btn-user-subscription-traffic-limit = 🌐 Ліміт трафіку
+btn-user-subscription-device-limit = 📱 Додати пристрої
+btn-user-subscription-expire-time = ⏳ Час закінчення
+btn-user-subscription-squads = 🔗 Сквади
+btn-user-subscription-traffic-reset = 🔄 Скинути трафік
+btn-user-subscription-devices = 🧾 Список пристроїв
+btn-user-subscription-url = 📋 Скопіювати посилання
+btn-user-subscription-set = ✅ Встановити підписку
+btn-user-subscription-delete = ❌ Видалити
+btn-user-message-preview = 👀 Попередній перегляд
+btn-user-message-confirm = ✅ Надіслати
+btn-user-sync = 🌀 Синхронізувати
+btn-user-sync-remnawave = 🌊 Використати дані Remnawave
+btn-user-sync-remnashop = 🛍 Використати дані Remnashop
+btn-user-give-subscription = 🎁 Видати підписку
+btn-user-subscription-internal-squads = ⏺️ Внутрішні сквади
+btn-user-subscription-external-squads = ⏹️ Зовнішній сквад
 
 btn-user-allowed-plan-choice = { $selected ->
     [1] 🔘
@@ -955,8 +955,8 @@ btn-user-allowed-plan-choice = { $selected ->
     } { $plan_name }
 
 btn-user-subscription-active-toggle = { $is_active ->
-    [1] 🔴 Выключить
-    *[0] 🟢 Включить
+    [1] 🔴 Вимкнути
+    *[0] 🟢 Увімкнути
     }
 
 btn-user-transaction = { $status ->
@@ -969,27 +969,27 @@ btn-user-transaction = { $status ->
 } { $created_at }
 
 btn-user-block = { $is_blocked ->
-    [1] 🔓 Разблокировать
-    *[0] 🔒 Заблокировать
+    [1] 🔓 Розблокувати
+    *[0] 🔒 Заблокувати
     }
 
 
 # Broadcast
-btn-broadcast-list = 📄 Список всех рассылок
-btn-broadcast-all = 👥 Всем
-btn-broadcast-plan = 📦 По плану
-btn-broadcast-subscribed = ✅ С подпиской
-btn-broadcast-unsubscribed = ❌ Без подписки
-btn-broadcast-expired = ⌛ Просроченным
-btn-broadcast-trial = ✳️ С пробником
-btn-broadcast-content = ✉️ Редактировать содержимое
-btn-broadcast-buttons = ✳️ Редактировать кнопки
-btn-broadcast-preview = 👀 Предпросмотр
-btn-broadcast-confirm = ✅ Запустить рассылку
-btn-broadcast-refresh = 🔄 Обновить данные
-btn-broadcast-viewing = 👀 Просмотр
-btn-broadcast-cancel = ⛔ Остановить рассылку
-btn-broadcast-delete = ❌ Удалить отправленное
+btn-broadcast-list = 📄 Список усіх розсилок
+btn-broadcast-all = 👥 Усім
+btn-broadcast-plan = 📦 За планом
+btn-broadcast-subscribed = ✅ З підпискою
+btn-broadcast-unsubscribed = ❌ Без підписки
+btn-broadcast-expired = ⌛ Із закінченою
+btn-broadcast-trial = ✳️ З пробною
+btn-broadcast-content = ✉️ Редагувати контент
+btn-broadcast-buttons = ✳️ Редагувати кнопки
+btn-broadcast-preview = 👀 Попередній перегляд
+btn-broadcast-confirm = ✅ Почати розсилку
+btn-broadcast-refresh = 🔄 Оновити дані
+btn-broadcast-viewing = 👀 Переглянути
+btn-broadcast-cancel = ⛔ Зупинити розсилку
+btn-broadcast-delete = ❌ Видалити надіслані
 
 btn-broadcast-button-choice = { $selected ->
     [1] 🔘
@@ -1007,19 +1007,19 @@ btn-broadcast =  { $status ->
 
 
 # Go to
-btn-goto-subscription = 💳 Купить подписку
-btn-goto-promocode = 🎟 Активировать промокод
-btn-goto-invite = 👥 Пригласить
-btn-goto-subscription-renew = 🔄 Продлить подписку
-btn-goto-user-profile = 👤 Перейти к пользователю
+btn-goto-subscription = 💳 Купити підписку
+btn-goto-promocode = 🎟 Активувати промокод
+btn-goto-invite = 👥 Запросити
+btn-goto-subscription-renew = 🔄 Продовжити підписку
+btn-goto-user-profile = 👤 Перейти до користувача
 
 
 # Promocodes
-btn-promocodes-list = 📃 Список промокодов
-btn-promocodes-search = 🔍 Поиск промокода
-btn-promocodes-create = 🆕 Создать
-btn-promocodes-delete = 🗑️ Удалить
-btn-promocodes-edit = ✏️ Редактировать
+btn-promocodes-list = 📃 Список промокодів
+btn-promocodes-search = 🔍 Пошук промокоду
+btn-promocodes-create = 🆕 Створити
+btn-promocodes-delete = 🗑️ Видалити
+btn-promocodes-edit = ✏️ Редагувати
 
 
 # Access
@@ -1033,43 +1033,43 @@ btn-access-purchases-toggle = { $enabled ->
 btn-access-registration-toggle = { $enabled ->
     [1] 🔘
     *[0] ⚪
-    } Регистрация
+    } Реєстрація
 
-btn-access-conditions = ⚙️ Условия доступа
-btn-access-rules = ✳️ Принятие правил
-btn-access-channel = ❇️ Подписка на канал
+btn-access-conditions = ⚙️ Умови доступу
+btn-access-rules = ✳️ Прийняття правил
+btn-access-channel = ❇️ Підписка на канал
 
 btn-access-condition-toggle = { $enabled ->
-    [1] 🔘 Включено
-    *[0] ⚪ Выключено
+    [1] 🔘 Увімкнено
+    *[0] ⚪ Вимкнено
     }
 
 
 # RemnaShop
-btn-remnashop-admins = 👮‍♂️ Администраторы
-btn-remnashop-gateways = 🌐 Платежные системы
-btn-remnashop-referral = 👥 Реф. система
+btn-remnashop-admins = 👮‍♂️ Адміністратори
+btn-remnashop-gateways = 🌐 Платіжні системи
+btn-remnashop-referral = 👥 Реферальна система
 btn-remnashop-advertising = 🎯 Реклама
-btn-remnashop-plans = 📦 Планы
-btn-remnashop-notifications = 🔔 Уведомления
+btn-remnashop-plans = 📦 Плани
+btn-remnashop-notifications = 🔔 Сповіщення
 btn-remnashop-logs = 📄 Логи
 btn-remnashop-audit = 🔍 Аудит
-btn-remnashop-extra-devices = 📱 Доп. устройства
+btn-remnashop-extra-devices = 📱 Додаткові пристрої
 
 
 # Gateways
 btn-gateway-title = { gateway-type }
 btn-gateways-setting = { $field }
-btn-gateways-webhook-copy = 📋 Скопировать вебхук
+btn-gateways-webhook-copy = 📋 Скопіювати Webhook
 
 btn-gateway-active = { $is_active ->
-    [1] 🟢 Включено
-    *[0] 🔴 Выключено
+    [1] 🟢 Увімкнено
+    *[0] 🔴 Вимкнено
     }
 
 btn-gateway-test = 🐞 Тест
-btn-gateways-default-currency = 💸 Валюта по умолчанию
-btn-gateways-placement = 🔢 Изменить позиционирование
+btn-gateways-default-currency = 💸 Валюта за замовчуванням
+btn-gateways-placement = 🔢 Змінити розташування
 
 btn-gateways-default-currency-choice = { $enabled -> 
     [1] 🔘
@@ -1078,84 +1078,84 @@ btn-gateways-default-currency-choice = { $enabled ->
 
 
 # Referral
-btn-referral-level = 🔢 Уровень
-btn-referral-reward-type = 🎀 Тип награды
-btn-referral-accrual-strategy = 📍 Условие начисления
-btn-referral-reward-strategy = ⚖️ Форма начисления
-btn-referral-reward = 🎁 Награда
-btn-referral-invite-message = ✉️ Настройка приглашения
-btn-reset-default = 🔄 Сбросить по умолчанию
-btn-invite-edit = ✏️ Редактировать содержимое
-btn-invite-preview = 👁 Предпросмотр
-btn-invite-close-preview = ❌ Закрыть
+btn-referral-level = 🔢 Рівень
+btn-referral-reward-type = 🎀 Тип нагороди
+btn-referral-accrual-strategy = 📍 Умова нарахування
+btn-referral-reward-strategy = ⚖️ Метод нарахування
+btn-referral-reward = 🎁 Нагорода
+btn-referral-invite-message = ✉️ Налаштування запрошення
+btn-reset-default = 🔄 Скинути за замовчуванням
+btn-invite-edit = ✏️ Редагувати контент
+btn-invite-preview = 👁 Попередній перегляд
+btn-invite-close-preview = ❌ Закрити
 
 btn-referral-enable = { $is_enable -> 
-    [1] 🟢 Включена
-    *[0] 🔴 Выключена
+    [1] 🟢 Увімкнено
+    *[0] 🔴 Вимкнено
     }
 
-# Кнопки уровня с радио-переключателем
+# Level buttons with radio toggle
 btn-referral-level-one = { $selected ->
-    [1] 🔘 Один уровень
-    *[0] ⚪ Один уровень
+    [1] 🔘 Один рівень
+    *[0] ⚪ Один рівень
     }
 
 btn-referral-level-two = { $selected ->
-    [1] 🔘 Два уровня
-    *[0] ⚪ Два уровня
+    [1] 🔘 Два рівні
+    *[0] ⚪ Два рівні
     }
 
-# Кнопки переключателя редактируемого уровня в меню награды
+# Editable level toggle buttons in reward menu
 btn-reward-level-one = { $selected ->
-    [1] 🔘 Первый уровень
-    *[0] ⚪ Первый уровень
+    [1] 🔘 Перший рівень
+    *[0] ⚪ Перший рівень
     }
 
 btn-reward-level-two = { $selected ->
-    [1] 🔘 Второй уровень
-    *[0] ⚪ Второй уровень
+    [1] 🔘 Другий рівень
+    *[0] ⚪ Другий рівень
     }
 
-# Кнопки типа награды с радио-переключателем
+# Reward type buttons with radio toggle
 btn-referral-type-money = { $selected ->
-    [1] 🔘 Деньги
-    *[0] ⚪ Деньги
+    [1] 🔘 Гроші
+    *[0] ⚪ Гроші
     }
 
 btn-referral-type-days = { $selected ->
-    [1] 🔘 Дни
-    *[0] ⚪ Дни
+    [1] 🔘 Дні
+    *[0] ⚪ Дні
     }
 
-# Кнопки условия начисления с радио-переключателем  
+# Accrual condition buttons with radio toggle
 btn-referral-accrual-first = { $selected ->
-    [1] 🔘 Первый платеж
-    *[0] ⚪ Первый платеж
+    [1] 🔘 Перший платіж
+    *[0] ⚪ Перший платіж
     }
 
 btn-referral-accrual-each = { $selected ->
-    [1] 🔘 Каждый платеж
-    *[0] ⚪ Каждый платеж
+    [1] 🔘 Кожен платіж
+    *[0] ⚪ Кожен платіж
     }
 
-# Кнопки формы начисления с радио-переключателем
+# Accrual method buttons with radio toggle
 btn-referral-strategy-fixed = { $selected ->
-    [1] 🔘 Фиксированная
-    *[0] ⚪ Фиксированная
+    [1] 🔘 Фіксована
+    *[0] ⚪ Фіксована
     }
 
 btn-referral-strategy-percent = { $selected ->
-    [1] 🔘 Процентная
-    *[0] ⚪ Процентная
+    [1] 🔘 Відсоток
+    *[0] ⚪ Відсоток
     }
 
-# Кнопка "Без награды"
+# "No Reward" button
 btn-reward-free = { $selected ->
-    [1] [ Без награды ]
-    *[0] Без награды
+    [1] [ Без нагороди ]
+    *[0] Без нагороди
     }
 
-# Кнопки награды для процентной формы (в стиле комиссии)
+# Reward buttons for percentage (commission style)
 btn-reward-5 = { $selected ->
     [1] [ 5% ]
     *[0] 5%
@@ -1197,7 +1197,7 @@ btn-reward-50 = { $selected ->
     *[0] 50%
     }
 
-# Кнопки награды для фиксированной формы (в стиле комиссии)
+# Reward buttons for fixed amounts (commission style)
 btn-reward-fixed-10 = { $selected ->
     [1] [ 10{ $suffix } ]
     *[0] 10{ $suffix }
@@ -1239,7 +1239,7 @@ btn-reward-fixed-500 = { $selected ->
     *[0] 500{ $suffix }
     }
 
-# Кнопки награды для дней (Экстра дни)
+# Reward buttons for days (Extra days)
 btn-reward-days-1 = { $selected ->
     [1] [ 1 ]
     *[0] 1
@@ -1301,7 +1301,7 @@ btn-reward-days-15 = { $selected ->
     *[0] 15
     }
 
-# Старые кнопки (оставлены для совместимости)
+# Old buttons (kept for compatibility)
 btn-referral-level-choice = { $type -> 
     [1] 1️⃣
     [2] 2️⃣
@@ -1310,86 +1310,86 @@ btn-referral-level-choice = { $type ->
     }
 
 btn-referral-reward-choice = { $type -> 
-    [POINTS] 💎 Баллы
-    [EXTRA_DAYS] ⏳ Дни
-    [MONEY] 💰 Деньги
+    [POINTS] 💎 Бали
+    [EXTRA_DAYS] ⏳ Дні
+    [MONEY] 💰 Гроші
     *[OTHER] { $type }
     }
 
 btn-referral-accrual-strategy-choice = { $type -> 
-    [ON_FIRST_PAYMENT] 💳 Первый платеж
-    [ON_EACH_PAYMENT] 💸 Каждый платеж
+    [ON_FIRST_PAYMENT] 💳 Перший платіж
+    [ON_EACH_PAYMENT] 💸 Кожен платіж
     *[OTHER] { $type }
     }
 
 btn-referral-reward-strategy-choice = { $type -> 
-    [AMOUNT] 🔸 Фиксированная
-    [PERCENT] 🔹 Процентная
+    [AMOUNT] 🔸 Фіксована
+    [PERCENT] 🔹 Відсоток
     *[OTHER] { $type }
     }
 
 
 # Notifications
-btn-notifications-user = 👥 Пользовательские
+btn-notifications-user = 👥 Сповіщення користувачів
 
 btn-notifications-user-choice = { $enabled ->
     [1] 🔘
     *[0] ⚪
     } { $type ->
-    [EXPIRES_IN_3_DAYS] Подписка истекает (3 дня)
-    [EXPIRES_IN_2_DAYS] Подписка истекает (2 дня)
-    [EXPIRES_IN_1_DAYS] Подписка истекает (1 день)
-    [EXPIRED] Подписка истекла
-    [LIMITED] Трафик исчерпан
-    [EXPIRED_1_DAY_AGO] Подписка истекла (1 день)
-    [REFERRAL_ATTACHED] Реферал закреплен
-    [REFERRAL_REWARD] Получено вознаграждение
+    [EXPIRES_IN_3_DAYS] Підписка закінчується (3 дні)
+    [EXPIRES_IN_2_DAYS] Підписка закінчується (2 дні)
+    [EXPIRES_IN_1_DAYS] Підписка закінчується (1 день)
+    [EXPIRED] Підписка закінчилася
+    [LIMITED] Трафік вичерпано
+    [EXPIRED_1_DAY_AGO] Підписка закінчилася (1 день)
+    [REFERRAL_ATTACHED] Реферал прив'язаний
+    [REFERRAL_REWARD] Нагорода отримана
     *[OTHER] { $type }
     }
 
-btn-notifications-system = ⚙️ Системные
+btn-notifications-system = ⚙️ Системні сповіщення
 
 btn-notifications-system-choice = { $enabled -> 
     [1] 🔘
     *[0] ⚪
     } { $type ->
-    [BOT_LIFETIME] Жизненный цикл бота
-    [BOT_UPDATE] Обновления бота
-    [USER_REGISTERED] Регистрация пользователя
-    [SUBSCRIPTION] Оформление подписки
-    [PROMOCODE_ACTIVATED] Активация промокода
-    [TRIAL_GETTED] Получение пробника
-    [NODE_STATUS] Статус узла
-    [USER_FIRST_CONNECTED] Первое подключение
-    [USER_HWID] Устройства пользователя
-    [BILLING] Финансовые операции
-    [BALANCE_TRANSFER] Финансовые переводы
+    [BOT_LIFETIME] Життєвий цикл бота
+    [BOT_UPDATE] Оновлення бота
+    [USER_REGISTERED] Реєстрація користувача
+    [SUBSCRIPTION] Покупка підписки
+    [PROMOCODE_ACTIVATED] Активація промокоду
+    [TRIAL_GETTED] Отримано пробний період
+    [NODE_STATUS] Статус вузла
+    [USER_FIRST_CONNECTED] Перше підключення
+    [USER_HWID] Пристрої користувача
+    [BILLING] Фінансові операції
+    [BALANCE_TRANSFER] Фінансові перекази
     *[OTHER] { $type }
     }
 
 
 # Plans
 btn-plans-statistics = 📊 Статистика
-btn-plans-create = 🆕 Создать
-btn-plan-save = ✅ Сохранить
-btn-plan-create = ✅ Создать план
-btn-plan-delete = ❌ Удалить
-btn-plan-name = 🏷️ Название
-btn-plan-description = 💬 Описание
-btn-plan-description-remove = ❌ Удалить текущее описание
+btn-plans-create = 🆕 Створити
+btn-plan-save = ✅ Зберегти
+btn-plan-create = ✅ Створити план
+btn-plan-delete = ❌ Видалити
+btn-plan-name = 🏷️ Назва
+btn-plan-description = 💬 Опис
+btn-plan-description-remove = ❌ Видалити поточний опис
 btn-plan-tag = 📌 Тег
-btn-plan-tag-remove = ❌ Удалить текущий тег
+btn-plan-tag-remove = ❌ Видалити поточний тег
 btn-plan-type = 🔖 Тип
 btn-plan-availability = ✴️ Доступ
-btn-plan-durations-prices = 💰 Тарифы
-btn-plan-traffic = 🌐 Трафик
-btn-plan-devices = 📱 Устройства
-btn-plan-allowed = 👥 Разрешенные пользователи
-btn-plan-squads = 🔗 Сквады
-btn-plan-internal-squads = ⏺️ Внутренние сквады
-btn-plan-external-squads = ⏹️ Внешний сквад
+btn-plan-durations-prices = 💰 Тарифи
+btn-plan-traffic = 🌐 Трафік
+btn-plan-devices = 📱 Пристрої
+btn-plan-allowed = 👥 Дозволені користувачі
+btn-plan-squads = 🔗 Сквади
+btn-plan-internal-squads = ⏺️ Внутрішні сквади
+btn-plan-external-squads = ⏹️ Зовнішній сквад
 btn-allowed-user = { $id }
-btn-plan-duration-add = 🆕 Добавить
+btn-plan-duration-add = 🆕 Додати
 btn-plan-price-choice = 💸 { $price } { $currency }
 
 btn-plan = { $is_active ->
@@ -1398,62 +1398,62 @@ btn-plan = { $is_active ->
     } { $name }
 
 btn-plan-active = { $is_active -> 
-    [1] 🟢 Включен
-    *[0] 🔴 Выключен
+    [1] 🟢 Увімкнено
+    *[0] 🔴 Вимкнено
     }
 
 btn-plan-type-choice = { $type -> 
-    [TRAFFIC] 🌐 Трафик
-    [DEVICES] 📱 Устройства
-    [BOTH] 🔗 Трафик + устройства
-    [UNLIMITED] ♾️ Безлимит
+    [TRAFFIC] 🌐 Трафік
+    [DEVICES] 📱 Пристрої
+    [BOTH] 🔗 Трафік + Пристрої
+    [UNLIMITED] ♾️ Безлімітний
     *[OTHER] { $type }
     }
 
 btn-plan-type-radio = { $selected ->
     [1] 🔘 { $type ->
-        [TRAFFIC] 🌐 Трафик
-        [DEVICES] 📱 Устройства
-        [BOTH] 🔗 Трафик + устройства
-        [UNLIMITED] ♾️ Безлимит
+        [TRAFFIC] 🌐 Трафік
+        [DEVICES] 📱 Пристрої
+        [BOTH] 🔗 Трафік + Пристрої
+        [UNLIMITED] ♾️ Безлімітний
         *[OTHER] { $type }
         }
     *[0] ⚪ { $type ->
-        [TRAFFIC] 🌐 Трафик
-        [DEVICES] 📱 Устройства
-        [BOTH] 🔗 Трафик + устройства
-        [UNLIMITED] ♾️ Безлимит
+        [TRAFFIC] 🌐 Трафік
+        [DEVICES] 📱 Пристрої
+        [BOTH] 🔗 Трафік + Пристрої
+        [UNLIMITED] ♾️ Безлімітний
         *[OTHER] { $type }
         }
     }
 
 btn-plan-availability-choice = { $type -> 
-    [ALL] 🌍 Для всех
-    [NEW] 🌱 Для новых
-    [EXISTING] 👥 Для клиентов
-    [INVITED] ✉️ Для приглашенных
-    [ALLOWED] 🔐 Для разрешенных
-    [TRIAL] 🎁 Для пробника
+    [ALL] 🌍 Для всіх
+    [NEW] 🌱 Для нових користувачів
+    [EXISTING] 👥 Для існуючих клієнтів
+    [INVITED] ✉️ Для запрошених користувачів
+    [ALLOWED] 🔐 Для дозволених користувачів
+    [TRIAL] 🎁 Для пробного періоду
     *[OTHER] { $type }
     }
 
 btn-plan-availability-radio = { $selected ->
     [1] 🔘 { $type ->
-        [ALL] 🌍 Для всех
-        [NEW] 🌱 Для новых
-        [EXISTING] 👥 Для клиентов
-        [INVITED] ✉️ Для приглашенных
-        [ALLOWED] 🔐 Для разрешенных
-        [TRIAL] 🎁 Для пробника
+        [ALL] 🌍 Для всіх
+        [NEW] 🌱 Для нових користувачів
+        [EXISTING] 👥 Для існуючих клієнтів
+        [INVITED] ✉️ Для запрошених користувачів
+        [ALLOWED] 🔐 Для дозволених користувачів
+        [TRIAL] 🎁 Для пробного періоду
         *[OTHER] { $type }
         }
     *[0] ⚪ { $type ->
-        [ALL] 🌍 Для всех
-        [NEW] 🌱 Для новых
-        [EXISTING] 👥 Для клиентов
-        [INVITED] ✉️ Для приглашенных
-        [ALLOWED] 🔐 Для разрешенных
-        [TRIAL] 🎁 Для пробника
+        [ALL] 🌍 Для всіх
+        [NEW] 🌱 Для нових користувачів
+        [EXISTING] 👥 Для існуючих клієнтів
+        [INVITED] ✉️ Для запрошених користувачів
+        [ALLOWED] 🔐 Для дозволених користувачів
+        [TRIAL] 🎁 Для пробного періоду
         *[OTHER] { $type }
         }
     }
@@ -1468,40 +1468,40 @@ btn-plan-duration = ⌛ { $value ->
     *[other] { unit-day }
     }
 
-btn-keep-current-duration = ⏸️ Не менять длительность ({ $remaining })
+btn-keep-current-duration = ⏸️ Залишити тривалість ({ $remaining })
 
 
 # RemnaWave
-btn-remnawave-users = 👥 Пользователи
-btn-remnawave-hosts = 🌐 Хосты
-btn-remnawave-nodes = 🖥️ Ноды
-btn-remnawave-inbounds = 🔌 Инбаунды
+btn-remnawave-users = 👥 Користувачі
+btn-remnawave-hosts = 🌐 Хости
+btn-remnawave-nodes = 🖥️ Вузли
+btn-remnawave-inbounds = 🔌 Inbounds
 
 
 # Importer
-btn-importer-from-xui = 💩 Импорт из панели 3X-UI
-btn-importer-from-xui-shop = 🛒 Бот 3xui-shop
-btn-importer-sync = 🌀 Из панели в бот
-btn-importer-sync-bot-to-panel = 📤 Из телеграма в панель
-btn-importer-squads = 🔗 Внутренние сквады
-btn-importer-import-all = ✅ Импортировать всех
-btn-importer-import-active = ❇️ Импортировать активных
+btn-importer-from-xui = 💩 Імпорт з 3X-UI панелі
+btn-importer-from-xui-shop = 🛒 3xui-shop бот
+btn-importer-sync = 🌀 З панелі в бота
+btn-importer-sync-bot-to-panel = 📤 З телеграма в панель
+btn-importer-squads = 🔗 Внутрішні сквади
+btn-importer-import-all = ✅ Імпортувати всіх
+btn-importer-import-active = ❇️ Імпортувати активних
 
 
 # Subscription
-btn-subscription-new = 💸 Купить подписку
-btn-subscription-buy = 🛒 Купить подписку
-btn-subscription-renew = 🔄 Продлить
-btn-subscription-change = 🔃 Изменить
-btn-subscription-referral = 📢 Реферальная подписка
-btn-subscription-upgrade-referral = 📢 Улучшить до реферальной
-btn-subscription-promocode = 🎟 Активировать промокод
+btn-subscription-new = 💸 Купити підписку
+btn-subscription-buy = 🛒 Купити підписку
+btn-subscription-renew = 🔄 Продовжити
+btn-subscription-change = 🔃 Змінити
+btn-subscription-referral = 📢 Реферальна підписка
+btn-subscription-upgrade-referral = 📢 Оновити до реферальної
+btn-subscription-promocode = 🎟 Активувати промокод
 btn-subscription-payment-method = 
     { $gateway_type ->
-    [BALANCE] 💰 С баланса
-    [YOOMONEY] 💳 Банковская карта
-    [YOOKASSA] 💳 ЮKassa
-    [TELEGRAM_STARS] ⭐ Звёзды телеграм
+    [BALANCE] 💰 З балансу
+    [YOOMONEY] 💳 Банківська картка
+    [YOOKASSA] 💳 YooKassa
+    [TELEGRAM_STARS] ⭐ Telegram Stars
     [CRYPTOMUS] 🔐 Cryptomus
     [HELEKET] 💎 Heleket
     [CRYPTOPAY] 🪙 Cryptopay
@@ -1511,13 +1511,13 @@ btn-subscription-payment-method =
         [1] { $price } ({ $original_price })
         *[0] { $price }
     }
-btn-subscription-pay = ✅ Подтвердить оплату
-btn-subscription-confirm-balance = ✅ Подтвердить оплату
-btn-subscription-get = 🎁 Получить бесплатно
-btn-subscription-back-plans = ⬅️ Назад к выбору плана
+btn-subscription-pay = ✅ Підтвердити оплату
+btn-subscription-confirm-balance = ✅ Підтвердити оплату
+btn-subscription-get = 🎁 Отримати безкоштовно
+btn-subscription-back-plans = ⬅️ Назад до вибору плану
 btn-subscription-back-duration = ⬅️ Назад
-btn-subscription-back-payment-method = ⬅️ Изменить способ оплаты
-btn-subscription-connect = 🚀 Подключиться
+btn-subscription-back-payment-method = ⬅️ Змінити спосіб оплати
+btn-subscription-connect = 🚀 Підключитися
 btn-subscription-duration = { $final_amount -> 
     [0] { $period } | 🎁
     *[HAS] { $has_discount ->
@@ -1527,36 +1527,36 @@ btn-subscription-duration = { $final_amount ->
     }
 
 # Extra device duration buttons
-btn-add-device-duration-full = До конца подписки ({ $days } д.) | { $price } ₽
-btn-add-device-duration-full-month = Полный месяц (30 д.) | { $price } ₽
-btn-add-device-duration-month = До конца цикла ({ $days } д.) | { $price } ₽
-btn-add-device-duration-months-1 = 1 месяц (30 д.) | { $price } ₽
-btn-add-device-duration-months-3 = 3 месяца (90 д.) | { $price } ₽
-btn-add-device-duration-months-6 = 6 месяцев (180 д.) | { $price } ₽
-btn-add-device-duration-months-12 = 12 месяцев (365 д.) | { $price } ₽
+btn-add-device-duration-full = До кінця підписки ({ $days } д.) | { $price } ₽
+btn-add-device-duration-full-month = Повний місяць (30 д.) | { $price } ₽
+btn-add-device-duration-month = До кінця циклу ({ $days } д.) | { $price } ₽
+btn-add-device-duration-months-1 = 1 місяць (30 д.) | { $price } ₽
+btn-add-device-duration-months-3 = 3 місяці (90 д.) | { $price } ₽
+btn-add-device-duration-months-6 = 6 місяців (180 д.) | { $price } ₽
+btn-add-device-duration-months-12 = 12 місяців (365 д.) | { $price } ₽
 
 
 # Promocodes
 btn-promocode-code = 🏷️ Код
-btn-promocode-name = 📝 Название
+btn-promocode-name = 📝 Назва
 btn-promocode-type = 🔖 Тип
 btn-promocode-availability = ✴️ Доступ
 
 btn-promocode-active = { $is_active -> 
-    [1] ✅ Выключить
-    *[0] 🔴 Включить
+    [1] ✅ Вимкнути
+    *[0] 🔴 Увімкнути
     }
 
-btn-promocode-reward = 🎁 Награда
-btn-promocode-lifetime = ⌛ Время жизни
-btn-promocode-allowed = 👥 Разрешенные пользователи
-btn-promocode-access = 📦 Доступ к тарифам
-btn-promocode-confirm = ✅ Сохранить
-btn-promocode-quantity = 🔢 Количество
-btn-promocode-generate = 🎲 Случайный код
-btn-lifetime-infinite = Бесконечно
-btn-quantity-infinite = Бесконечно
-btn-manual-input = ✏️ Ручной ввод
+btn-promocode-reward = 🎁 Нагорода
+btn-promocode-lifetime = ⌛ Час життя
+btn-promocode-allowed = 👥 Дозволені користувачі
+btn-promocode-access = 📦 Доступ до планів
+btn-promocode-confirm = ✅ Зберегти
+btn-promocode-quantity = 🔢 Кількість
+btn-promocode-generate = 🎲 Випадковий код
+btn-lifetime-infinite = Безкінечний
+btn-quantity-infinite = Безкінечно
+btn-manual-input = ✏️ Ручне введення
 
 btn-promocode-type-choice = { $selected -> 
     [1] 🔘
@@ -1568,4 +1568,4 @@ btn-plan-access-choice = { $selected ->
     *[0] ⚪ { $plan_name }
     }
 
-btn-pay = 💳 Оплатить
+btn-pay = 💳 Сплатити

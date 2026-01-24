@@ -1,534 +1,353 @@
-# Layout
-space = {" "}
-empty = { "!empty!" }
-btn-test = Кнопка
-msg-test = Сообщение
-development = Временно недоступно!
-test-payment = Тестовый платеж
-unlimited = ∞
-unknown = —
-expired = Закончилась
-
-unit-unlimited = { $value ->
-    [-1] { unlimited }
-    [0] { unlimited }
-    *[other] { $value }
-}
-
-# Other
-payment-invoice-description = { purchase-type } подписки { $name } на { $duration }
-payment-invoice-topup = Пополнение баланса на { $amount }
-payment-invoice-extra-devices = Покупка дополнительных устройств ({ $device_count } шт.)
-contact-support-help = Здравствуйте! Мне нужна помощь.
-contact-support-paysupport = Здравствуйте! Я бы хотел запросить возврат средств.
-contact-support-withdraw-points = Здравствуйте! Я бы хотел запросить обмен баллов.
-cmd-start = Перезапустить бота
-cmd-support = Помощь
-
-referral-invite-message =
-    {space}
-
-    ✨ TEST Online - Ваш приватный интернет!
-
-    ➡️ Подключиться: { $url }
-
 # Headers
-hdr-user = <b>👤 Пользователь:</b>
-hdr-user-profile = <b>👤 Ваш профиль:</b>
+hdr-dashboard = 🛠 Панель керування
+hdr-settings = ⚙️ Налаштування
+hdr-users = 👥 Користувачі
+hdr-user = 👤 Користувач
+hdr-plans = 📦 Тарифні плани
+hdr-plan = 📦 План
+hdr-promocodes = 🎟 Промокоди
+hdr-promocode = 🎟 Промокод
+hdr-broadcast = 📢 Розсилка
+hdr-statistics = 📊 Статистика
+hdr-notifications = 🔔 Сповіщення
+hdr-referral = 👥 Реферальна система
+hdr-finances = 💰 Фінанси
+hdr-gateways = 🌐 Платіжні системи
+hdr-gateway = 🌐 Платіжна система
+hdr-balance = 💰 Баланс
+hdr-subscription = 💳 Підписка
+hdr-connect = 🚀 Підключення
+hdr-devices = 📱 Пристрої
+hdr-invite = 👥 Запросити
+hdr-support = 🆘 Підтримка
+hdr-trial = 🎁 Пробний період
+hdr-importer = 📥 Імпорт
+hdr-access = 🔓 Доступ
+hdr-features = ⚙️ Функції
+hdr-remnawave = 🌊 Remnawave
+hdr-remnashop = 🛍 Телеграм
+hdr-transfers = 💸 Перекази
+hdr-community = 👥 Спільнота
+hdr-tos = 📜 Умови використання
+hdr-global-discount = 🏷️ Глобальна знижка
+hdr-extra-devices = 📱 Додаткові пристрої
+hdr-bonus = 💸 Бонуси
 
-hdr-subscription = <b>📋 Ваша подписка:</b>
-
-hdr-plan = <b>📦 План:</b>
-hdr-payment = <b>💰 Платеж:</b>
-hdr-error = <b>⚠️ Ошибка:</b>
-hdr-node = <b>🖥 Нода:</b>
-hdr-hwid = <b>📱 Устройство:</b>
 
 # Fragments
-frg-user =
-    <blockquote>
-    • <b>ID</b>: <code>{ $user_id }</code>
-    • <b>Имя</b>: { $user_name }
-    { $is_referral_enable ->
-        [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
-        *[0] {""}
-    }
-    • <b>Скидка</b>: { $discount_value }%{ $discount_value ->
-    [0] {""}
-    *[other] { $discount_is_permanent ->
-        [1] {" "}(Постоянная)
-        *[0] { $discount_remaining ->
-            [0] {" "}(Одноразовая)
-            *[other] {" "}(Осталось { $discount_remaining } { $discount_remaining ->
-                [1] день
-                [2] дня
-                [3] дня
-                [4] дня
-                *[other] дней
-            })
-        }
-    }
-    }
-    { $is_balance_enabled ->
-        [1] • <b>Баланс</b>: { $balance }
-        *[0] {""}
-    }
-    { $is_balance_separate ->
-        [1] { $is_referral_enable ->
-            [1] • <b>Бонусы</b>: { $referral_balance }
-            *[0] {""}
-        }
-        *[0] {""}
-    }
-    </blockquote>
-
-frg-user-info =
-    <blockquote>
-    • <b>ID</b>: <code>{ $user_id }</code>
-    • <b>Имя</b>: { $user_name } { $username -> 
-        [0] { empty }
-        *[HAS] (<a href="tg://user?id={ $user_id }">@{ $username }</a>)
-    }
-    </blockquote>
-
-frg-user-details =
-    <blockquote>
-    • <b>ID</b>: <code>{ $user_id }</code>
-    • <b>Имя</b>: { $user_name } { $username -> 
-        [0] { space }
-        *[HAS] (<a href="tg://user?id={ $user_id }">@{ $username }</a>)
-    }
-    • <b>Роль</b>: { role }
-    • <b>Язык</b>: { language }
-    { $is_referral_enable ->
-        [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
-        *[0] {""}
-    }
-    • <b>Баланс</b>: { $balance }
-    </blockquote>
-
-frg-user-discounts-details =
-    <blockquote>
-    • <b>Персональная</b>: { $personal_discount }%
-    • <b>На следующую покупку</b>: { $purchase_discount }%
-    </blockquote>
-
-frg-subscription =
-    <blockquote>
-    • <b>Тариф:</b> { $plan_name }
-    • <b>Лимит трафика</b>: { $traffic_limit }
-    • <b>Лимит устройств</b>: { $device_limit_number }{ $device_limit_bonus ->
-        [0] {""}
-        *[other] +{ $device_limit_bonus }
-    }{ $extra_devices ->
-        [0] {""}
-        *[other] {" "}(+{ $extra_devices } доп.)
-    }
-    • <b>Осталось</b>: { $expire_time }
-    </blockquote>
-
-# Примечание: frg-subscription-devices убран как дубликат frg-subscription
-# Используйте { frg-subscription } вместо { frg-subscription-devices }
-
-frg-subscription-details =
-    <blockquote>
-    • <b>ID</b>: <code>{ $subscription_id }</code>
-    • <b>Статус</b>: { subscription-status }
-    • <b>Тариф:</b> { $plan_name }
-    • <b>Трафик</b>: { $traffic_used } / { $traffic_limit }
-    • <b>Лимит устройств</b>: { $device_limit_number }{ $device_limit_bonus ->
-        [0] {""}
-        *[other] +{ $device_limit_bonus }
-    }{ $extra_devices ->
-        [0] {""}
-        *[other] {" "}(+{ $extra_devices } доп.)
-    }
-    • <b>Осталось</b>: { $expire_time }
-    </blockquote>
-
-frg-payment-info =
-    <blockquote>
-    • <b>ID</b>: <code>{ $payment_id }</code>
-    • <b>Способ оплаты</b>: { gateway-type }
-    • <b>Сумма</b>: { frg-payment-amount }
-    </blockquote>
-
-frg-payment-amount = { $final_amount }{ $discount_percent -> 
-    [0] { space }
-    *[more] { space } <strike>{ $original_amount }</strike> (-{ $discount_percent }%)
-    }
-
-frg-plan-snapshot =
-    <blockquote>
-    • <b>План</b>: <code>{ $plan_name }</code>
-    • <b>Тип</b>: { plan-type }
-    • <b>Лимит трафика</b>: { $plan_traffic_limit }
-    • <b>Лимит устройств</b>: { $plan_device_limit }
-    • <b>Длительность</b>: { $plan_duration }
-    </blockquote>
-
-frg-plan-snapshot-comparison =
-    <blockquote>
-    • <b>План</b>: <code>{ $previous_plan_name }</code> -> <code>{ $plan_name }</code>
-    • <b>Тип</b>: { $previous_plan_type } -> { plan-type }
-    • <b>Лимит трафика</b>: { $previous_plan_traffic_limit } -> { $plan_traffic_limit }
-    • <b>Лимит устройств</b>: { $previous_plan_device_limit } -> { $plan_device_limit }
-    • <b>Длительность</b>: { $previous_plan_duration } -> { $plan_duration }
-    </blockquote>
-
-frg-node-info =
-    <blockquote>
-    • <b>Название</b>: { $country } { $name }
-    • <b>Адрес</b>: <code>{ $address }:{ $port }</code>
-    • <b>Трафик</b>: { $traffic_used } / { $traffic_limit }
-    { $last_status_message -> 
-    [0] { empty }
-    *[HAS] • <b>Последний статус</b>: { $last_status_message }
-    }
-    { $last_status_change -> 
-    [0] { empty }
-    *[HAS] • <b>Статус изменен</b>: { $last_status_change }
-    }
-    </blockquote>
-
-frg-user-hwid =
-    <blockquote>
-    • <b>HWID</b>: <code>{ $hwid }</code>
-
-    • <b>Платформа</b>: { $platform }
-    • <b>Модель</b>: { $device_model }
-    • <b>Версия ОС</b>: { $os_version }
-    • <b>Агент</b>: { $user_agent }
-    </blockquote>
-
-frg-build-info =
-    { $has_build ->
-    [0] { space }
-    *[HAS]
-    <b>🏗️ Информация о сборке:</b>
-    <blockquote>
-    Время сборки: { $time }
-    Ветка: { $branch } ({ $tag })
-    Коммит: <a href="{ $commit_url }">{ $commit }</a>
-    </blockquote>
-    }
-
-# Roles
-role-dev = Разработчик
-role-admin = Администратор
-role-user = Пользователь
-role = 
-    { $role ->
-    [DEV] { role-dev }
-    [ADMIN] { role-admin }
-    *[USER] { role-user }
-}
+frg-enabled = ✅ Увімкнено
+frg-disabled = 🔴 Вимкнено
+frg-active = 🟢 Активний
+frg-inactive = 🔴 Неактивний
+frg-yes = Так
+frg-no = Ні
+frg-none = Немає
+frg-not-set = Не встановлено
+frg-unlimited = ♾️ Безлімітно
+frg-unknown = Невідомо
+frg-loading = Завантаження...
+frg-empty = Порожньо
+frg-error = Помилка
+frg-success = Успішно
+frg-pending = Очікується
+frg-processing = Обробка...
+frg-canceled = Скасовано
+frg-completed = Завершено
+frg-failed = Невдало
+frg-refunded = Повернено
+frg-expired = Закінчився
+frg-limited = Обмежено
+frg-blocked = Заблоковано
+frg-online = Онлайн
+frg-offline = Офлайн
+frg-connected = Підключено
+frg-disconnected = Відключено
+frg-never = Ніколи
+frg-today = Сьогодні
+frg-yesterday = Вчора
+frg-now = Зараз
+frg-ago = тому
+frg-in = через
+frg-from = від
+frg-to = до
+frg-or = або
+frg-and = та
+frg-free = Безкоштовно
+frg-paid = Платно
+frg-one-time = Одноразово
+frg-monthly = Щомісяця
+frg-auto-renewal = Автопродовження
 
 
 # Units
-unit-device = { $value -> 
-    [-1] { unlimited }
-    [0] Отключено
-    *[other] { $value } 
-} { $value ->
-    [-1] { space }
-    [0] { space }
-    [one] устройство
-    [few] устройства
-    *[other] устройств
-}
+unit-day =
+    { $value ->
+    [one] { $value } день
+    [few] { $value } дні
+    *[many] { $value } днів
+    }
 
-unit-byte = { $value } Б
-unit-kilobyte = { $value } КБ
-unit-megabyte = { $value } МБ
-unit-gigabyte = { $value } ГБ
-unit-terabyte = { $value } ТБ
+unit-hour =
+    { $value ->
+    [one] { $value } година
+    [few] { $value } години
+    *[many] { $value } годин
+    }
 
-unit-second = { $value } { $value ->
-    [one] секунда
-    [few] секунды
-    *[other] секунд
-}
+unit-minute =
+    { $value ->
+    [one] { $value } хвилина
+    [few] { $value } хвилини
+    *[many] { $value } хвилин
+    }
 
-unit-minute = { $value } { $value ->
-    [one] минута
-    [few] минуты
-    *[other] минут
-}
+unit-second =
+    { $value ->
+    [one] { $value } секунда
+    [few] { $value } секунди
+    *[many] { $value } секунд
+    }
 
-unit-hour = { $value } { $value ->
-    [one] час
-    [few] часа
-    *[other] часов
-}
+unit-gb =
+    { $value ->
+    [one] { $value } ГБ
+    *[other] { $value } ГБ
+    }
 
-unit-day = { $value } { $value ->
-    [one] день
-    [few] дня
-    *[other] дней
-}
+unit-mb =
+    { $value ->
+    [one] { $value } МБ
+    *[other] { $value } МБ
+    }
 
-unit-month = { $value } { $value ->
-    [one] месяц
-    [few] месяца
-    *[other] месяцев
-}
+unit-device =
+    { $value ->
+    [one] { $value } пристрій
+    [few] { $value } пристрої
+    *[many] { $value } пристроїв
+    }
 
-unit-year = { $value } { $value ->
-    [one] год
-    [few] года
-    *[other] лет
-}
+unit-user =
+    { $value ->
+    [one] { $value } користувач
+    [few] { $value } користувачі
+    *[many] { $value } користувачів
+    }
+
+unit-activation =
+    { $value ->
+    [one] { $value } активація
+    [few] { $value } активації
+    *[many] { $value } активацій
+    }
+
+unit-rub = ₽
+unit-usd = $
+unit-eur = €
+unit-uah = ₴
+unit-percent = %
+
+unlimited = безлімітно
 
 
 # Types
-plan-type = { $plan_type -> 
-    [TRAFFIC] Трафик
-    [DEVICES] Устройства
-    [BOTH] Трафик + устройства
-    [UNLIMITED] Безлимитный
-    *[OTHER] { $plan_type }
-}
+type-subscription = Підписка
+type-balance = Баланс
+type-bonus = Бонус
+type-referral = Реферал
+type-promocode = Промокод
+type-trial = Пробний період
+type-transfer = Переказ
 
-promocode-type = { $promocode_type -> 
-    [DURATION] Длительность
-    [TRAFFIC] Трафик
-    [DEVICES] Устройства
-    [SUBSCRIPTION] Подписка
-    [PERSONAL_DISCOUNT] Постоянная скидка
-    [PURCHASE_DISCOUNT] Одноразовая скидка
-    *[OTHER] { $promocode_type }
-}
 
-promocode-type-name = { $type -> 
-    [DURATION] Дни к подписке
-    [TRAFFIC] Трафик
-    [DEVICES] Устройства
-    [SUBSCRIPTION] Подписка
-    [PERSONAL_DISCOUNT] Постоянная скидка
-    [PURCHASE_DISCOUNT] Одноразовая скидка
-    *[OTHER] { $type }
-}
+# Plan Types
+plan-type-traffic = 🌐 Трафік
+plan-type-devices = 📱 Пристрої
+plan-type-both = 🔗 Трафік + Пристрої
+plan-type-unlimited = ♾️ Безлімітний
 
-availability-type = { $availability_type -> 
-    [ALL] Для всех
-    [NEW] Для новых
-    [EXISTING] Для существующих
-    [INVITED] Для приглашенных
-    [ALLOWED] Для разрешенных
-    [TRIAL] Для пробника
-    *[OTHER] { $availability_type }
-}
 
-gateway-type = { $gateway_type ->
-    [TELEGRAM_STARS] ⭐ Telegram Stars
-    [YOOKASSA] 💳 ЮKassa
-    [YOOMONEY] 💳 ЮMoney
+# Plan Availability
+plan-availability-all = 🌍 Для всіх
+plan-availability-new = 🌱 Для нових користувачів
+plan-availability-existing = 👥 Для існуючих клієнтів
+plan-availability-invited = ✉️ Для запрошених користувачів
+plan-availability-allowed = 🔐 Для дозволених користувачів
+plan-availability-trial = 🎁 Для пробного періоду
+
+
+# Promocode Types
+promocode-type-subscription = 📋 Підписка
+promocode-type-discount = 💸 Знижка
+promocode-type-bonus = 🎁 Бонус
+promocode-type-trial = 🎁 Пробний період
+promocode-type-extra-days = ⏳ Додаткові дні
+promocode-type-traffic = 🌐 Трафік
+promocode-type-balance = 💰 Баланс
+
+
+# Roles
+role-user = 👤 Користувач
+role-admin = 👮‍♂️ Адміністратор
+role-moderator = 🛡️ Модератор
+role-support = 📩 Підтримка
+role-vip = ⭐ VIP
+
+
+# Gateway Types
+gateway-type =
+    { $type ->
+    [YOOMONEY] 💳 YooMoney
+    [YOOKASSA] 💳 YooKassa
     [CRYPTOMUS] 🔐 Cryptomus
     [HELEKET] 💎 Heleket
-    [URLPAY] UrlPay
-    [BALANCE] 💰 С баланса
-    *[OTHER] { $gateway_type }
-}
-
-access-mode = { $access_mode ->
-    [PUBLIC] 🟢 Разрешен для всех
-    [INVITED] 🟡 Разрешен для приглашенных
-    [RESTRICTED] 🔴 Запрещен для всех
-    *[OTHER] { $access_mode }
-}
-
-audience-type = { $audience_type ->
-    [ALL] Всем
-    [PLAN] По плану
-    [SUBSCRIBED] С подпиской
-    [UNSUBSCRIBED] Без подписки
-    [EXPIRED] Просроченным
-    [TRIAL] С пробником
-    *[OTHER] { $audience_type }
-}
-
-broadcast-status = { $broadcast_status ->
-    [PROCESSING] В процессе
-    [COMPLETED] Завершена
-    [CANCELED] Отменена
-    [DELETED] Удалена
-    [ERROR] Ошибка
-    *[OTHER] { $broadcast_status }
-}
-
-transaction-status = { $transaction_status ->
-    [PENDING] Ожидание
-    [COMPLETED] Завершена
-    [CANCELED] Отменена
-    [REFUNDED] Возврат
-    [FAILED] Ошибка
-    *[OTHER] { $transaction_status }
-}
-
-subscription-status = { $subscription_status ->
-    [ACTIVE] Активна
-    [DISABLED] Отключена
-    [LIMITED] Исчерпан трафик
-    [EXPIRED] Истекла
-    [DELETED] Удалена
-    *[OTHER] { $subscription_status }
-}
-
-purchase-type = { $purchase_type ->
-    [NEW] Покупка
-    [RENEW] Продление
-    [CHANGE] Изменение
-    *[OTHER] { $purchase_type }
-}
-
-traffic-strategy = { $strategy_type -> 
-    [NO_RESET] При оплате
-    [DAY] Каждый день
-    [WEEK] Каждую неделю
-    [MONTH] Каждый месяц
-    *[OTHER] { $strategy_type }
+    [TELEGRAM_STARS] ⭐ Telegram Stars
+    [ROBOKASSA] 💳 Robokassa
+    [CRYPTOPAY] 🪙 CryptoPay
+    [BALANCE] 💰 Баланс
+    *[OTHER] 💳 { $type }
     }
 
-reward-type = { $reward_type -> 
-    [POINTS] Баллы
-    [EXTRA_DAYS] Дни
-    [MONEY] Деньги
-    *[OTHER] { $reward_type }
-    }
 
-accrual-strategy = { $accrual_strategy_type -> 
-    [ON_FIRST_PAYMENT] Первый платеж
-    [ON_EACH_PAYMENT] Каждый платеж
-    *[OTHER] { $accrual_strategy_type }
-    }
-
-reward-strategy = { $reward_strategy_type -> 
-    [AMOUNT] Фиксированная
-    [PERCENT] Процентная
-    *[OTHER] { $reward_strategy_type }
-    }
-
-# Фрагмент: Текущая подписка с проверкой наличия
-# Примечание: используйте plan_name вместо current_plan_name для согласованности
-frg-subscription-conditional =
-    { $has_subscription ->
-    [true]
-    { frg-subscription }
-    *[false]
-    <blockquote>
-    • У вас нет оформленной подписки.
-    </blockquote>
-    }
-
-# Фрагмент: Полный статус подписки (с пояснениями)
-frg-subscription-status-full =
+# Transaction Statuses
+transaction-status =
     { $status ->
-    [ACTIVE] { frg-subscription }
-    [EXPIRED]
-    <blockquote>
-    • Срок действия истек.
-    
-    <i>{ $is_trial ->
-    [0] Ваша подписка истекла. Продлите ее, чтобы продолжить пользоваться сервисом!
-    *[1] Ваш бесплатный пробный период закончился. Оформите подписку, чтобы продолжить пользоваться сервисом!
-    }</i>
-    </blockquote>
-    [LIMITED]
-    <blockquote>
-    • Ваш трафик израсходован.
-
-    <i>{ $is_trial ->
-    [0] { $traffic_strategy ->
-        [NO_RESET] Продлите подписку, чтобы сбросить трафик и продолжить пользоваться сервисом!
-        *[RESET] Трафик будет восстановлен через { $reset_time }. Вы также можете продлить подписку, чтобы сбросить трафик.
-        }
-    *[1] { $traffic_strategy ->
-        [NO_RESET] Оформите подписку, чтобы продолжить пользоваться сервисом!
-        *[RESET] Трафик будет восстановлен через { $reset_time }. Вы также можете оформить подписку, чтобы пользоваться сервисом без ограничений.
-        }
-    }</i>
-    </blockquote>
-    [DISABLED]
-    <blockquote>
-    • Ваша подписка отключена.
-
-    <i>Свяжитесь с поддержкой для выяснения причины!</i>
-    </blockquote>
-    *[NONE]
-    <blockquote>
-    • У вас нет оформленной подписки.
-    </blockquote>
-
-    <i>ℹ️ Для получения доступа перейдите в меню <b>«Подписка»</b>.</i>
+    [PENDING] 🕓 Очікується
+    [COMPLETED] ✅ Завершено
+    [CANCELED] ❌ Скасовано
+    [REFUNDED] 💸 Повернено
+    [FAILED] ⚠️ Невдало
+    *[OTHER] { $status }
     }
 
-# Фрагмент: Короткий статус подписки (для админки)
-frg-subscription-status-short =
+
+# Broadcast Statuses
+broadcast-status =
     { $status ->
-    [ACTIVE]
-    { frg-subscription }
-    [EXPIRED]
-    <blockquote>
-    • Срок действия истек.
-    </blockquote>
-    [LIMITED]
-    <blockquote>
-    • Превышен лимит трафика.
-    </blockquote>
-    [DISABLED]
-    <blockquote>
-    • Подписка отключена.
-    </blockquote>
-    *[NONE]
-    <blockquote>
-    • Нет текущей подписки.
-    </blockquote>
+    [PROCESSING] ⏳ Обробка
+    [COMPLETED] ✅ Завершено
+    [CANCELED] ⛔ Скасовано
+    [DELETED] ❌ Видалено
+    [ERROR] ⚠️ Помилка
+    *[OTHER] { $status }
     }
 
-# Фрагмент: Предупреждение о типе покупки
-frg-purchase-type-warning =
-    { $purchase_type ->
-    [RENEW] <i>⚠️ Текущая подписка будет <u>продлена</u>.</i>
-    [CHANGE] <i>⚠️ Текущая подписка будет <u>заменена</u> без пересчета оставшегося срока.</i>
-    *[OTHER] { empty }
+
+# Subscription Statuses
+subscription-status =
+    { $status ->
+    [ACTIVE] 🟢 Активна
+    [EXPIRED] 🔴 Закінчилася
+    [LIMITED] 🚫 Обмежена
+    [DISABLED] ⚫ Вимкнена
+    *[OTHER] { $status }
     }
 
-# Фрагмент: Заголовок подтверждения покупки
-frg-purchase-confirm-header =
-    { $purchase_type ->
-    [RENEW] <b>🛒 Подтверждение продления подписки</b>
-    [CHANGE] <b>🛒 Подтверждение изменения подписки</b>
-    *[OTHER] <b>🛒 Подтверждение покупки подписки</b>
+
+# Access Mode
+access-mode =
+    { $mode ->
+    [OPEN] 🟢 Відкритий
+    [CLOSED] 🔴 Закритий
+    [INVITE_ONLY] 📩 За запрошенням
+    *[OTHER] { $mode }
     }
 
-language = { $language ->
-    [ar] Арабский
-    [az] Азербайджанский
-    [be] Белорусский
-    [cs] Чешский
-    [de] Немецкий
-    [en] Английский
-    [es] Испанский
-    [fa] Персидский
-    [fr] Французский
-    [he] Иврит
-    [hi] Хинди
-    [id] Индонезийский
-    [it] Итальянский
-    [ja] Японский
-    [kk] Казахский
-    [ko] Корейский
-    [ms] Малайский
-    [nl] Нидерландский
-    [pl] Польский
-    [pt] Португальский
-    [ro] Румынский
-    [ru] Русский
-    [sr] Сербский
-    [tr] Турецкий
-    [uk] Украинский
-    [uz] Узбекский
-    [vi] Вьетнамский
-    *[OTHER] { $language }
-}
+
+# Traffic Reset Strategy
+traffic-strategy =
+    { $strategy ->
+    [NO_RESET] Без скидання
+    [DAY] Щоденно
+    [WEEK] Щотижня
+    [MONTH] Щомісяця
+    [YEAR] Щороку
+    *[OTHER] { $strategy }
+    }
+
+
+# Referral Reward Types
+referral-reward-type =
+    { $type ->
+    [MONEY] 💰 Гроші
+    [DAYS] ⏳ Дні
+    [POINTS] 💎 Бали
+    *[OTHER] { $type }
+    }
+
+
+# Referral Accrual Strategies
+referral-accrual-strategy =
+    { $strategy ->
+    [ON_FIRST_PAYMENT] 💳 Перший платіж
+    [ON_EACH_PAYMENT] 💸 Кожен платіж
+    *[OTHER] { $strategy }
+    }
+
+
+# Referral Reward Strategies
+referral-reward-strategy =
+    { $strategy ->
+    [AMOUNT] 🔸 Фіксована
+    [PERCENT] 🔹 Відсоток
+    *[OTHER] { $strategy }
+    }
+
+
+# Date and Time Formatting
+datetime-format = { $date } о { $time }
+date-format = { $day }.{ $month }.{ $year }
+time-format = { $hour }:{ $minute }
+
+
+# Error Messages
+error-unknown = Сталася невідома помилка
+error-try-again = Будь ласка, спробуйте пізніше
+error-contact-support = Якщо проблема не зникає, зверніться до підтримки
+
+
+# Success Messages
+success-saved = Успішно збережено
+success-deleted = Успішно видалено
+success-created = Успішно створено
+success-updated = Успішно оновлено
+
+
+# Confirmation Messages
+confirm-delete = Ви впевнені, що хочете видалити?
+confirm-cancel = Ви впевнені, що хочете скасувати?
+confirm-continue = Продовжити?
+
+
+# Pagination
+pagination-page = Сторінка { $current } з { $total }
+pagination-prev = ◀️ Попередня
+pagination-next = Наступна ▶️
+pagination-first = ⏮ Перша
+pagination-last = Остання ⏭
+
+
+# Search
+search-no-results = Результатів не знайдено
+search-enter-query = Введіть пошуковий запит
+
+
+# List Empty States
+list-empty-users = Немає користувачів
+list-empty-plans = Немає тарифних планів
+list-empty-promocodes = Немає промокодів
+list-empty-broadcasts = Немає розсилок
+list-empty-transactions = Немає транзакцій
+list-empty-devices = Немає пристроїв
+list-empty-squads = Немає сквадів
+
+
+# Formatting Helpers
+format-price = { $price } { $currency }
+format-discount = -{ $discount }%
+format-traffic = { $used } / { $limit }
+format-devices = { $used } / { $limit }
+format-duration = { $days } днів
+format-expires = Закінчується: { $date }
+format-created = Створено: { $date }
+format-updated = Оновлено: { $date }

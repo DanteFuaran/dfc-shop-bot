@@ -1,2233 +1,1486 @@
 # Database Management
-msg-db-main =
-    <b>🗄 Управление базой данных</b>
+db-management =
+    🗄 &lt;b&gt;Database Management&lt;/b&gt;
 
-    <blockquote>
-    • <b>Сохранить</b> - создать резервную копию базы
-    • <b>Загрузить</b> - восстановить базу из бэкапа
-    • <b>Очистить всё</b> - удалить все данные из базы
-    • <b>Очистить пользователей</b> - удалить только пользователей
-    • <b>Синхронизация</b> - синхронизировать данные между ботом и панелью
-    </blockquote>
+    Select an action:
 
-    <b>🔽 Выберите действие:</b>
+db-save-confirm =
+    &lt;b&gt;💾 Save Database&lt;/b&gt;
+
+    A copy of the database will be saved.
     
-msg-db-clear-all-confirm =
-    <b>⚠️ ВНИМАНИЕ!</b>
+    ⚡️ Continue?
 
-    <blockquote>
-    Вы собираетесь <b>полностью очистить базу данных</b>.
+db-load-select =
+    &lt;b&gt;📦 Load Database&lt;/b&gt;
+
+    Select a file for uploading:
+
+db-load-confirm = 
+    &lt;b&gt;📦 Load Database&lt;/b&gt;
+
+    The current database will be replaced with the one you selected. All current data will be deleted, a backup will not be saved.
+
+    Selected file: &lt;code&gt;{ $file }&lt;/code&gt;
+    Last modified: &lt;code&gt;{ $last_modified }&lt;/code&gt;
     
-    Будут удалены:
-    • Все пользователи
-    • Все подписки
-    • Все транзакции
-    • Все промокоды и их активации
-    • Все рефералы и награды
-    • Все уведомления
-    </blockquote>
+    ⚡️ Continue?
 
-    <b>⚠️ Это действие необратимо!</b>
-    
-    <i>Нажмите кнопку повторно для подтверждения очистки.</i>
+db-convert-confirm =
+    &lt;b&gt;🔄 Convert Database&lt;/b&gt;
 
-msg-db-clear-users-confirm =
-    <b>⚠️ ВНИМАНИЕ!</b>
+    This feature converts the database from the original project format to a new version compatible with RemnaShop.
 
-    <blockquote>
-    Вы собираетесь <b>удалить всех пользователей</b> из базы данных.
-    
-    Будут удалены:
-    • Все пользователи
-    • Все подписки пользователей
-    • Все транзакции пользователей
-    • Все активации промокодов
-    • Все рефералы и награды
-    </blockquote>
+    ⚠️ The operation is irreversible!
 
-    <b>⚠️ Это действие необратимо!</b>
-    
-    <i>Нажмите кнопку ниже повторно для подтверждения.</i>
+    Convert?
 
-msg-db-clear-users-result =
-    <b>✅ Удаление пользователей завершено успешно!</b>
+db-sync-confirm =
+    &lt;b&gt;🔄 Synchronize Data&lt;/b&gt;
 
-    <blockquote>
-    📊 Итого:
-    • Пользователи: <b>{ $users }</b>
-    • Подписки: <b>{ $subscriptions }</b>
-    • Транзакции: <b>{ $transactions }</b>
-    • Активации: <b>{ $activations }</b>
-    • Рефералы: <b>{ $referrals }</b>
-    • Награды: <b>{ $rewards }</b>
-    </blockquote>
+    This feature allows you to synchronize user data from Remnawave to the local Telegram database.
 
-msg-db-clear-users-failed =
-    <b>❌ Ошибка при удалении пользователей</b>
+    &lt;blockquote expandable&gt;
+    • &lt;b&gt;Traffic&lt;/b&gt; — Will update the traffic used to values ​​from Remnawave.
+    • &lt;b&gt;Devices&lt;/b&gt; — Will update the user's device information.
+    • &lt;b&gt;Expiration date&lt;/b&gt; — Will update the subscription end time.
+    • &lt;b&gt;Online&lt;/b&gt; — Will update the last online time.
+    &lt;/blockquote&gt;
+
+db-sync-from-bot-confirm =
+    &lt;b&gt;🔄 Import from Telegram to Remnawave&lt;/b&gt;
+
+    This feature allows you to import users from Telegram to the Remnawave panel.
+
+    ⚠️ &lt;b&gt;Please note:&lt;/b&gt;
+    &lt;blockquote expandable&gt;
+    • &lt;b&gt;Import creates new users on the panel&lt;/b&gt; — if they don't already exist.
+    • &lt;b&gt;Subscription settings&lt;/b&gt; — will be taken from your tariff plans.
+    • &lt;b&gt;Users with active subscription&lt;/b&gt; — will be imported according to the current bot settings.
+    &lt;/blockquote&gt;
+
+    ⚡️ Continue?
+
+db-sync-to-bot-confirm =
+    &lt;b&gt;🔄 Import from Remnawave to Telegram&lt;/b&gt;
+
+    This feature allows you to import users from the Remnawave panel to the Telegram database.
+
+    ⚠️ &lt;b&gt;Please note:&lt;/b&gt;
+    &lt;blockquote expandable&gt;
+    • &lt;b&gt;Import does not synchronize existing users&lt;/b&gt; — they will be skipped.
+    • &lt;b&gt;Subscription settings&lt;/b&gt; — will be taken from the panel.
+    • &lt;b&gt;Some parameters&lt;/b&gt; — such as balance or bonus points will not be imported because they are not stored on the panel.
+    &lt;/blockquote&gt;
+
+    ⚡️ Continue?
+
+db-clear-all-confirm =
+    &lt;b&gt;🗑 Clear All Data&lt;/b&gt;
+
+    All data will be deleted: users, subscriptions, promo codes, plans, settings.
+
+    ⚠️ The operation is irreversible!
+
+    Continue?
+
+db-clear-users-confirm =
+    &lt;b&gt;🗑 Clear Users&lt;/b&gt;
+
+    All users will be deleted: users, subscriptions.
+
+    ⚠️ The operation is irreversible!
+
+    Continue?
+
+
+# Database import section
+db-import-title =
+    📥 &lt;b&gt;Database Import&lt;/b&gt;
+
+    Upload an exported database file in &lt;code&gt;.sql&lt;/code&gt; format.
+
+    📁 Maximum file size: 50 MB
+
+db-import-confirm =
+    &lt;b&gt;📥 Database Import Confirmation&lt;/b&gt;
+
+    File: &lt;code&gt;{ $file }&lt;/code&gt;
+    Size: &lt;code&gt;{ $size }&lt;/code&gt;
+
+    ⚠️ This will completely replace the current database!
+
+    Continue?
+
+db-import-processing =
+    ⏳ Importing database...
+
+    &lt;i&gt;This may take a few minutes.&lt;/i&gt;
+
+db-import-success =
+    ✅ Database successfully imported!
+
+    All data has been updated.
+
+db-import-error =
+    ❌ Error importing database
 
     { $error }
 
-msg-db-imports =
-    <b>📥 Управление импортами</b>
+db-import-invalid-file =
+    ❌ Invalid file format
 
-    Выберите источник для импорта данных:
+    Please upload an &lt;code&gt;.sql&lt;/code&gt; file.
 
-msg-db-load =
-    <b>📁 Выбор файла загрузки</b>
-
-msg-db-sync =
-    <b>🔄 Синхронизация данных</b>
-
-    <blockquote>    
-    • <b>Из Remnawave в бота</b>
-    Данные пользователей из панели будут обновлены в боте.
-    Если пользователя нет в боте, он будет создан.
-    
-    • <b>Из бота в панель Remnawave</b>
-    Данные пользователей из бота будут обновлены в панели.
-    Если пользователя нет в панели, он будет создан.
-    </blockquote>
-
-    <i>⚠️ Синхронизация может занять некоторое время. </i>
-
-msg-db-sync-progress =
-    <b>🔄 Синхронизация...</b>
-
-    <blockquote>
-    Пожалуйста, подождите. Синхронизация выполняется в фоновом режиме.
-    Вы получите уведомление по завершении.
-    </blockquote>
-
-msg-db-import =
-    <b>📥 Импорт из SQLite</b>
-    
-    Выберите файл для импорта:
-
-msg-db-restore-success =
-    <b>✅ База данных успешно восстановлена из загруженного дампа.</b>
-
-msg-db-restore-failed =
-    <b>❌ Ошибка при восстановлении базы: { $error }</b>
 
 # Settings
-msg-dashboard-settings =
-    <b>⚙️ Настройки</b>
+settings = 
+    ⚙️ &lt;b&gt;Settings&lt;/b&gt;
 
-    🔽 Выберите интересующий параметр:
-
-msg-dashboard-settings-transfers =
-    <b>💸 Настройка переводов</b>
-
-    <blockquote>
-    • Статус: { $enabled ->
-        [1] ✅ Включено
-        *[0] 🔴 Выключено
-    }
-    • Тип комиссии: { $commission_type_display }
-    • Комиссия: { $commission_display }
-    • Минимальная сумма: { $min_amount } ₽
-    • Максимальная сумма: { $max_amount } ₽
-    </blockquote>
-
-
-msg-dashboard-settings-transfers-commission-type =
-    <b>💰 Выбор типа комиссии</b>
-
-    <blockquote>
-    • <b>Процентная</b> - комиссия взимается в процентах от суммы перевода
-    • <b>Фиксированная</b> - комиссия взимается в фиксированной сумме независимо от суммы перевода
-    </blockquote>
-
-    Выберите тип комиссии:
-
-msg-dashboard-settings-transfers-commission-value =
-    <b>💵 Значение комиссии</b>
-
-    <blockquote>
-    • Тип комиссии: { $commission_type_display }
-    • Текущая комиссия: { $db_commission_display }
-    • Изменить на: { $selected_display }
-    </blockquote>
-
-    Выберите цену или введите свою:
-
-msg-commission-manual-input =
-    <b>✏️ Ручной ввод</b>
-
-    <blockquote>
-    Введите стоимость комиссии:
-    </blockquote>
-
-msg-dashboard-settings-transfers-min-amount =
-    <b>📉 Минимальная сумма перевода</b>
-
-    <blockquote>
-    • Текущая минимальная сумма: { $db_min_current_display }
-    • Изменить на: { $min_selected_display }
-    </blockquote>
-
-    Выберите сумму или введите свою:
-
-msg-min-amount-manual-input =
-    <b>✏️ Ручной ввод</b>
-
-    <blockquote>
-    Введите минимальную сумму перевода (в рублях):
-    </blockquote>
-
-msg-dashboard-settings-transfers-max-amount =
-    <b>📈 Максимальная сумма перевода</b>
-
-    <blockquote>
-    • Текущая максимальная сумма: { $db_max_current_display }
-    • Изменить на: { $max_selected_display }
-    </blockquote>
-
-    Выберите сумму или введите свою:
-
-msg-max-amount-manual-input =
-    <b>✏️ Ручной ввод</b>
-
-    <blockquote>
-    Введите максимальную сумму перевода (в рублях):
-    </blockquote>
+    Select a category:
 
 # Balance Settings
-msg-dashboard-settings-balance =
-    <b>💰 Настройка баланса</b>
+settings-balance =
+    💰 &lt;b&gt;Balance Settings&lt;/b&gt;
 
-    <blockquote>
-    • Статус: { $enabled ->
-        [1] ✅ Включено
-        *[0] 🔴 Выключено
-    }
-    • Минимальная сумма пополнения: { $balance_min_amount }
-    • Максимальная сумма пополнения: { $balance_max_amount }
-    </blockquote>
+    &lt;blockquote&gt;
+    • &lt;b&gt;Main Balance&lt;/b&gt; — standard balance for purchases and subscriptions.
+    • &lt;b&gt;Bonus Balance&lt;/b&gt; — additional balance, awarded for completed tasks.
+    &lt;/blockquote&gt;
 
-    <b>💎 Режим баланса:</b>
-    <blockquote>
-    • <b>Сумма</b> - бонусы зачисляются на основной баланс
-    • <b>Раздельно</b> - отдельный бонусный баланс
-    </blockquote>
+    Balance display mode:
 
-msg-dashboard-settings-balance-min-amount =
-    <b>📉 Минимальная сумма пополнения баланса</b>
+    &lt;blockquote&gt;
+    • &lt;b&gt;Combined&lt;/b&gt; — main and bonus balances are displayed as one total.
+    • &lt;b&gt;Separate&lt;/b&gt; — each balance is displayed separately.
+    &lt;/blockquote&gt;
 
-    <blockquote>
-    • Текущая минимальная сумма: { $balance_min_current_display }
-    • Изменить на: { $balance_min_selected_display }
-    </blockquote>
+settings-extra-devices = 
+    📱 &lt;b&gt;Extra Devices&lt;/b&gt;
 
-    Выберите сумму:
+    This section allows configuring additional devices for users.
 
-msg-dashboard-settings-balance-max-amount =
-    <b>📈 Максимальная сумма пополнения баланса</b>
+    • &lt;b&gt;Price&lt;/b&gt; — cost of renting a device (per month)
+    • &lt;b&gt;Payment type&lt;/b&gt; — one-time or monthly
+    • &lt;b&gt;Min days&lt;/b&gt; — the minimum number of days remaining on the subscription to purchase a device
 
-    <blockquote>
-    • Текущая максимальная сумма: { $balance_max_current_display }
-    • Изменить на: { $balance_max_selected_display }
-    </blockquote>
+settings-transfers = 
+    💸 &lt;b&gt;Transfer Settings&lt;/b&gt;
 
-    Выберите сумму:
+    This section allows configuring balance transfers between users.
 
-# Extra Devices Settings
-msg-dashboard-extra-devices-settings =
-    <b>📱 Настройка доп. устройств</b>
+    • &lt;b&gt;Enable/Disable&lt;/b&gt; — enable or disable transfers
+    • &lt;b&gt;Commission type&lt;/b&gt; — percentage of transfer or fixed amount
+    • &lt;b&gt;Commission&lt;/b&gt; — transfer commission value
+    • &lt;b&gt;Min. amount&lt;/b&gt; — minimum transfer amount
+    • &lt;b&gt;Max. amount&lt;/b&gt; — maximum transfer amount
 
-    <blockquote>
-    • Статус: { $enabled ->
-        [1] ✅ Включено
-        *[0] 🔴 Выключено
-    }
-    • Тип оплаты: { $payment_type_display }
-    • Стоимость устройства: { $extra_devices_price } ₽
-    • Минимальное количество дней: { $min_days } { $min_days ->
-        [1] день
-        [2] дня
-        [3] дня
-        [4] дня
-        *[other] дней
-    }
-    </blockquote>
+settings-transfers-commission = 
+    💸 &lt;b&gt;Commission Settings&lt;/b&gt;
 
+    Select the commission type and value.
 
-msg-dashboard-extra-devices-price =
-    <b>💵 Стоимость доп. устройства</b>
+settings-transfers-min-amount = 
+    💸 &lt;b&gt;Minimum Amount Settings&lt;/b&gt;
 
-    <blockquote>
-    • Текущая цена: { $current_price } ₽
-    • Изменить на: { $selected_price } ₽
-    </blockquote>
+    Select the minimum transfer amount.
 
-    Выберите цену или введите свою:
+settings-transfers-max-amount = 
+    💸 &lt;b&gt;Maximum Amount Settings&lt;/b&gt;
 
-msg-dashboard-extra-devices-price-manual =
-    <b>✏️ Ручной ввод цены</b>
+    Select the maximum transfer amount.
 
-    <blockquote>
-    Введите цену доп. устройства (в рублях):
-    </blockquote>
-
-msg-dashboard-extra-devices-min-days =
-    <b>⏳ Минимальное количество дней</b>
-
-    <blockquote>
-    • Текущее: { $current_min_days } дней
-    • Изменить на: { $selected_min_days } дней
-    </blockquote>
-
-    Минимальное количество дней до окончания подписки, при котором разрешена покупка дополнительного слота устройства.
-
-msg-dashboard-extra-devices-min-days-manual =
-    <b>⏳ Минимальное количество дней</b>
-
-    Введите минимальное количество дней (от 1 до 365)
-
-    Выберите количество дней:
 
 # Global Discount Settings
-msg-dashboard-settings-global-discount =
-    <b>🏷️ Настройка глобальной скидки</b>
+settings-global-discount =
+    🏷️ &lt;b&gt;Global Discount Settings&lt;/b&gt;
 
-    <blockquote>
-    • Статус: { $enabled ->
-        [1] ✅ Включено
-        *[0] 🔴 Выключено
-    }
-    • Тип скидки: { $discount_type_display }
-    • Скидка: { $discount_display }
-    • Режим: { $stack_mode_display }
-    • Влияние: { $apply_to_display }
-    </blockquote>
+    In this section, you can set up a global discount for all users.
 
-msg-global-discount-apply-to =
-    <b>📌 На что влияет скидка</b>
+    &lt;blockquote&gt;
+    • &lt;b&gt;Enabled/Disabled&lt;/b&gt; — enable or disable global discount
+    • &lt;b&gt;Mode&lt;/b&gt; — "Maximum" or "Stacked" with personal discount
+    • &lt;b&gt;Discount type&lt;/b&gt; — percentage or fixed
+    • &lt;b&gt;Applies to&lt;/b&gt; — what the discount applies to
+    &lt;/blockquote&gt;
 
-    <blockquote>
-    Операции на которые влияет глобальная скидка.
-    </blockquote>
+settings-discount-value =
+    💵 &lt;b&gt;Discount Value Settings&lt;/b&gt;
 
-msg-global-discount-mode =
-    <b>⚙️ Режим применения скидок</b>
+    Select or enter the discount value:
 
-    <blockquote>
-    • <b>Максимальная</b> - использовать наибольшую из примененных скидок
-    
-    • <b>Сложенная</b> - складывать обе скидки
-    </blockquote>
+settings-discount-mode =
+    ⚙️ &lt;b&gt;Discount Stacking Mode&lt;/b&gt;
 
-msg-dashboard-settings-global-discount-value =
-    <b>💵 Значение скидки</b>
+    &lt;blockquote&gt;
+    • &lt;b&gt;Maximum&lt;/b&gt; — the higher discount wins (global or personal)
+    • &lt;b&gt;Stacked&lt;/b&gt; — discounts stack (e.g. 10% + 10% = 19% compound discount)
+    &lt;/blockquote&gt;
 
-    <blockquote>
-    • Тип скидки: { $discount_type_display }
-    • Текущая скидка: { $db_discount_display }
-    • Изменить на: { $selected_display }
-    </blockquote>
+settings-discount-apply-to =
+    📌 &lt;b&gt;Discount Application Targets&lt;/b&gt;
 
-    Выберите скидку или введите свою:
+    Select what the global discount applies to:
 
-msg-global-discount-manual-input =
-    <b>✏️ Ручной ввод</b>
+    &lt;blockquote&gt;
+    • &lt;b&gt;Subscription&lt;/b&gt; — discount on subscription purchase/renewal
+    • &lt;b&gt;Extra Devices&lt;/b&gt; — discount on purchasing extra devices
+    • &lt;b&gt;Transfer Commission&lt;/b&gt; — discount on balance transfer commission
+    &lt;/blockquote&gt;
 
-    <blockquote>
-    Введите значение скидки:
-    </blockquote>
+settings-finances =
+    💰 &lt;b&gt;Financial Settings&lt;/b&gt;
 
-# Language Settings
-msg-dashboard-settings-language =
-    <b>🌐 Настройка языка</b>
+    Select a category:
 
-    <blockquote>
-    • Статус: { $enabled ->
-        [1] ✅ Мультиязычность
-        *[0] 🔴 Русский (по умолчанию)
-    }
-    • Текущий язык: { $current_locale }
-    </blockquote>
+settings-finances-gateways =
+    🌐 &lt;b&gt;Payment Systems&lt;/b&gt;
 
-    Выберите язык бота:
+    Select a payment system to configure:
 
-msg-main-menu =
-    { hdr-user-profile }
-    { frg-user }
+settings-finances-gateways-item =
+    🌐 &lt;b&gt;Payment System Settings - { $gateway_type }&lt;/b&gt;
 
-    { hdr-subscription }{ frg-subscription-status-full }
-
-msg-menu-connect =
-    <b>📝 Инструкция:</b>
-    <blockquote>
-    • Скачайте и установите приложение.
-    • Нажмите 🔗Подключиться.
-    • В приложении нажмите Включить.
-    </blockquote>
-
-msg-menu-devices =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    📱 <b>Управление устройствами:</b>
-
-msg-add-device =
-    <b>➕ Добавить устройство</b>
-
-msg-add-device-select-count =
-    { $has_discount ->
-    [1] ℹ️<i>Стоимость каждого доп.устройства: { $device_price }₽/мес  <s>{ $device_price_original }₽</s>/мес.</i>
-    *[0] ℹ️<i>Стоимость каждого доп.устройства: { $device_price }₽/мес.</i>
+    { $gateway_type -> 
+    [YOOMONEY] Provider: &lt;code&gt;YooMoney&lt;/code&gt;
+    [YOOKASSA] Provider: &lt;code&gt;YooKassa&lt;/code&gt;
+    [CRYPTOMUS] Provider: &lt;code&gt;Cryptomus&lt;/code&gt;
+    [HELEKET] Provider: &lt;code&gt;Heleket&lt;/code&gt;
+    [TELEGRAM_STARS] Provider: &lt;code&gt;Telegram Stars&lt;/code&gt;
+    [ROBOKASSA] Provider: &lt;code&gt;Robokassa&lt;/code&gt;
+    [CRYPTOPAY] Provider: &lt;code&gt;CryptoPay&lt;/code&gt;
+    *[OTHER] Provider: &lt;code&gt;{ $gateway_type }&lt;/code&gt;
     }
 
-    📱 <b>Выберите количество устройств:</b>
+settings-finances-gateways-item-default-currency =
+    💸 &lt;b&gt;Default Currency&lt;/b&gt;
 
-msg-add-device-full =
-    { hdr-user-profile }
-    { frg-user }
+    Select the default currency for payments:
 
-    { hdr-subscription }
-    { frg-subscription }
+settings-gateway-test-title =
+    🧪 &lt;b&gt;Test Payment - { $gateway_type }&lt;/b&gt;
 
-    { $has_discount ->
-    [1] ℹ️<i>Стоимость каждого доп.устройства: { $device_price }₽/мес  <s>{ $device_price_original }₽</s>/мес.</i>
-    *[0] ℹ️<i>Стоимость каждого доп.устройства: { $device_price }₽/мес.</i>
-    }
+    A test invoice for 10 ₽ ({ $currency }) has been created.
 
-    📱 <b>Выберите количество устройств:</b>
+    Payment link:
+    &lt;code&gt;{ $payment_url }&lt;/code&gt;
 
-msg-add-device-duration =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    📱 <b>Покупка:</b>
-    <blockquote>
-    • <b>Дополнительные устройства:</b> { $device_count }
-    </blockquote>
-
-    📅 <b>Выберите срок действия:</b>
-
-msg-add-device-payment =
-    📱 <b>Покупка:</b>
-    <blockquote>
-    • <b>Дополнительные устройства:</b> { $device_count }
-    </blockquote>
-
-    💳 <b>Выберите способ оплаты:</b>
-
-msg-add-device-payment-full =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    📱 <b>Покупка:</b>
-    <blockquote>
-    • <b>Дополнительные устройства:</b> { $device_count }
-    </blockquote>
-
-    💳 <b>Выберите способ оплаты:</b>
-
-msg-add-device-confirm-full =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    📱 <b>Покупка:</b>
-    <blockquote>
-    • <b>Дополнительные устройства:</b> { $device_count }
-    </blockquote>
-
-    📋 <b>Итого:</b>
-    <blockquote>
-    💳 <b>Способ оплаты:</b> { $selected_method }
-    { $is_balance_payment ->
-    [1]
-    📊 <b>Текущий баланс:</b> { $balance }
-    📊 <b>Баланс после:</b> { $new_balance }
-    *[0]
-    { $has_discount ->
-    [1]
-    💰 <b>Сумма к оплате:</b> <s>{ $original_price }</s> { $total_price }
-    *[0]
-    💰 <b>Сумма к оплате:</b> { $total_price }
-    }
-    }
-    </blockquote>
-
-    💳 <b>Подтверждение покупки:</b>
-
-msg-add-device-success-full =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    ℹ️ <i>К вашей подписке добавлено { $device_count } { $device_count_word }.</i>
-
-    ✅ <b>Оплата прошла успешно!</b>
-
-msg-extra-devices-list =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    📱 <b>Дополнительные устройства</b>
-    { $purchases_empty ->
-        [true] <i>У вас нет активных дополнительных устройств.</i>
-        *[false] <blockquote>
-    💰 <b>Ежемесячная стоимость:</b> { $total_monthly_cost }
-    📱 <b>Всего доп. устройств:</b> { $total_extra_devices }
-    <i>Устройства активны до конца месяца подписки.</i>
-    </blockquote>
-    
-    <i>Нажмите ❌ чтобы отменить подписку на устройство.</i>
-    }
-
-msg-extra-device-manage =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    📱 <b>Управление дополнительными устройствами</b>
-    
-    <blockquote>
-    • <b>Количество устройств:</b> { $purchase_device_count }
-    • <b>Стоимость/мес:</b> { $purchase_price } ₽
-    • <b>Истекает:</b> { $purchase_expires_at }
-    • <b>Автопродление:</b> { $purchase_auto_renew ->
-        [1] ✅ Включено
-        *[0] ❌ Отключено
-    }
-    </blockquote>
-    
-    { $purchase_auto_renew ->
-        [1] <i>При отключении автопродления, устройства будут удалены по истечению срока.</i>
-        *[0] <i>Автопродление отключено. Устройства будут удалены через { $purchase_days_remaining } дн.</i>
-    }
-
-msg-add-device-confirm-details =
-    📱 <b>Покупка:</b>
-    <blockquote>
-    • <b>Дополнительные устройства:</b> { $device_count }
-    </blockquote>
-
-    📋 <b>Итого:</b>
-    <blockquote>
-    • <b>Способ оплаты:</b> { $selected_method }
-    • <b>Текущий баланс:</b> { $balance }
-    • <b>Баланс после:</b> { $new_balance }
-    </blockquote>
-
-    💳<b>Подтверждение покупки:</b>
-
-msg-balance-menu =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-status-full }
-
-    <b>💰 Управление балансом:</b>
-
-msg-balance-select-gateway =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    <b>💰 Выбор способа оплаты:</b>
-
-msg-balance-select-amount =
-    <b>💰 Пополнение баланса</b>
-
-    Способ оплаты: <b>{ $selected_gateway }</b>
-
-    Выберите сумму пополнения:
-
-msg-balance-enter-amount =
-    <b>💰 Пополнение баланса</b>
-
-    Способ оплаты: <b>{ $selected_gateway }</b>
-
-    Введите сумму пополнения (от { $min_amount } до { $max_amount } { $currency }):
-
-msg-balance-confirm =
-    <b>💰 Подтверждение пополнения</b>
-
-    Способ оплаты: <b>{ $selected_gateway }</b>
-    Сумма: <b>{ $topup_amount } { $currency }</b>
-
-    Нажмите кнопку ниже для оплаты.
-
-msg-balance-success =
-    <b>✅ Баланс успешно пополнен!</b>
-    
-    <blockquote>
-    На ваш счёт зачислено <b>{ $amount }{ $currency }</b>
-    </blockquote>
-
-msg-balance-transfer =
-    <b>💸 Перевод баланса</b>
-
-    <b>👤 Ваш профиль:</b>
-    <blockquote>
-    • Ваш баланс: <b>{ $balance }</b>
-    • Комиссия: { $commission_display }
-    </blockquote>
-
-    <b>💸 Перевод:</b>
-    <blockquote>
-    • Получатель: { $recipient_display }
-    • Сумма перевода: <b>{ $amount_display } ₽</b>
-    • Комиссия: <b>{ $transfer_commission } ₽</b>
-    </blockquote>
-
-    <b>💬 Сообщение:</b>
-    <blockquote>
-    { $message_display }
-    </blockquote>
-
-    <i>ℹ️ Заполните данные и нажмите на кнопку "Отправить".</i>
-
-msg-balance-transfer-recipient =
-    <b>💸 Получатель</b>
-
-    <blockquote>
-    Введите <b>Telegram ID</b> получателя:
-    </blockquote>
-
-msg-balance-transfer-recipient-history =
-    <b>📜 История пользователей</b>
-
-    Выберите получателя из списка пользователей, которым вы ранее отправляли переводы:
-
-msg-balance-transfer-no-history = <i>У вас пока нет истории переводов.</i>
-
-msg-balance-transfer-amount-value =
-    <b>💸 Сумма перевода</b>
-
-    <blockquote>
-    • Текущая сумма: { $current_display }
-    • Изменить на: { $selected_display }
-    </blockquote>
-
-    Выберите сумму или введите свою:
-
-msg-balance-transfer-amount-manual =
-    <b>✏️ Ручной ввод</b>
-
-    <blockquote>
-    Введите сумму перевода (от { $min_amount } до { $max_amount } ₽):
-    </blockquote>
-
-msg-balance-transfer-message =
-    <b>💬 Сообщение</b>
-
-    <blockquote>
-    { $message_display }
-    </blockquote>
-
-    <i>Введите сообщение для перевода (макс. 200 символов):</i>
-
-msg-balance-transfer-confirm =
-    <b>💸 Подтверждение перевода</b>
-
-    <blockquote>
-    Получатель: <b>{ $recipient_name }</b> (<code>{ $recipient_id }</code>)
-    Сумма перевода: <b>{ $amount } ₽</b>
-    Комиссия: <b>{ $commission } ₽</b>
-    Итого к списанию: <b>{ $total } ₽</b>
-    </blockquote>
-
-    ⚠️ <b>Внимание:</b> Операция необратима!
-
-msg-balance-transfer-success =
-    <b>✅ Перевод выполнен успешно!</b>
-
-    <blockquote>
-    Получатель: <b>{ $recipient_name }</b>
-    Сумма: <b>{ $amount } ₽</b>
-    Комиссия: <b>{ $commission } ₽</b>
-    </blockquote>
-
-msg-balance-transfer-error =
-    <b>❌ Ошибка перевода</b>
+settings-gateway-test-error =
+    ❌ &lt;b&gt;Error creating invoice&lt;/b&gt;
 
     { $error }
 
-msg-menu-invite =
-    <b>👥 Пригласить друзей</b>
+settings-currency-rates =
+    💱 &lt;b&gt;Exchange Rates&lt;/b&gt;
 
-    <b>👤 Ваш профиль:</b>
-    <blockquote>
-    • <b>ID</b>: <code>{ $user_id }</code>
-    • <b>Имя</b>: { $user_name }
-    { $is_referral_enable ->
-        [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
-        *[0] {""}
-    }
-    • <b>Скидка</b>: { $discount_value }%{ $discount_value ->
-        [0] {""}
-       *[other] { $discount_is_permanent ->
-            [1] {" "}(Постоянная)
-            *[0] { $discount_remaining ->
-                [0] {" "}(Одноразовая)
-                *[other] {" "}(Осталось { $discount_remaining } { $discount_remaining ->
-                    [1] день
-                    [2] дня
-                    [3] дня
-                    [4] дня
-                    *[other] дней
-                })
-            }
-        }
-    }
-    • <b>Баланс</b>: { $balance }
-    { $is_balance_separate ->
-        [1] • <b>Бонусы</b>: { $referral_balance }
-        *[0] {""}
-    }
-    </blockquote>
+    { $rates }
 
-    { hdr-subscription }{ frg-subscription-status-full }
+    Press to update manually.
+    Rates update frequency: &lt;b&gt;{ $update_interval }&lt;/b&gt; minutes
 
-    <b>🏆 Награда:</b>
-    <blockquote>
-    { $ref_reward_type ->
-        [EXTRA_DAYS] • { $ref_reward_level_1_value } дн. за каждые 100 ₽ пополнения приглашенным
-        [MONEY] • { $ref_reward_level_1_value }% от суммы пополнения приглашенным
-        *[OTHER] • { $ref_reward_level_1_value } ₽
-    }{ $ref_max_level ->
-        [2] {""}
-    
-    { $ref_reward_type ->
-        [EXTRA_DAYS] • { $ref_reward_level_2_value } дн. за каждые 100 ₽ пополнения приглашенным приглашенными
-        [MONEY] • { $ref_reward_level_2_value }% от суммы пополнения приглашенным приглашенными
-        *[OTHER] • { $ref_reward_level_2_value } ₽
-    }
-        *[1] {""}
-    }
-    </blockquote>
+    &lt;i&gt;Updated: { $updated_at }&lt;/i&gt;
 
-    <b>📊 Статистика:</b>
-    <blockquote>
-    👥 Всего приглашенных: { $referrals }
-    💳 Платежей по вашей ссылке: { $payments }
-    💳 Получено всего: { $total_bonus }{ $ref_reward_type ->
-        [EXTRA_DAYS] { " " }дн.
-        *[OTHER] { " " }₽
-    }
-    </blockquote>
+settings-language =
+    🌐 &lt;b&gt;Language&lt;/b&gt;
 
-    <i>ℹ️ Награда начисляется при оплатах приведенных вами пользователей.</i>
-
-msg-menu-invite-about =
-    <b>🎁 Подробнее о вознаграждении</b>
-
-    <b>✨ Как получить награду:</b>
-    <blockquote>
-    { $accrual_strategy ->
-    [ON_FIRST_PAYMENT] Награда начисляется за первую покупку подписки приглашенным пользователем.
-    [ON_EACH_PAYMENT] Награда начисляется за каждую покупку, или продление подписки приглашенным пользователем.
-    *[OTHER] { $accrual_strategy }
-    }
-    </blockquote>
-
-    <b>💎 Что вы получаете:</b>
-    <blockquote>
-    { $max_level -> 
-    [1] За приглашенных друзей: { $reward_level_1 }
-    *[MORE]
-    { $identical_reward ->
-    [0]
-    1️⃣ За ваших друзей: { $reward_level_1 }
-    2️⃣ За приглашенных вашими друзьями: { $reward_level_2 }
-    *[1]
-    За ваших друзей и приглашенных вашими друзьями: { $reward_level_1 }
-    }
-    }
-    
-    { $reward_strategy_type ->
-    [AMOUNT] { $reward_type ->
-        [MONEY] { space }
-        [EXTRA_DAYS] <i>(Все дополнительные дни начисляются к вашей текущей подписке)</i>
-        *[OTHER] { $reward_type }
-    }
-    [PERCENT] { $reward_type ->
-        [MONEY] <i>(Процент от стоимости их приобретенной подписки)</i>
-        [EXTRA_DAYS] <i>(Процент доп. дней от их приобретенной подписки)</i>
-        *[OTHER] { $reward_type }
-    }
-    *[OTHER] { $reward_strategy_type }
-    }
-    </blockquote>
-
-msg-invite-reward = { $value }{ $reward_strategy_type ->
-    [AMOUNT] { $reward_type ->
-        [MONEY] { space }₽
-        [EXTRA_DAYS] { space }доп. { $value -> 
-            [one] день
-            [few] дня
-            *[more] дней
-            }
-        *[OTHER] { $reward_type }
-    }
-    [PERCENT] % { $reward_type ->
-        [MONEY] 
-        [EXTRA_DAYS] доп. дней
-        *[OTHER] { $reward_type }
-    }
-    *[OTHER] { $reward_strategy_type }
-    }
-
-
-# Dashboard
-msg-dashboard-main =
-    <b>🛠 Панель управления</b>
-    • Версия бота: { $bot_version }
-msg-dashboard-features =
-    <b>⚙️ Функционал</b>
-
-    <blockquote>
-    Здесь вы можете включить или выключить различные функции бота.
-    </blockquote>
-
-msg-dashboard-extra-devices =
-    <b>📱 Дополнительные устройства</b>
-
-    <b>Статус:</b> { $enabled ->
-        [1] ✅ Включено
-        *[0] ⬜ Выключено
-    }
-    <b>Стоимость:</b> { $price } ₽/мес за устройство
-
-    <blockquote>
-    Позволяет пользователям добавлять дополнительные устройства к подписке за отдельную плату.
-    </blockquote>
-
-msg-dashboard-extra-devices-price =
-    <b>💰 Изменение стоимости доп. устройств</b>
-
-    <b>Текущая стоимость:</b> { $current_price } ₽
-
-    Выберите стоимость или введите вручную:
-
-msg-dashboard-extra-devices-price-manual =
-    <b>💰 Ручной ввод стоимости</b>
-
-    Введите новую стоимость в рублях (целое число от 0 до 100000):
-
-msg-dashboard-extra-devices-settings =
-    <b>📱 Настройка доп. устройств</b>
-
-    <b>Текущая стоимость:</b> { $price } ₽ за устройство
-    <b>Тип оплаты:</b> { $is_one_time ->
-    [1] Единоразово
-    *[0] Ежемесячно
-    }
-
-    <blockquote>
-    <b>Единоразово</b> - пользователь оплачивает устройства один раз, они сохраняются до удаления.
-    
-    <b>Ежемесячно</b> - стоимость устройств добавляется при каждом продлении подписки.
-    </blockquote>
-
-msg-users-main = <b>👥 Пользователи</b>
-msg-broadcast-main = <b>📢 Рассылка</b>
-msg-statistics-main = { $statistics }
-    
-msg-statistics-users =
-    <b>👥 Статистика по пользователям</b>
-
-    <blockquote>
-    • <b>Всего</b>: { $total_users }
-    • <b>Новые за день</b>: { $new_users_daily }
-    • <b>Новые за неделю</b>: { $new_users_weekly }
-    • <b>Новые за месяц</b>: { $new_users_monthly }
-
-    • <b>С подпиской</b>: { $users_with_subscription }
-    • <b>Без подписки</b>: { $users_without_subscription }
-    • <b>С пробным периодом</b>: { $users_with_trial }
-
-    • <b>Заблокированные</b>: { $blocked_users }
-    • <b>Заблокировали бота</b>: { $bot_blocked_users }
-
-    • <b>Конверсия пользователей → покупка</b>: { $user_conversion }%
-    • <b>Конверсия пробников → подписка</b>: { $trial_conversion }%
-    </blockquote>
-
-msg-statistics-transactions =
-    <b>🧾 Статистика по транзакциям</b>
-
-    <blockquote>
-    • <b>Всего транзакций</b>: { $total_transactions }
-    • <b>Завершенных транзакций</b>: { $completed_transactions }
-    • <b>Бесплатных транзакций</b>: { $free_transactions }
-    { $popular_gateway ->
-    [0] { empty }
-    *[HAS] • <b>Популярная платежная система</b>: { $popular_gateway }
-    }
-    </blockquote>
-
-    <b>💰 Реальные деньги:</b>
-    
-    { $payment_gateways }
-
-    <b>🎁 Бонусы пользователей:</b>
-    
-    { $bonus_gateways }
-
-msg-statistics-subscriptions =
-    <b>💳 Статистика по подпискам</b>
-
-    <blockquote>
-    • <b>Активные</b>: { $total_active_subscriptions }
-    • <b>Истекшие</b>: { $total_expire_subscriptions }
-    • <b>Пробные</b>: { $active_trial_subscriptions }
-    • <b>Истекающие (7 дней)</b>: { $expiring_subscriptions }
-    </blockquote>
-
-    <blockquote>
-    • <b>С безлимитом</b>: { $total_unlimited }
-    • <b>С лимитом трафика</b>: { $total_traffic }
-    • <b>С лимитом устройств</b>: { $total_devices }
-    </blockquote>
-
-msg-statistics-plans = 
-    <b>📦 Статистика по планам</b>
-
-    { $plans }
-
-msg-statistics-promocodes =
-    <b>🎁 Статистика по промокодам</b>
-
-    <blockquote>
-    • <b>Общее кол-во активаций</b>: { $total_promo_activations }
-    • <b>Самый популярный промокод</b>: { $most_popular_promo ->
-    [0] { unknown }
-    *[HAS] { $most_popular_promo }
-    }
-    • <b>Выдано дней</b>: { $total_promo_days }
-    • <b>Выдано трафика</b>: { $total_promo_days }
-    • <b>Выдано подписок</b>: { $total_promo_subscriptions }
-    • <b>Выдано личных скидок</b>: { $total_promo_personal_discounts }
-    • <b>Выдано одноразовых скидок</b>: { $total_promo_purchase_discounts }
-    </blockquote>
-
-msg-statistics-referrals =
-    <b>👪 Статистика по реферальной системе</b>
-    
-    <blockquote>
-    • <b></b>:
-    </blockquote>
-
-msg-statistics-transactions-gateway =
-    <b>{ gateway-type }:</b>
-    <blockquote>
-    • <b>Общий доход</b>: { $total_income }{ $currency }
-    • <b>Доход за день</b>: { $daily_income }{ $currency }
-    • <b>Доход за неделю</b>: { $weekly_income }{ $currency }
-    • <b>Доход за месяц</b>: { $monthly_income }{ $currency }
-    • <b>Средний чек</b>: { $average_check }{ $currency }
-    • <b>Сумма скидок</b>: { $total_discounts }{ $currency }
-    </blockquote>
-
-msg-statistics-plan =
-    <b>{ $plan_name }:</b> { $popular -> 
-    [0] { space }
-    *[HAS] (⭐)
-    }
-    <blockquote>
-    • <b>Всего подписок</b>: { $total_subscriptions }
-    • <b>Активных подписок</b>: { $active_subscriptions }
-    • <b>Популярная длительность</b>: { $popular_duration }
-
-    • <b>Общий доход</b>: 
-    { $all_income }
-    </blockquote>
-
-msg-statistics-plan-income = { $income }{ $currency }
-    
+    Select bot language:
 
 
 # Access
-msg-access-main =
-    <b>🔓 Режим доступа</b>
+access =
+    🔓 &lt;b&gt;Access Mode&lt;/b&gt;
+
+    Current status:
     
-    <blockquote>
-    • <b>Режим</b>: { access-mode }
-    • <b>Покупки</b>: { $purchases_allowed ->
-    [0] запрещены
-    *[1] разрешены
-    }.
-    • <b>Регистрация</b>: { $registration_allowed ->
-    [0] запрещена
-    *[1] разрешена
-    }.
-    </blockquote>
+    • &lt;b&gt;Purchases&lt;/b&gt;: { $purchases_status }
+    • &lt;b&gt;Registration&lt;/b&gt;: { $registration_status }
 
-msg-access-conditions =
-    <b>⚙️ Условия доступа</b>
+access-conditions =
+    ⚙️ &lt;b&gt;Access Conditions&lt;/b&gt;
 
-msg-access-rules =
-    <b>✳️ Изменить ссылку на правила</b>
+    &lt;blockquote expandable&gt;
+    • &lt;b&gt;Rules&lt;/b&gt; — you can set up rules that the user must accept to access the bot.
+    • &lt;b&gt;Channel subscription&lt;/b&gt; — you can set up a channel that the user must subscribe to for access to the bot.
+    &lt;/blockquote&gt;
 
-    Введите ссылку (в формате https://telegram.org/tos).
+access-rules =
+    ✳️ &lt;b&gt;Rules&lt;/b&gt;
+
+    { $status }
+
+    If enabled, users must accept the rules before using the bot.
+
+    Rules text will be displayed from the &lt;b&gt;Terms of Service&lt;/b&gt;.
+
+access-channel =
+    ❇️ &lt;b&gt;Channel Subscription&lt;/b&gt;
+
+    { $status }
+
+    If enabled, users must subscribe to the channel before using the bot.
+
+    Current channel: { $channel_link }
+
+access-channel-set =
+    ❇️ &lt;b&gt;Channel Settings&lt;/b&gt;
+
+    Enter the link to the Telegram channel:
+
+    Example: &lt;code&gt;https://t.me/channel_name&lt;/code&gt;
+
+    ⚠️ &lt;b&gt;Important&lt;/b&gt;: the bot must be an administrator in the channel!
+
+
+# Community
+community =
+    👥 &lt;b&gt;Community&lt;/b&gt;
+
+    { $status }
+
+    If enabled, users will be able to see a community button in the main menu, which will redirect them to the specified group or channel.
+
+    Current link: { $community_link }
+
+community-set =
+    👥 &lt;b&gt;Community Settings&lt;/b&gt;
+
+    Enter the link to the Telegram group or channel:
+
+    Example: &lt;code&gt;https://t.me/channel_name&lt;/code&gt;
+
+
+# Terms of service
+tos =
+    📜 &lt;b&gt;Terms of Service&lt;/b&gt;
+
+    { $status }
+
+    If enabled, users will be able to see a Terms of Service button in the main menu, which will redirect them to the specified link.
+
+    Current source: { $tos_link }
+
+tos-set =
+    📜 &lt;b&gt;Agreement Settings&lt;/b&gt;
+
+    Enter the link to the agreement text:
+
+    Examples: 
+    &lt;code&gt;https://telegra.ph/...&lt;/code&gt;
+    &lt;code&gt;https://example.com/tos&lt;/code&gt;
+
+
+# Menu
+menu = 
+    👋 Hello, { $mention }!
+
+    { $subscription_info }
+
+menu-promo-input =
+    🎟 &lt;b&gt;Promo Code Activation&lt;/b&gt;
+
+    Enter the promo code:
+
+
+# Menu - Invite
+menu-invite =
+    👥 &lt;b&gt;Referral Program&lt;/b&gt;
+
+    👤 Invited users: &lt;b&gt;{ $invited_count }&lt;/b&gt;
+    { $referral_balance }
+
+    &lt;b&gt;Your referral link:&lt;/b&gt;
+    { $referral_link }
+
+menu-invite-about =
+    &lt;b&gt;How to earn from referrals?&lt;/b&gt;
+
+    Invite friends to our service and get bonuses for every invited user!
+
+    1️⃣ Share your referral link with friends
+    2️⃣ When a friend registers and pays for a subscription, you get a reward
+    3️⃣ Rewards are credited to your bonus balance
+
+    &lt;b&gt;Reward terms:&lt;/b&gt;
+    &lt;blockquote expandable&gt;{ $reward_conditions }&lt;/blockquote&gt;
+
+
+# Menu - Balance
+menu-balance =
+    💰 &lt;b&gt;Balance&lt;/b&gt;
+
+    💳 Balance: &lt;b&gt;{ $balance } ₽&lt;/b&gt;
+
+menu-balance-topup =
+    💰 &lt;b&gt;Balance Top Up&lt;/b&gt;
+
+    Select payment amount:
+
+menu-balance-topup-custom =
+    💰 &lt;b&gt;Balance Top Up&lt;/b&gt;
+
+    Enter top up amount (in rubles):
+
+menu-balance-topup-gateway =
+    💰 &lt;b&gt;Balance Top Up&lt;/b&gt;
+
+    Amount: &lt;b&gt;{ $amount }&lt;/b&gt;
+
+    Select payment method:
+
+menu-balance-topup-confirm =
+    💰 &lt;b&gt;Payment Confirmation&lt;/b&gt;
+
+    Amount: &lt;b&gt;{ $amount }&lt;/b&gt;
+    Payment method: &lt;b&gt;{ $gateway }&lt;/b&gt;
+
+    After clicking the &lt;b&gt;Confirm payment&lt;/b&gt; button, you will be redirected to the payment page.
+
+menu-balance-transfer =
+    💸 &lt;b&gt;Balance Transfer&lt;/b&gt;
+
+    Current balance: &lt;b&gt;{ $balance } ₽&lt;/b&gt;
+    Commission: &lt;b&gt;{ $commission }&lt;/b&gt;
+
+    { $limits }
+
+menu-balance-transfer-recipient =
+    💸 &lt;b&gt;Balance Transfer&lt;/b&gt;
+
+    Enter the user ID or username for the transfer:
+
+menu-balance-transfer-amount =
+    💸 &lt;b&gt;Balance Transfer&lt;/b&gt;
+
+    Recipient: { $recipient }
+
+    Select the transfer amount:
+
+menu-balance-transfer-amount-custom =
+    💸 &lt;b&gt;Balance Transfer&lt;/b&gt;
+
+    Recipient: { $recipient }
+
+    Enter the transfer amount (in rubles):
+
+menu-balance-transfer-message =
+    💸 &lt;b&gt;Balance Transfer&lt;/b&gt;
+
+    Recipient: { $recipient }
+    Amount: &lt;b&gt;{ $amount } ₽&lt;/b&gt;
+
+    Enter a message for the recipient (optional):
+
+menu-balance-transfer-confirm =
+    💸 &lt;b&gt;Transfer Confirmation&lt;/b&gt;
+
+    Recipient: { $recipient }
+    Amount: &lt;b&gt;{ $amount } ₽&lt;/b&gt;
+    Commission: &lt;b&gt;{ $commission }&lt;/b&gt;
+    Total: &lt;b&gt;{ $total } ₽&lt;/b&gt;
+    { $message_preview }
+
+    Confirm transfer?
+
+menu-balance-transfer-history =
+    📜 &lt;b&gt;Transfer History&lt;/b&gt;
+
+    { $history }
+
+
+# Menu - Subscription
+menu-subscription =
+    💳 &lt;b&gt;Subscription&lt;/b&gt;
+
+    Select a pricing plan:
+
+menu-subscription-plan =
+    💳 &lt;b&gt;Subscription - { $plan_name }&lt;/b&gt;
+
+    { $plan_description }
+
+    &lt;b&gt;Features:&lt;/b&gt;
+    { $plan_features }
     
-    Это же значение используется в меню <b>Соглашение с пользователем</b>.
+    Select subscription duration:
 
-msg-access-channel =
-    <b>❇️ Изменить ссылку на канал/группу</b>
+menu-subscription-pay =
+    💳 &lt;b&gt;Subscription - { $plan_name }&lt;/b&gt;
 
-    Если ваша группа не имеет @username, отправьте ID группы и ссылку-приглашение отдельными сообщениями.
+    Duration: &lt;b&gt;{ $duration }&lt;/b&gt;
+    Price: { $price }
+    { $balance }
+
+    Select payment method:
+
+menu-subscription-pay-confirm =
+    💳 &lt;b&gt;Payment Confirmation&lt;/b&gt;
+
+    Plan: &lt;b&gt;{ $plan_name }&lt;/b&gt;
+    Duration: &lt;b&gt;{ $duration }&lt;/b&gt;
+    Price: { $price }
+    Payment method: &lt;b&gt;{ $gateway }&lt;/b&gt;
+
+    After clicking the &lt;b&gt;Confirm payment&lt;/b&gt; button, you will be redirected to the payment page.
+
+menu-subscription-balance-confirm =
+    💳 &lt;b&gt;Payment Confirmation&lt;/b&gt;
+
+    Plan: &lt;b&gt;{ $plan_name }&lt;/b&gt;
+    Duration: &lt;b&gt;{ $duration }&lt;/b&gt;
+    Price: { $price }
     
-    Если у вас публичный канал/группа, введите только @username.
+    Current balance: &lt;b&gt;{ $balance }&lt;/b&gt;
+    Remaining balance: &lt;b&gt;{ $balance_after }&lt;/b&gt;
+
+    Confirm payment?
 
 
-# Broadcast
-msg-broadcast-list = <b>📄 Список рассылок</b>
-msg-broadcast-plan-select = <b>📦 Выберите план для рассылки</b>
-msg-broadcast-send = <b>📢 Отправить рассылку ({ audience-type })</b>
+# Menu - Connect
+menu-connect =
+    🚀 &lt;b&gt;Connect&lt;/b&gt;
 
-    { $audience_count } { $audience_count ->
-    [one] пользователю
-    [few] пользователям
-    *[more] пользователей
-    } будет отправлена рассылка
+    Select connection method:
 
-msg-broadcast-content =
-    <b>✉️ Содержимое рассылки</b>
+menu-connect-key =
+    🔑 &lt;b&gt;Connection Key&lt;/b&gt;
 
-    Отправьте любое сообщение: текст, изображение или все вместе (поддерживается HTML).
+    Your key:
 
-msg-broadcast-buttons = <b>✳️ Кнопки рассылки</b>
+    &lt;code&gt;{ $key }&lt;/code&gt;
 
-msg-broadcast-view =
-    <b>📢 Рассылка</b>
+    Copy the key and paste it in the application.
 
-    <blockquote>
-    • <b>ID</b>: <code>{ $broadcast_id }</code>
-    • <b>Статус</b>: { broadcast-status }
-    • <b>Аудитория</b>: { audience-type }
-    • <b>Создано</b>: { $created_at }
-    </blockquote>
+menu-connect-qr =
+    📱 &lt;b&gt;QR Code&lt;/b&gt;
 
-    <blockquote>
-    • <b>Всего сообщений</b>: { $total_count }
-    • <b>Успешных</b>: { $success_count }
-    • <b>Неудачных</b>: { $failed_count }
-    </blockquote>
+    Scan the QR code with the application.
 
 
-# Users
-msg-users-recent-registered = <b>🆕 Последние зарегистрированные</b>
-msg-users-recent-activity = <b>📝 Последние взаимодействующие</b>
-msg-users-all = <b>👥 Все пользователи</b>
-msg-user-transactions = <b>🧾 Транзакции пользователя</b>
-msg-user-devices = <b>📱 Устройства пользователя ({ $current_count } / { $max_count })</b>
-msg-user-give-access = <b>🔑 Предоставить доступ к плану</b>
+# Menu - Devices
+menu-devices =
+    📱 &lt;b&gt;My Devices&lt;/b&gt;
 
-msg-users-search =
-    <b>🔍 Поиск пользователя</b>
+    Device limit: &lt;b&gt;{ $device_limit }&lt;/b&gt;
+    { $extra_devices }
 
-    Введите ID пользователя, часть имени или перешлите любое его сообщение.
+    &lt;b&gt;Device List:&lt;/b&gt;
 
-msg-users-search-results =
-    <b>🔍 Поиск пользователя</b>
+    { $devices }
 
-    Найдено <b>{ $count }</b> { $count ->
-    [one] пользователь
-    [few] пользователя
-    *[more] пользователей
-    }, { $count ->
-    [one] соответствующий
-    *[more] соответствующих
-    } запросу
+menu-extra-devices =
+    📱 &lt;b&gt;Extra Devices&lt;/b&gt;
 
-msg-user-main = 
-    <b>📝 Информация о пользователе</b>
+    &lt;b&gt;Your extra devices:&lt;/b&gt;
 
-    { hdr-user-profile }
-    { frg-user-details }
+    { $extra_devices }
 
-    <b>💸 Скидка:</b>
-    <blockquote>
-    • <b>Персональная</b>: { $personal_discount }%
-    • <b>На следующую покупку</b>: { $purchase_discount }%
-    </blockquote>
+menu-add-device =
+    ➕ &lt;b&gt;Add Extra Device&lt;/b&gt;
+
+    Cost: &lt;b&gt;{ $price } ₽&lt;/b&gt;
+    Pricing: { $pricing_type }
+
+    { $duration_info }
+
+    Select duration:
+
+menu-add-device-confirm =
+    ➕ &lt;b&gt;Confirm Purchase&lt;/b&gt;
+
+    Extra device: &lt;b&gt;1 pc.&lt;/b&gt;
+    Duration: &lt;b&gt;{ $duration }&lt;/b&gt;
+    Price: &lt;b&gt;{ $price } ₽&lt;/b&gt;
     
-    { hdr-subscription }
-    { frg-subscription-status-short }
+    Current balance: &lt;b&gt;{ $balance } ₽&lt;/b&gt;
+    Balance after: &lt;b&gt;{ $balance_after } ₽&lt;/b&gt;
 
-msg-user-sync = 
-    <b>🌀 Синхронизировать пользователя</b>
+    Confirm purchase?
 
-    <b>🛍 Телеграм:</b>
-    <blockquote>
-    { $has_bot_subscription -> 
-    [0] Данные отсутствуют
-    *[HAS]{ $bot_subscription }
-    }
-    </blockquote>
+menu-extra-device-view =
+    📱 &lt;b&gt;Extra Device&lt;/b&gt;
 
-    <b>🌊 Панель:</b> { $remna_version }
-    <blockquote>
-    { $has_remna_subscription -> 
-    [0] Данные отсутствуют
-    *[HAS] { $remna_subscription }
-    }
-    </blockquote>
-
-    Выберите актуальные данные для синхронизации.
-
-msg-user-sync-version = { $version ->
-    [NEWER] (новее)
-    [OLDER] (старее)
-    *[UNKNOWN] { empty }
-    }
-
-msg-user-sync-subscription =
-    • <b>ID</b>: <code>{ $id }</code>
-    • Статус: { $status -> 
-    [ACTIVE] Активна
-    [DISABLED] Отключена
-    [LIMITED] Исчерпан трафик
-    [EXPIRED] Истекла
-    [DELETED] Удалена
-    *[OTHER] { $status }
-    }
-    • Ссылка: <a href="{ $url }">*********</a>
-
-    • Лимит трафика: { $traffic_limit }
-    • Лимит устройств: { $device_limit }
-    • Осталось: { $expire_time }
-
-    • Внутренние сквады: { $internal_squads ->
-    [0] { unknown }
-    *[HAS] { $internal_squads }
-    }
-    • Внешний сквад: { $external_squad ->
-    [0] { unknown }
-    *[HAS] { $external_squad }
-    }
-    • Сброс трафика: { $traffic_limit_strategy -> 
-    [NO_RESET] При оплате
-    [DAY] Каждый день
-    [WEEK] Каждую неделю
-    [MONTH] Каждый месяц
-    *[OTHER] { $traffic_limit_strategy }
-    }
-    • Тег: { $tag -> 
-    [0] { unknown }
-    *[HAS] { $tag }
-    }
-
-msg-user-sync-waiting =
-    <b>🌀 Синхронизация пользователя</b>
-
-    Пожалуйста, подождите... Идет процесс синхронизации данных пользователя. Вы автоматически вернетесь к редактору пользователя по завершении.
-
-msg-user-give-subscription =
-    <b>🎁 Выдать подписку</b>
-
-    Выберите план, который хотите выдать пользователю.
-
-msg-user-give-subscription-duration =
-    <b>⏳ Выберите длительность</b>
-
-    Выберите длительность выдаваемой подписки.
-
-msg-user-discount =
-    <b>💸 Изменить персональную скидку</b>
-
-    Выберите по кнопке или введите свой вариант.
-
-msg-user-balance-menu =
-    <b>💰 Баланс пользователя</b>
-
-    <b>Основной баланс:</b> { $current_balance } ₽
-    <b>Реферальный баланс:</b> { $referral_balance }
-
-    Выберите тип баланса для редактирования:
-
-msg-user-main-balance =
-    <b>💰 Основной баланс</b>
-
-    <b>Текущий баланс: { $current_balance } ₽</b>
-
-    Выберите по кнопке или введите свой вариант, чтобы добавить или отнять.
-
-msg-user-referral-balance =
-    <b>🎁 Реферальный баланс</b>
-
-    <b>Текущий баланс: { $current_referral_balance } ₽</b>
-
-    Выберите по кнопке или введите свой вариант, чтобы добавить.
-
-msg-user-points =
-    <b>� Изменить баланс</b>
-
-    <b>Текущий баланс: { $current_balance } ₽</b>
-
-    Выберите по кнопке или введите свой вариант, чтобы добавить или отнять.
-
-msg-user-subscription-traffic-limit =
-    <b>🌐 Изменить лимит трафика</b>
-
-    Выберите по кнопке или введите свой вариант (в ГБ), чтобы изменить лимит трафика.
-
-msg-user-subscription-device-limit =
-    <b>📱 Бонусные устройства</b>
-
-    • Выберите количество бонусных устройств для пользователя, или введите количество от 0 до 100
-
-msg-user-subscription-expire-time =
-    <b>⏳ Изменить срок действия</b>
-
-    <b>Закончится через: { $expire_time }</b>
-
-    Выберите по кнопке или введите свой вариант (в днях), чтобы добавить или отнять.
-
-msg-user-subscription-squads =
-    <b>🔗 Сквады</b>
-
-    • Внутренний сквад: { $internal_squads ->
-    [0] не выбран
-    *[HAS] { $internal_squads }
-    }
-    • Внешний сквад: { $external_squad ->
-    [0] не выбран
-    *[HAS] { $external_squad }
-    }
-
-    ✏️ Выберите сквады:
-
-msg-user-subscription-internal-squads =
-    <b>⏺️ Изменить список внутренних сквадов</b>
-
-    Выберите, какие внутренние группы будут присвоены этому пользователю.
-
-msg-user-subscription-external-squads =
-    <b>⏹️ Изменить внешний сквад</b>
-
-    Выберите, какая внешняя группа будет присвоена этому пользователю.
-
-msg-user-subscription-empty =
-    <b>💳 Информация о подписке</b>
-
-    У данного пользователя нет активной подписки.
-
-msg-user-subscription-info =
-    <b>💳 Информация о текущей подписке</b>
+    Created: &lt;b&gt;{ $created_at }&lt;/b&gt;
+    Expires: &lt;b&gt;{ $expires_at }&lt;/b&gt;
+    Auto-renewal: &lt;b&gt;{ $auto_renewal }&lt;/b&gt;
     
-    { hdr-subscription }
-    { frg-subscription-details }
+    Status: { $status }
 
-    <blockquote>
-    • <b>Сквады</b>: { $squads -> 
-    [0] { unknown }
-    *[HAS] { $squads }
-    }
-    • <b>Первое подключение</b>: { $first_connected_at -> 
-    [0] { unknown }
-    *[HAS] { $first_connected_at }
-    }
-    • <b>Последнее подключение</b>: { $last_connected_at ->
-    [0] { unknown }
-    *[HAS] { $last_connected_at } ({ $node_name })
-    } 
-    </blockquote>
+menu-extra-device-auto-renew-disabled =
+    ✅ Auto-renewal disabled successfully.
 
-    { hdr-plan }
-    { frg-plan-snapshot }
+menu-extra-device-deleted =
+    ✅ Extra device deleted successfully.
 
-msg-user-transaction-info =
-    <b>🧾 Информация о транзакции</b>
 
-    { hdr-payment }
-    <blockquote>
-    • <b>ID</b>: <code>{ $payment_id }</code>
-    • <b>Тип</b>: { purchase-type }
-    • <b>Статус</b>: { transaction-status }
-    • <b>Способ оплаты</b>: { gateway-type }
-    • <b>Сумма</b>: { frg-payment-amount }
-    • <b>Создано</b>: { $created_at }
-    </blockquote>
+# Menu - Trial
+menu-trial =
+    🎁 &lt;b&gt;Trial Subscription&lt;/b&gt;
 
-    { $is_test -> 
-    [1] ⚠️ Тестовая транзакция
-    *[0]
-    { hdr-plan }
-    { frg-plan-snapshot }
-    }
+    You can try our service for free!
+
+    &lt;b&gt;Trial period:&lt;/b&gt; { $trial_days }
+    &lt;b&gt;Traffic:&lt;/b&gt; { $traffic_limit }
+    &lt;b&gt;Devices:&lt;/b&gt; { $device_limit }
+
+    To activate, click the button below:
+
+menu-trial-used =
+    ⚠️ &lt;b&gt;Trial Period&lt;/b&gt;
+
+    You have already used the trial period.
+
+
+# Menu - Referral Trial
+menu-referral-trial =
+    📢 &lt;b&gt;Referral Subscription&lt;/b&gt;
+
+    Invite &lt;b&gt;{ $required_invites }&lt;/b&gt; friends and get a free subscription!
+
+    👤 Invited: &lt;b&gt;{ $invited_count }/{ $required_invites }&lt;/b&gt;
+
+    { $status }
+
+menu-referral-trial-progress =
+    Invite &lt;b&gt;{ $remaining }&lt;/b&gt; more users.
+
+menu-referral-trial-ready =
+    ✅ You have invited enough users!
+
+    Click the button to get your subscription.
+
+
+# Menu - Support
+menu-support =
+    🆘 &lt;b&gt;Support&lt;/b&gt;
+
+    If you have any questions, contact support:
+
+    { $support_link }
+
+
+# User Bonuses
+menu-bonus-activation =
+    💸 &lt;b&gt;Bonus Activation&lt;/b&gt;
+
+    Bonus balance: &lt;b&gt;{ $referral_balance } ₽&lt;/b&gt;
+
+    Select the amount to transfer to main balance:
+
+menu-bonus-activation-custom =
+    💸 &lt;b&gt;Bonus Activation&lt;/b&gt;
+
+    Bonus balance: &lt;b&gt;{ $referral_balance } ₽&lt;/b&gt;
+
+    Enter the amount to transfer (in rubles):
+
+
+# Download
+menu-download-android =
+    📥 &lt;b&gt;Download for Android&lt;/b&gt;
+
+    Select the application to download:
+
+menu-download-ios =
+    📥 &lt;b&gt;Download for iPhone&lt;/b&gt;
+
+    Select the application to download:
+
+menu-download-windows =
+    📥 &lt;b&gt;Download for Windows&lt;/b&gt;
+
+    Select the application to download:
+
+menu-download-macos =
+    📥 &lt;b&gt;Download for macOS&lt;/b&gt;
+
+    Select the application to download:
+
+
+# Dashboard
+dashboard =
+    🛠 &lt;b&gt;Control Panel&lt;/b&gt;
+
+    Welcome to the admin panel.
+
+
+# Dashboard - Statistics
+dashboard-statistics =
+    📊 &lt;b&gt;Statistics&lt;/b&gt;
+
+    { $stats_content }
+
+
+# Dashboard - Users
+dashboard-users =
+    👥 &lt;b&gt;Users&lt;/b&gt;
+
+    Total: &lt;b&gt;{ $total }&lt;/b&gt;
+
+    Select an action:
+
+dashboard-users-search =
+    🔍 &lt;b&gt;User Search&lt;/b&gt;
+
+    Enter user ID or username:
+
+dashboard-users-recent-registered =
+    🆕 &lt;b&gt;Recently Registered&lt;/b&gt;
+
+    { $users }
+
+dashboard-users-recent-activity =
+    📝 &lt;b&gt;Recently Active&lt;/b&gt;
+
+    { $users }
+
+dashboard-users-all =
+    👥 &lt;b&gt;All Users&lt;/b&gt;
+
+    { $users }
+
+dashboard-users-blacklist =
+    🚫 &lt;b&gt;Blacklist&lt;/b&gt;
+
+    { $users }
+
+dashboard-users-unblock-all =
+    🔓 &lt;b&gt;Unblock All&lt;/b&gt;
+
+    All users will be unblocked.
+
+    Continue?
+
+
+# Dashboard - User
+dashboard-user =
+    👤 &lt;b&gt;User — { $name }&lt;/b&gt;
+
+    { $user_info }
+
+dashboard-user-discount =
+    💸 &lt;b&gt;Permanent Discount&lt;/b&gt;
+
+    Current discount: &lt;b&gt;{ $discount }&lt;/b&gt;
+
+    Select discount value:
+
+dashboard-user-discount-input =
+    💸 &lt;b&gt;Permanent Discount&lt;/b&gt;
+
+    Enter discount percentage (0-100):
+
+dashboard-user-balance =
+    💳 &lt;b&gt;User Finances&lt;/b&gt;
+
+    Main balance: &lt;b&gt;{ $balance } ₽&lt;/b&gt;
+    Bonus balance: &lt;b&gt;{ $referral_balance } ₽&lt;/b&gt;
+
+dashboard-user-points-main =
+    💰 &lt;b&gt;Main Balance&lt;/b&gt;
+
+    Current balance: &lt;b&gt;{ $balance } ₽&lt;/b&gt;
+
+    Enter the change amount (positive or negative number):
+
+dashboard-user-points-referral =
+    🎁 &lt;b&gt;Bonus Balance&lt;/b&gt;
+
+    Current bonus balance: &lt;b&gt;{ $referral_balance } ₽&lt;/b&gt;
+
+    Enter the change amount (positive or negative number):
+
+dashboard-user-subscription =
+    📋 &lt;b&gt;User Subscription&lt;/b&gt;
+
+    { $subscription_info }
+
+dashboard-user-subscription-traffic-limit =
+    🌐 &lt;b&gt;Traffic Limit&lt;/b&gt;
+
+    Current limit: &lt;b&gt;{ $traffic_limit }&lt;/b&gt;
+
+    Enter new value in GB:
+
+dashboard-user-subscription-device-limit =
+    📱 &lt;b&gt;Device Limit&lt;/b&gt;
+
+    Current limit: &lt;b&gt;{ $device_limit }&lt;/b&gt;
+
+    Enter new value:
+
+dashboard-user-subscription-expire-time =
+    ⏳ &lt;b&gt;Expiration Time&lt;/b&gt;
+
+    Current time: &lt;b&gt;{ $expire_time }&lt;/b&gt;
+
+    Enter new value in days (positive or negative number):
+
+dashboard-user-subscription-squads =
+    🔗 &lt;b&gt;User Squads&lt;/b&gt;
+
+    { $squads_info }
+
+    Select squad to add/remove:
+
+dashboard-user-subscription-devices =
+    🧾 &lt;b&gt;User Devices&lt;/b&gt;
+
+    { $devices_info }
+
+dashboard-user-give-subscription =
+    🎁 &lt;b&gt;Give Subscription&lt;/b&gt;
+
+    Select plan for the user:
+
+dashboard-user-give-subscription-duration =
+    🎁 &lt;b&gt;Give Subscription - { $plan_name }&lt;/b&gt;
+
+    Select duration:
+
+dashboard-user-give-subscription-confirm =
+    🎁 &lt;b&gt;Subscription Confirmation&lt;/b&gt;
+
+    Plan: &lt;b&gt;{ $plan_name }&lt;/b&gt;
+    Duration: &lt;b&gt;{ $duration }&lt;/b&gt;
+
+    Grant to user?
+
+dashboard-user-change-subscription =
+    🔃 &lt;b&gt;Change Subscription&lt;/b&gt;
+
+    Current plan: &lt;b&gt;{ $current_plan }&lt;/b&gt;
+
+    Select new plan:
+
+dashboard-user-change-subscription-confirm =
+    🔃 &lt;b&gt;Subscription Change Confirmation&lt;/b&gt;
+
+    Current plan: &lt;b&gt;{ $current_plan }&lt;/b&gt;
+    New plan: &lt;b&gt;{ $new_plan }&lt;/b&gt;
+
+    Change plan?
+
+dashboard-user-statistics =
+    📊 &lt;b&gt;User Statistics&lt;/b&gt;
+
+    { $stats_info }
+
+dashboard-user-message =
+    📩 &lt;b&gt;Send Message&lt;/b&gt;
+
+    Send a message to the user. You can use text, photos, videos or any other content.
+
+    Just send the message:
+
+dashboard-user-message-preview =
+    👀 &lt;b&gt;Preview&lt;/b&gt;
+
+    The message will be sent to the user. Confirm sending?
+
+dashboard-user-role =
+    👮‍♂️ &lt;b&gt;User Role&lt;/b&gt;
+
+    Current role: &lt;b&gt;{ $role }&lt;/b&gt;
+
+    Select new role:
+
+dashboard-user-transactions =
+    🧾 &lt;b&gt;User Payments&lt;/b&gt;
+
+    { $transactions }
+
+dashboard-user-transaction =
+    🧾 &lt;b&gt;Transaction&lt;/b&gt;
+
+    { $transaction_info }
+
+dashboard-user-give-access =
+    🔑 &lt;b&gt;Plan Access&lt;/b&gt;
+
+    { $current_access }
+
+    Select plan to grant/revoke access:
+
+dashboard-user-sync =
+    🌀 &lt;b&gt;User Synchronization&lt;/b&gt;
+
+    A mismatch was detected between the local database and the Remnawave panel.
+
+    &lt;blockquote&gt;
+    &lt;b&gt;Remnawave&lt;/b&gt;
+    { $remnawave_info }
+    &lt;/blockquote&gt;
+
+    &lt;blockquote&gt;
+    &lt;b&gt;Remnashop&lt;/b&gt;
+    { $remnashop_info }
+    &lt;/blockquote&gt;
+
+    Select data source:
+
+
+# Dashboard - Broadcast
+dashboard-broadcast =
+    📢 &lt;b&gt;Broadcast&lt;/b&gt;
+
+    { $broadcast_status }
+
+    Select broadcast type:
+
+dashboard-broadcast-list =
+    📄 &lt;b&gt;All Broadcasts&lt;/b&gt;
+
+    { $broadcast_list }
+
+dashboard-broadcast-view =
+    👀 &lt;b&gt;Broadcast { $broadcast_id }&lt;/b&gt;
+
+    { $broadcast_info }
+
+dashboard-broadcast-plan =
+    📦 &lt;b&gt;Broadcast by Plan&lt;/b&gt;
+
+    Select plan:
+
+dashboard-broadcast-content =
+    ✉️ &lt;b&gt;Broadcast Content&lt;/b&gt;
+
+    Send the content you want to broadcast:
+
+dashboard-broadcast-buttons =
+    ✳️ &lt;b&gt;Broadcast Buttons&lt;/b&gt;
+
+    Select buttons to add to the broadcast:
+
+dashboard-broadcast-preview =
+    👀 &lt;b&gt;Broadcast Preview&lt;/b&gt;
+
+    Recipients: &lt;b&gt;{ $recipients }&lt;/b&gt;
+    { $filter }
+
+    Confirm sending?
+
+dashboard-broadcast-sent =
+    ✅ Broadcast started!
+
+    ID: &lt;code&gt;{ $broadcast_id }&lt;/code&gt;
+
+dashboard-broadcast-canceled =
+    ⛔ Broadcast canceled.
+
+dashboard-broadcast-deleted =
+    ❌ Sent messages deleted.
+
+
+# Dashboard - Promocodes
+dashboard-promocodes =
+    🎟 &lt;b&gt;Promo Codes&lt;/b&gt;
+
+    Total: &lt;b&gt;{ $total }&lt;/b&gt;
+
+    Select an action:
+
+dashboard-promocodes-list =
+    📃 &lt;b&gt;Promo Code List&lt;/b&gt;
+
+    { $promocodes }
+
+dashboard-promocodes-search =
+    🔍 &lt;b&gt;Promo Code Search&lt;/b&gt;
+
+    Enter promo code:
+
+dashboard-promocode =
+    🎟 &lt;b&gt;Promo Code — { $code }&lt;/b&gt;
+
+    { $promocode_info }
+
+dashboard-promocode-create =
+    🆕 &lt;b&gt;Create Promo Code&lt;/b&gt;
+
+    Select promo code parameters:
+
+dashboard-promocode-create-code =
+    🏷️ &lt;b&gt;Promo Code&lt;/b&gt;
+
+    Enter promo code (or generate random):
+
+dashboard-promocode-create-name =
+    📝 &lt;b&gt;Name&lt;/b&gt;
+
+    Enter promo code name (optional):
+
+dashboard-promocode-create-type =
+    🔖 &lt;b&gt;Promo Code Type&lt;/b&gt;
+
+    Select promo code type:
+
+dashboard-promocode-create-availability =
+    ✴️ &lt;b&gt;Promo Code Access&lt;/b&gt;
+
+    Select who can use the promo code:
+
+dashboard-promocode-create-reward =
+    🎁 &lt;b&gt;Promo Code Reward&lt;/b&gt;
+
+    { $reward_type }
+
+    Select reward value:
+
+dashboard-promocode-create-lifetime =
+    ⌛ &lt;b&gt;Promo Code Lifetime&lt;/b&gt;
+
+    Select the number of activations or unlimited:
+
+dashboard-promocode-create-access =
+    📦 &lt;b&gt;Plan Access&lt;/b&gt;
+
+    Select plans where the promo code can be used:
+
+dashboard-promocode-create-allowed =
+    👥 &lt;b&gt;Allowed Users&lt;/b&gt;
+
+    Enter user IDs (comma-separated):
+
+dashboard-promocode-edit =
+    ✏️ &lt;b&gt;Edit Promo Code&lt;/b&gt;
+
+    Select parameter to edit:
+
+dashboard-promocode-edit-code =
+    🏷️ &lt;b&gt;Promo Code&lt;/b&gt;
+
+    Current code: &lt;code&gt;{ $code }&lt;/code&gt;
+
+    Enter new promo code:
+
+dashboard-promocode-edit-name =
+    📝 &lt;b&gt;Name&lt;/b&gt;
+
+    Current name: { $name }
+
+    Enter new name:
+
+dashboard-promocode-edit-type =
+    🔖 &lt;b&gt;Promo Code Type&lt;/b&gt;
+
+    Current type: { $type }
+
+    Select new type:
+
+dashboard-promocode-edit-availability =
+    ✴️ &lt;b&gt;Promo Code Access&lt;/b&gt;
+
+    Current access: { $availability }
+
+    Select new access:
+
+dashboard-promocode-edit-reward =
+    🎁 &lt;b&gt;Promo Code Reward&lt;/b&gt;
+
+    Current reward: { $reward }
+
+    Select new reward:
+
+dashboard-promocode-edit-lifetime =
+    ⌛ &lt;b&gt;Promo Code Lifetime&lt;/b&gt;
+
+    Current lifetime: { $lifetime }
+
+    Select new lifetime:
+
+dashboard-promocode-edit-access =
+    📦 &lt;b&gt;Plan Access&lt;/b&gt;
+
+    Current plans: { $access }
+
+    Select plans:
+
+dashboard-promocode-edit-quantity =
+    🔢 &lt;b&gt;Quantity&lt;/b&gt;
+
+    Current quantity: { $quantity }
+
+    Enter new quantity:
+
+dashboard-promocode-delete-confirm =
+    🗑️ &lt;b&gt;Delete Promo Code&lt;/b&gt;
+
+    Delete promo code &lt;code&gt;{ $code }&lt;/code&gt;?
+
+
+# Dashboard - Features
+dashboard-features =
+    ⚙️ &lt;b&gt;Features&lt;/b&gt;
+
+    Enable or disable various bot functions:
+
+    { $features_list }
+
+
+# Dashboard - Remnawave
+dashboard-remnawave =
+    🌊 &lt;b&gt;Remnawave Panel&lt;/b&gt;
+
+    Connection status: { $status }
+
+    { $panel_info }
+
+dashboard-remnawave-users =
+    👥 &lt;b&gt;Panel Users&lt;/b&gt;
+
+    { $users }
+
+dashboard-remnawave-hosts =
+    🌐 &lt;b&gt;Hosts&lt;/b&gt;
+
+    { $hosts }
+
+dashboard-remnawave-nodes =
+    🖥️ &lt;b&gt;Nodes&lt;/b&gt;
+
+    { $nodes }
+
+dashboard-remnawave-inbounds =
+    🔌 &lt;b&gt;Inbounds&lt;/b&gt;
+
+    { $inbounds }
+
+
+# Dashboard - Remnashop
+dashboard-remnashop =
+    🛍 &lt;b&gt;Telegram&lt;/b&gt;
+
+    Bot version: &lt;code&gt;{ $version }&lt;/code&gt;
+    { $update_info }
+
+
+# Dashboard - Importer
+dashboard-importer =
+    📥 &lt;b&gt;Import&lt;/b&gt;
+
+    Select data source for import:
+
+dashboard-importer-xui =
+    💩 &lt;b&gt;3X-UI Panel Import&lt;/b&gt;
+
+    Instructions for import:
     
-msg-user-role = 
-    <b>👮‍♂️ Изменить роль</b>
+    1. Open 3X-UI panel
+    2. Go to Panel Settings → Backup
+    3. Export the database
+    4. Upload the file here
+
+dashboard-importer-xui-shop =
+    🛒 &lt;b&gt;3xui-shop Bot Import&lt;/b&gt;
+
+    Instructions for import:
+
+    1. In the 3xui-shop bot, run the &lt;code&gt;/dump&lt;/code&gt; command
+    2. Upload the received file here
+
+dashboard-importer-sync =
+    🌀 &lt;b&gt;Synchronization&lt;/b&gt;
+
+    Select synchronization direction:
+
+dashboard-importer-squads =
+    🔗 &lt;b&gt;Internal Squads&lt;/b&gt;
+
+    Select squad for import:
+
+
+# Dashboard - Plans
+dashboard-plans =
+    📦 &lt;b&gt;Pricing Plans&lt;/b&gt;
+
+    Total: &lt;b&gt;{ $total }&lt;/b&gt;
+
+    Select plan to edit or create a new one:
+
+dashboard-plan =
+    📦 &lt;b&gt;Plan — { $name }&lt;/b&gt;
+
+    { $plan_info }
+
+dashboard-plan-create =
+    🆕 &lt;b&gt;Create Plan&lt;/b&gt;
+
+    Select plan parameters:
+
+dashboard-plan-create-name =
+    🏷️ &lt;b&gt;Plan Name&lt;/b&gt;
+
+    Enter plan name:
+
+dashboard-plan-create-description =
+    💬 &lt;b&gt;Plan Description&lt;/b&gt;
+
+    Enter plan description (optional):
+
+dashboard-plan-create-tag =
+    📌 &lt;b&gt;Plan Tag&lt;/b&gt;
+
+    Enter tag for the plan (optional):
     
-    Выберите новую роль для пользователя.
+    Example: "Popular", "New"
 
-msg-users-blacklist =
-    <b>🚫 Черный список</b>
+dashboard-plan-create-type =
+    🔖 &lt;b&gt;Plan Type&lt;/b&gt;
 
-    Заблокировано: <b>{ $count_blocked }</b> / <b>{ $count_users }</b> ({ $percent }%).
+    Select plan type:
 
-msg-user-message =
-    <b>📩 Отправить сообщение пользователю</b>
+dashboard-plan-create-availability =
+    ✴️ &lt;b&gt;Plan Access&lt;/b&gt;
 
-    Отправьте любое сообщение: текст, изображение или все вместе (поддерживается HTML).
+    Select who can purchase the plan:
+
+dashboard-plan-create-traffic =
+    🌐 &lt;b&gt;Traffic&lt;/b&gt;
+
+    Enter traffic limit in GB:
     
+    Enter &lt;code&gt;0&lt;/code&gt; for unlimited traffic.
 
-# Панель
-msg-remnawave-main =
-    <b>🌊 Панель</b>
-    
-    <b>🖥️ Система:</b>
-    <blockquote>
-    • <b>ЦПУ</b>: { $cpu_cores } { $cpu_cores ->
-    [one] ядро
-    [few] ядра
-    *[more] ядер
-    } { $cpu_threads } { $cpu_threads ->
-    [one] поток
-    [few] потока
-    *[more] потоков
-    }
-    • <b>ОЗУ</b>: { $ram_used } / { $ram_total } ({ $ram_used_percent }%)
-    • <b>Аптайм</b>: { $uptime }
-    </blockquote>
-
-msg-remnawave-users =
-    <b>👥 Пользователи</b>
-
-    <b>📊 Статистика:</b>
-    <blockquote>
-    • <b>Всего</b>: { $users_total }
-    • <b>Активные</b>: { $users_active }
-    • <b>Отключенные</b>: { $users_disabled }
-    • <b>Ограниченные</b>: { $users_limited }
-    • <b>Истекшие</b>: { $users_expired }
-    </blockquote>
-
-    <b>🟢 Онлайн:</b>
-    <blockquote>
-    • <b>За день</b>: { $online_last_day }
-    • <b>За неделю</b>: { $online_last_week }
-    • <b>Никогда не заходили</b>: { $online_never }
-    • <b>Сейчас онлайн</b>: { $online_now }
-    </blockquote>
-
-msg-remnawave-host-details =
-    <b>{ $remark } ({ $status ->
-    [ON] включен
-    *[OFF] выключен
-    }):</b>
-    <blockquote>
-    • <b>Адрес</b>: <code>{ $address }:{ $port }</code>
-    { $inbound_uuid ->
-    [0] { empty }
-    *[HAS] • <b>Инбаунд</b>: <code>{ $inbound_uuid }</code>
-    }
-    </blockquote>
-
-msg-remnawave-node-details =
-    <b>{ $country } { $name } ({ $status ->
-    [ON] подключено
-    *[OFF] отключено
-    }):</b>
-    <blockquote>
-    • <b>Адрес</b>: <code>{ $address }{ $port -> 
-    [0] { empty }
-    *[HAS]:{ $port }
-    }</code>
-    • <b>Аптайм (xray)</b>: { $xray_uptime }
-    • <b>Пользователей онлайн</b>: { $users_online }
-    • <b>Трафик</b>: { $traffic_used } / { $traffic_limit }
-    </blockquote>
-
-msg-remnawave-inbound-details =
-    <b>🔗 { $tag }</b>
-    <blockquote>
-    • <b>ID</b>: <code>{ $inbound_id }</code>
-    • <b>Протокол</b>: { $type } ({ $network })
-    { $port ->
-    [0] { empty }
-    *[HAS] • <b>Порт</b>: { $port }
-    }
-    { $security ->
-    [0] { empty }
-    *[HAS] • <b>Безопасность</b>: { $security } 
-    }
-    </blockquote>
-
-msg-remnawave-hosts =
-    <b>🌐 Хосты</b>
-    
-    { $host }
-
-msg-remnawave-nodes = 
-    <b>🖥️ Ноды</b>
-
-    { $node }
-
-msg-remnawave-inbounds =
-    <b>🔌 Инбаунды</b>
-
-    { $inbound }
-
-
-# Телеграм
-msg-remnashop-main = <b>🛍 Телеграм</b>
-msg-admins-main = <b>👮‍♂️ Администраторы</b>
-
-
-# Gateways
-msg-gateways-main = <b>🌐 Платежные системы</b>
-msg-gateways-settings = <b>🌐 Конфигурация { gateway-type }</b>
-msg-gateways-default-currency = <b>💸 Валюта по умолчанию</b>
-msg-gateways-placement = <b>🔢 Изменить позиционирование</b>
-
-msg-gateways-field =
-    <b>🌐 Конфигурация { gateway-type }</b>
-
-    Введите новое значение для { $field }.
-
-
-# Referral
-msg-referral-main =
-    <b>👥 Реферальная система</b>
-
-    <blockquote>
-    • <b>Статус</b>: { $is_enable -> 
-        [1] 🟢 Включено
-        *[0] 🔴 Выключено
-        }
-    • <b>Тип награды</b>: { reward-type }
-    • <b>Количество уровней</b>: { $level_text }
-    • <b>Условие начисления</b>: { accrual-strategy }
-    • <b>Форма начисления</b>: { reward-strategy }
-    • <b>Награда</b>: { $reward_display }
-    </blockquote>
-
-    🔽 Выберите пункт для изменения.
-
-msg-referral-level =
-    <b>🔢 Изменить уровень</b>
-
-    Выберите количество уровней реферальной системы.
-
-msg-referral-reward-type =
-    <b>🎀 Изменить тип награды</b>
-
-    Выберите тип награды за приглашенных пользователей.
-    
-msg-referral-accrual-strategy =
-    <b>📍 Изменить условие начисления</b>
-
-    Выберите, при каком условии будет начисляться награда.
-
-
-msg-referral-reward-strategy =
-    <b>⚖️ Изменить форму начисления</b>
-
-    Выберите способ расчета награды.
-    
-    <i>При выборе типа "Дни": начисляется N дней за каждые 100 рублей пополнения/покупки.</i>
-
-
-msg-referral-reward-level = { $level } уровень: { $value }{ $reward_strategy_type ->
-    [AMOUNT] { $reward_type ->
-        [POINTS] { space }{ $value -> 
-            [one] балл
-            [few] балла
-            *[more] баллов
-            }
-        [EXTRA_DAYS] { space }доп. { $value -> 
-            [one] день
-            [few] дня
-            *[more] дней
-            }
-        [MONEY] ₽
-        *[OTHER] { $reward_type }
-    }
-    [PERCENT] % { $reward_type ->
-        [POINTS] баллов
-        [EXTRA_DAYS] доп. дней
-        [MONEY] от суммы платежа
-        *[OTHER] { $reward_type }
-    }
-    *[OTHER] { $reward_strategy_type }
-    }
-    
-msg-referral-reward =
-    <b>🎁 Изменить награду</b>
-
-    <blockquote>
-    { $reward }
-    </blockquote>
-
-    { $reward_type ->
-        [EXTRA_DAYS] Выберите количество дней за каждые 100₽ пополнения/покупки, или введите значение вручную.
-        *[OTHER] Выберите размер награды или введите значение вручную.
-    }
-
-msg-referral-reward-manual =
-    <b>✏️ Ручной ввод награды</b>
-
-msg-referral-invite-message =
-    <b>✉️ Настройка сообщения приглашения</b>
-
-    🔽 Выберите действие:
-
-msg-referral-invite-edit =
-    <b>✉️ Настройка сообщения приглашения</b>
-
-    ℹ️ Доступные переменные:
-    <blockquote>
-    • <code>{"{url}"}</code> - реферальная ссылка
-    • <code>{"{space}"}</code> - пустая строка в начале (не видна в превью)
-    </blockquote>
+dashboard-plan-traffic-reset-strategy =
+    🔄 &lt;b&gt;Traffic Reset Strategy&lt;/b&gt;
 
-    <i>✏️ Введите ваше приглашение:</i>
+    Select traffic reset strategy:
 
-msg-referral-invite-preview =
+dashboard-plan-create-devices =
+    📱 &lt;b&gt;Devices&lt;/b&gt;
 
-    { $preview_message }
+    Enter device limit:
 
-# Plans
-msg-plans-main = <b>📦 Планы</b>
+dashboard-plan-create-squads =
+    🔗 &lt;b&gt;Plan Squads&lt;/b&gt;
 
-msg-plan-configurator =
-    <b>📦 Конфигуратор плана</b>
+    Select squads for the plan:
 
-    <blockquote>
-    • <b>Название</b>: { $name }
-    • <b>Тег</b>: { $tag }
-    • <b>Внутренний сквад</b>: { $internal_squads }
-    • <b>Внешний сквад</b>: { $external_squad }
-    • <b>Доступ</b>: { availability-type }
-    </blockquote>
-    
-    <blockquote>
-    • <b>Тип</b>: { plan-type }
-    • <b>Лимит трафика</b>: { $is_unlimited_traffic ->
-        [1] { unlimited }
-        *[0] { $traffic_limit }
-    }
-    • <b>Лимит устройств</b>: { $is_unlimited_devices ->
-        [1] { unlimited }
-        *[0] { $device_limit }
-    }
-    </blockquote>
-    
-    <blockquote>
-    • <b>Статус</b>: { $is_active ->
-        [1] 🟢 Включен
-        *[0] 🔴 Выключен
-    }
-    </blockquote>
+dashboard-plan-create-allowed =
+    👥 &lt;b&gt;Allowed Users&lt;/b&gt;
 
-    Выберите пункт для изменения.
+    Enter user IDs (comma-separated):
 
-msg-plan-name =
-    <b>🏷️ Изменить название</b>
+dashboard-plan-create-durations-prices =
+    💰 &lt;b&gt;Pricing&lt;/b&gt;
 
-    { $name ->
-    [0] { space }
-    *[HAS]
-    <blockquote>
-    { $name }
-    </blockquote>
-    }
+    Set durations and prices:
 
-    Введите новое название плана.
+    { $durations }
 
-msg-plan-description =
-    <b>💬 Изменить описание</b>
+dashboard-plan-create-duration =
+    ⌛ &lt;b&gt;Duration&lt;/b&gt;
 
-    <blockquote>
-    Описание: { $description }
-    </blockquote>
+    Enter duration in days:
 
-    Введите новое описание плана.
+dashboard-plan-create-price =
+    💰 &lt;b&gt;Price&lt;/b&gt;
 
-msg-plan-tag =
-    <b>📌 Изменить тег</b>
+    Duration: { $duration }
 
-    <blockquote>
-    Тег: { $tag }
-    </blockquote>
+    Enter the price in rubles:
 
-    <i>ℹ️ Используйте латинские заглавные буквы, цифры и символ подчеркивания.</i>
+dashboard-plan-edit =
+    ✏️ &lt;b&gt;Edit Plan&lt;/b&gt;
 
-    ✏️ Введите тег для плана:
+    Select parameter to edit:
 
-msg-plan-type =
-    <b>🔖 Изменить тип</b>
+dashboard-plan-edit-name =
+    🏷️ &lt;b&gt;Plan Name&lt;/b&gt;
 
-    Выберите новый тип плана.
+    Current name: &lt;code&gt;{ $name }&lt;/code&gt;
 
-msg-plan-availability =
-    <b>✴️ Изменить доступность</b>
+    Enter new name:
 
-    Выберите доступность плана.
+dashboard-plan-edit-description =
+    💬 &lt;b&gt;Plan Description&lt;/b&gt;
 
-msg-plan-traffic =
-    <b>🌐 Изменить лимит и стратегию сброса трафика</b>
+    Current description: { $description }
 
-    Введите новый лимит трафика плана (в ГБ) и выберите стратегию его сброса.
+    Enter new description:
 
-msg-plan-devices =
-    <b>📱 Изменить лимит устройств</b>
+dashboard-plan-edit-tag =
+    📌 &lt;b&gt;Plan Tag&lt;/b&gt;
 
-    Введите новый лимит устройств плана.
+    Current tag: { $tag }
 
-msg-plan-durations =
-    <b>⏳ Длительности плана</b>
+    Enter new tag:
 
-    Выберите длительность для изменения цены.
+dashboard-plan-edit-type =
+    🔖 &lt;b&gt;Plan Type&lt;/b&gt;
 
-msg-plan-duration =
-    <b>⏳ Добавить длительность плана</b>
+    Current type: { $type }
 
-    Введите новую длительность (в днях).
+    Select new type:
 
-msg-plan-prices =
-    <b>💰 Изменить цену тарифа на ({ $value ->
-            [-1] { unlimited }
-            *[other] { unit-day }
-        })</b>
+dashboard-plan-edit-availability =
+    ✴️ &lt;b&gt;Plan Access&lt;/b&gt;
 
-    Укажите цену в рублях.
-    Цены в других валютах будут рассчитаны автоматически по курсу.
+    Current access: { $availability }
 
-msg-plan-price =
-    <b>💰 Изменить цену для тарифа на ({ $value ->
-            [-1] { unlimited }
-            *[other] { unit-day }
-        })</b>
+    Select new access:
 
-    Введите новую цену в рублях (₽).
+dashboard-plan-edit-traffic =
+    🌐 &lt;b&gt;Traffic&lt;/b&gt;
 
-msg-plan-allowed-users = 
-    <b>👥 Изменить список разрешенных пользователей</b>
+    Current limit: &lt;b&gt;{ $traffic }&lt;/b&gt;
 
-    Введите ID пользователя для добавления в список.
+    Enter new value in GB:
 
-msg-plan-squads =
-    <b>🔗 Сквады</b>
+dashboard-plan-edit-devices =
+    📱 &lt;b&gt;Devices&lt;/b&gt;
 
-    <blockquote>
-    • <b>Внутренние</b>: { $internal_squads }
-    • <b>Внешний</b>: { $external_squad }
-    </blockquote>
+    Current limit: &lt;b&gt;{ $devices }&lt;/b&gt;
 
-    ✏️ Выберите необходимые сквады:
+    Enter new value:
 
-msg-plan-internal-squads =
-    <b>⏺️ Изменить список внутренних сквадов</b>
+dashboard-plan-edit-squads =
+    🔗 &lt;b&gt;Plan Squads&lt;/b&gt;
 
-    Выберите, какие внутренние группы будут присвоены этому плану.
+    Current squads: { $squads }
 
-msg-plan-external-squads =
-    <b>⏹️ Изменить внешний сквад</b>
+    Select squads:
 
-    Выберите, какая внешняя группа будет присвоена этому плану.
+dashboard-plan-edit-allowed =
+    👥 &lt;b&gt;Allowed Users&lt;/b&gt;
+
+    Current users: { $allowed }
+
+    Enter user IDs (comma-separated):
+
+dashboard-plan-delete-confirm =
+    ❌ &lt;b&gt;Delete Plan&lt;/b&gt;
+
+    Delete plan &lt;code&gt;{ $name }&lt;/code&gt;?
+
+    ⚠️ This action cannot be undone!
+
+
+# Dashboard - Referral
+dashboard-referral =
+    👥 &lt;b&gt;Referral System&lt;/b&gt;
+
+    { $status }
+
+    Configure the referral system:
+
+dashboard-referral-level =
+    🔢 &lt;b&gt;Referral Levels&lt;/b&gt;
+
+    Current levels: &lt;b&gt;{ $levels }&lt;/b&gt;
+
+    Select number of levels:
+
+dashboard-referral-reward-type =
+    🎀 &lt;b&gt;Reward Type&lt;/b&gt;
+
+    Select reward type:
+
+dashboard-referral-accrual-strategy =
+    📍 &lt;b&gt;Accrual Condition&lt;/b&gt;
+
+    Select when rewards are accrued:
+
+dashboard-referral-reward-strategy =
+    ⚖️ &lt;b&gt;Accrual Method&lt;/b&gt;
+
+    Select how rewards are calculated:
+
+dashboard-referral-reward =
+    🎁 &lt;b&gt;Reward&lt;/b&gt;
+
+    Current reward: { $reward }
+
+    Select new reward value:
+
+dashboard-referral-invite-message =
+    ✉️ &lt;b&gt;Invitation Message&lt;/b&gt;
+
+    Configure the message sent when inviting:
 
 
 # Notifications
-msg-notifications-main = <b>🔔 Настройка уведомлений</b>
-msg-notifications-user = <b>👥 Пользовательские уведомления</b>
-msg-notifications-system = <b>⚙️ Системные уведомления</b>
-
-
-# Subscription
-msg-subscription-main =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    { $trial_available ->
-    [1]
-    { $is_referral_trial ->
-    [1]
-    { $is_referral_enable ->
-    [1] <i>📢 Для вас доступна бесплатная реферальная подписка.</i>
-    *[0] {""}
-    }
-    *[0]
-    <i>🎁 Для вас доступна бесплатная пробная подписка.</i>
-    }
-    *[0]
-    <b>💳 Управление подпиской:</b>
-    }
-msg-subscription-plans =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    <b>📦 Выбор тарифного плана:</b>
-msg-subscription-new-success = ℹ️<i>Был подключен тарифный план { $plan_name }.</i>
-msg-subscription-renew-success = ℹ️<i>Ваша подписка продлена на { $added_duration }.</i>
-
-msg-subscription-details =
-    <b>💳 Покупаемая подписка:</b>
-    <blockquote>
-    • <b>Тариф:</b> { $plan_name }
-    • <b>Лимит трафика</b>: { $traffic }
-    { $devices ->
-    [0] { empty }
-    *[HAS] • <b>Лимит устройств</b>: { $devices }
-    }{ $has_planned_extra_devices ->
-        [1] {""}
-    • <b>Дополнительные устройства:</b> { $planned_extra_devices }
-        *[0] {""}
-    }
-    { $period ->
-    [0] { empty }
-    *[HAS] • <b>Длительность</b>: { $period }
-    }
-    { $final_amount ->
-    [0] { empty }
-    *[HAS] • <b>Стоимость</b>: { frg-payment-amount }
-    }
-    </blockquote>
-
-    { $description ->
-    [0] {""}
-    *[HAS] {""}
-    ℹ️ <b>Подробное описание:</b>
-    <blockquote>
-    { $description }
-    </blockquote>
-
-    }
-
-msg-subscription-duration =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    <b>💳 Покупаемая подписка:</b>
-    <blockquote>
-    • <b>Тариф:</b> { $plan_name }
-    • <b>Лимит трафика</b>: { $traffic }
-    • <b>Лимит устройств</b>: { $devices }{ $has_extra_devices ->
-        [1] {""}
-    • <b>Доп. устройства:</b> { $extra_devices }
-        *[0] {""}
-    }
-    </blockquote>
-    { $description ->
-    [0] {""}
-    *[HAS] {""}
-    
-    ℹ️ <b>Подробное описание:</b>
-    <blockquote>
-    { $description }
-    </blockquote>
-    }
-    { $has_extra_devices_cost ->
-        [1] {""}
-    
-    ℹ️ <i>Стоимость { $extra_devices } доп. устройств ({ $extra_devices_monthly_cost }₽/мес) будет добавлена к стоимости подписки.</i>
-        *[0] {""}
-    }
-
-    <b>⏳ Выбор длительности:</b>
-
-msg-subscription-payment-method =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    <b>💳 Покупаемая подписка:</b>
-    <blockquote>
-    • <b>Тариф:</b> { $plan_name }
-    • <b>Лимит трафика</b>: { $traffic }
-    • <b>Лимит устройств</b>: { $device_limit }{ $has_extra_devices ->
-        [1] {""}
-    • <b>Дополнительные устройства:</b> { $extra_devices }
-        *[0] {""}
-    }
-    • <b>Длительность:</b> { $period }
-    </blockquote>
-
-    { $description ->
-    [0] {""}
-    *[HAS] {""}
-    ℹ️ <b>Подробное описание:</b>
-    <blockquote>
-    { $description }
-    </blockquote>
-
-    }
-
-    <b>💳 Выберите способ оплаты</b>
-
-msg-subscription-confirm-balance =
-    { frg-purchase-confirm-header }
-
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    { msg-subscription-details }
-
-    { $purchase_type ->
-        [RENEW] { $has_extra_devices_cost ->
-            [1] <b>📋 Разбор стоимости:</b>
-    <blockquote>
-    • <b>Подписка:</b> { $original_amount }
-    • <b>Доп. устройства:</b> { $extra_devices_cost } ({ $extra_devices_monthly_cost }/мес)
-    • <b>Итого к оплате:</b> { $total_payment }
-    </blockquote>
-            *[0] {""}
-        }
-        *[OTHER] {""}
-    }
-
-    <b>📋 Способ оплаты:</b>
-    <blockquote>
-    <b>💳 Метод:</b> С баланса
-    <b>📊 Текущий баланс:</b> { $user_balance }
-    <b>📊 Баланс после:</b> { $balance_after }
-    </blockquote>
-
-    { frg-purchase-type-warning }
-
-msg-subscription-confirm-yoomoney =
-    { frg-purchase-confirm-header }
-
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    { msg-subscription-details }
-
-    { $purchase_type ->
-        [RENEW] { $has_extra_devices_cost ->
-            [1] <b>📋 Разбор стоимости:</b>
-    <blockquote>
-    • <b>Подписка:</b> { $original_amount }
-    • <b>Доп. устройства:</b> { $extra_devices_cost } ({ $extra_devices_monthly_cost }/мес)
-    • <b>Итого к оплате:</b> { $total_payment }
-    </blockquote>
-            *[0] {""}
-        }
-        *[OTHER] {""}
-    }
-
-    <b>📋 Способ оплаты:</b>
-    <blockquote>
-    <b>💳 Метод:</b> Банковская карта
-    </blockquote>
-
-    { frg-purchase-type-warning }
-
-msg-subscription-confirm-yookassa =
-    { frg-purchase-confirm-header }
-
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    { msg-subscription-details }
-
-    { $purchase_type ->
-        [RENEW] { $has_extra_devices_cost ->
-            [1] <b>📋 Разбор стоимости:</b>
-    <blockquote>
-    • <b>Подписка:</b> { $original_amount }
-    • <b>Доп. устройства:</b> { $extra_devices_cost } ({ $extra_devices_monthly_cost }/мес)
-    • <b>Итого к оплате:</b> { $total_payment }
-    </blockquote>
-            *[0] {""}
-        }
-        *[OTHER] {""}
-    }
-
-    <b>📋 Способ оплаты:</b>
-    <blockquote>
-    <b>💳 Метод:</b> Банковская карта
-    </blockquote>
-
-    { frg-purchase-type-warning }
-
-msg-subscription-confirm =
-    { frg-purchase-confirm-header }
+dashboard-notifications =
+    🔔 &lt;b&gt;Notifications&lt;/b&gt;
 
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription-conditional }
-
-    { msg-subscription-details }
-
-    { $purchase_type ->
-        [RENEW] { $has_extra_devices_cost ->
-            [1] <b>📋 Разбор стоимости:</b>
-    <blockquote>
-    • <b>Подписка:</b> { $original_amount }
-    • <b>Доп. устройства:</b> { $extra_devices_cost } ({ $extra_devices_monthly_cost }/мес)
-    • <b>Итого к оплате:</b> { $total_payment }
-    </blockquote>
-            *[0] {""}
-        }
-        *[OTHER] {""}
-    }
-
-    <b>📋 Способ оплаты:</b>
-    <blockquote>
-    <b>💳 Метод:</b> { gateway-type }
-    </blockquote>
-
-    { frg-purchase-type-warning }
-
-msg-subscription-trial =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    <b>✅ Пробная подписка успешно получена!</b>
-
-msg-subscription-referral-code =
-    <b>📢 Реферальная подписка</b>
-
-    Введите реферальный код пользователя, который вас пригласил:
-
-msg-subscription-referral-success =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    <b>🎉 Подписка успешно улучшена до Реферальной!</b>
-
-msg-subscription-promocode =
-    <b>🎟 Введите промокод</b>
-
-    Отправьте код промокода для активации бонусов или скидок.
-
-msg-subscription-success =
-    { hdr-user-profile }
-    { frg-user }
-
-    { hdr-subscription }
-    { frg-subscription }
-
-    { $purchase_type ->
-    [ADD_DEVICE] ℹ️<i>К вашей подписке добавлено { $device_count } { $device_count ->
-        [1] устройство
-        [2] устройства
-        [3] устройства
-        [4] устройства
-        *[other] устройств
-    }.</i>
-
-    <b>✅ Оплата прошла успешно!</b>
-    [NEW] <b>✅ Оплата прошла успешно!</b>
-
-    { msg-subscription-new-success }
-    [RENEW] <b>✅ Оплата прошла успешно!</b>
-
-    { msg-subscription-renew-success }
-    [CHANGE] <b>✅ Оплата прошла успешно!</b>
-
-    { msg-subscription-change-success }
-    *[OTHER] <b>✅ Оплата прошла успешно!</b>
-    }
-
-msg-subscription-change-success = ℹ️<i>Ваша подписка была изменена.</i>
-
-msg-subscription-failed = 
-    <b>❌ Произошла ошибка!</b>
-
-    Не волнуйтесь, техподдержка уже уведомлена и свяжется с вами в ближайшее время. Приносим извинения за неудобства.
-
-
-# Importer
-msg-importer-main =
-    <b>📥 Импорт пользователей</b>
-
-    Запуск синхронизации: проверка всех пользователей в Панели. Если пользователя нет в базе бота, он будет создан и получит временную подписку. Если данные пользователя отличаются, они будут автоматически обновлены.
-
-msg-importer-from-xui =
-    <b>📥 Импорт пользователей (3X-UI)</b>
-    
-    { $has_exported -> 
-    [1]
-    <b>🔍 Найдено:</b>
-    <blockquote>
-    Всего пользователей: { $total }
-    С активной подпиской: { $active }
-    С истекшей подпиской: { $expired }
-    </blockquote>
-    *[0]
-    Импортируются все активные пользователи с числовым email.
-
-    Рекомендуется заранее отключить пользователей, у которых в поле email отсутствует Telegram ID. Операция может занять значительное время в зависимости от количества пользователей.
-
-    Отправьте файл базы данных (в формате .db).
-    }
-
-msg-importer-squads =
-    <b>🔗 Список внутренних сквадов</b>
-
-    Выберите, какие внутренние группы будут доступны импортированным пользователям.
-
-msg-importer-import-completed =
-    <b>📥 Импорт пользователей завершен</b>
-    
-    <b>📃 Информация:</b>
-    <blockquote>
-    • <b>Всего пользователей</b>: { $total_count }
-    • <b>Успешно импортированы</b>: { $success_count }
-    • <b>Не удалось импортировать</b>: { $failed_count }
-    </blockquote>
-
-msg-importer-sync-completed =
-    <b>📥 Синхронизация пользователей завершена</b>
-
-    <b>📃 Информация:</b>
-    <blockquote>
-    Всего пользователей в панели: { $total_panel_users }
-    Всего пользователей в боте: { $total_bot_users }
-
-    Новые пользователи: { $added_users }
-    Добавлены подписки: { $added_subscription }
-    Обновлены подписки: { $updated}
-    
-    Пользователи без Telegram ID: { $missing_telegram }
-    Ошибки при синхронизации: { $errors }
-    </blockquote>
-
-msg-importer-sync-bot-to-panel-completed =
-    <b>📤 Синхронизация из телеграма в панель завершена</b>
-
-    <b>📃 Информация:</b>
-    <blockquote>
-    Всего пользователей в боте: { $total_bot_users }
-
-    Создано в панели: { $created }
-    Обновлено в панели: { $updated }
-    Пропущено (без подписки): { $skipped }
-    Ошибки при синхронизации: { $errors }
-    </blockquote>
-
-
-# Promocodes
-msg-promocodes-main = <b>🎟 Промокоды</b>
+    Configure notifications:
 
-    Создавайте и управляйте промокодами для пользователей.
+dashboard-notifications-user =
+    👥 &lt;b&gt;User Notifications&lt;/b&gt;
 
-msg-promocodes-search = <b>🔍 Поиск промокода</b>
+    Enable or disable user notifications:
 
-    Введите код промокода для поиска.
+dashboard-notifications-system =
+    ⚙️ &lt;b&gt;System Notifications&lt;/b&gt;
 
-msg-promocodes-list = <b>📃 Список промокодов</b>
+    Enable or disable system notifications:
 
-    { $count ->
-        [0] Нет созданных промокодов.
-        [1] Найден { $count } промокод.
-        [2] Найдено { $count } промокода.
-        [3] Найдено { $count } промокода.
-        [4] Найдено { $count } промокода.
-        *[other] Найдено { $count } промокодов.
-    }
 
-msg-promocode-view =
-    <b>🎟 Просмотр промокода</b>
+# Trial settings
+trial-settings =
+    🎁 &lt;b&gt;Trial Settings&lt;/b&gt;
 
-    <blockquote>
-    • <b>Код</b>: <code>{ $code }</code>
-    • <b>Тип</b>: { promocode-type }
-    • <b>Статус</b>: { $is_active -> 
-        [1] 🟢 Включен
-        *[0] 🔴 Выключен
-        }
-    </blockquote>
+    { $status }
 
-    <blockquote>
-    { $promocode_type ->
-    [DURATION] • <b>Бонус</b>: +{ $reward }
-    [PERSONAL_DISCOUNT] • <b>Постоянная скидка</b>: { $reward }%
-    [PURCHASE_DISCOUNT] • <b>Одноразовая скидка</b>: { $reward }%
-    *[OTHER] • <b>Награда</b>: { $reward }
-    }
-    • <b>Срок действия</b>: { $lifetime }
-    • <b>Использовано</b>: { $activations_count } / { $max_activations }
-    </blockquote>
+    Configure trial parameters:
 
-msg-promocode-configurator =
-    <b>🎟 Создание промокода</b>
+trial-settings-days =
+    📅 &lt;b&gt;Trial Duration&lt;/b&gt;
 
-    <blockquote>
-    • <b>Название</b>: { $name }
-    • <b>Код</b>: <code>{ $code }</code>
-    • <b>Тип награды</b>: { promocode-type }
-    </blockquote>
+    Current duration: &lt;b&gt;{ $days }&lt;/b&gt;
 
-    <blockquote>
-    { $promocode_type ->
-    [DURATION] • <b>Бонус</b>: +{ $reward }
-    [PERSONAL_DISCOUNT] • <b>Постоянная скидка</b>: { $reward }%
-    [PURCHASE_DISCOUNT] • <b>Одноразовая скидка</b>: { $reward }%
-    *[OTHER] • <b>Награда</b>: { $reward }
-    }
-    • <b>Срок действия</b>: { $lifetime }
-    • <b>Лимит активаций</b>: { $max_activations }
-    </blockquote>
+    Enter the number of days:
 
-    Выберите пункт для изменения.
-
-msg-promocode-name = <b>📝 Название промокода</b>
+trial-settings-traffic =
+    🌐 &lt;b&gt;Trial Traffic&lt;/b&gt;
 
-    Введите название промокода (1-50 символов).
+    Current limit: &lt;b&gt;{ $traffic }&lt;/b&gt;
 
-msg-promocode-code = <b>🏷️ Код промокода</b>
+    Enter traffic limit in GB:
 
-    Введите код промокода (3-20 символов) или нажмите кнопку для генерации случайного кода.
+trial-settings-devices =
+    📱 &lt;b&gt;Trial Devices&lt;/b&gt;
 
-msg-promocode-type = <b>🔖 Выберите тип промокода:</b>
+    Current limit: &lt;b&gt;{ $devices }&lt;/b&gt;
 
-    <blockquote>
-    • <b>Одноразовая скидка</b> - скидка исчезнет после первой покупки, или по истечению срока действия промокода.
+    Enter device limit:
 
-    • <b>Постоянная скидка</b> - постоянная скидка для пользователя.
+trial-settings-plan =
+    📦 &lt;b&gt;Trial Plan&lt;/b&gt;
 
-    • <b>Дни к подписке</b> - Добавление дней к подписке пользователя.
-    </blockquote>
+    Current plan: { $plan }
 
-msg-promocode-reward = <b>🎁 Награда</b>
+    Select plan for trial:
 
-    <b>Тип награды</b>: { promocode-type }
 
-    { $promocode_type ->
-    [DURATION] Введите <b>количество дней</b> для бонуса к подписке.
-    [PERSONAL_DISCOUNT] Введите <b>процент скидки</b> (1-100) для постоянной скидки.
-    [PURCHASE_DISCOUNT] Введите <b>процент скидки</b> (1-100) для скидки на покупку.
-    *[OTHER] Введите значение награды.
-    }
+# Referral trial settings
+referral-trial-settings =
+    📢 &lt;b&gt;Referral Subscription Settings&lt;/b&gt;
 
-msg-promocode-lifetime = <b>⌛ Срок действия</b>
+    { $status }
 
-    Выберите срок действия промокода в днях.
+    Configure referral subscription parameters:
 
-msg-promocode-lifetime-input = ⌛️Введите срок действия промокода в днях.
+referral-trial-settings-invites =
+    👥 &lt;b&gt;Required Invites&lt;/b&gt;
 
-msg-promocode-quantity = <b>🔢 Количество активаций</b>
+    Current requirement: &lt;b&gt;{ $invites }&lt;/b&gt;
 
-    Выберите максимальное количество активаций промокода.
+    Enter the number of invites:
 
-msg-promocode-quantity-input = 🔢 Введите количество активаций промокода.
-msg-promocode-access = <b>📦 Доступ к тарифам</b>
 
-# Bonus Activation
-msg-bonus-activate =
-    <b>💎 Активация бонусов</b>
+# Gateways positioning
+gateways-positioning =
+    🔢 &lt;b&gt;Payment System Positioning&lt;/b&gt;
 
-    Доступно бонусов: <b>{ $referral_balance }</b>
-    Выбранная сумма: <b>{ $current_bonus_amount } ₽</b>
+    Drag and drop to change order:
 
-msg-bonus-activate-custom =
-    <b>💎 Активация бонусов</b>
+    { $gateways }
 
-    Доступно бонусов: <b>{ $referral_balance }</b>
 
-    Введите сумму для активации (от 1 до { $referral_balance }):
+# Plan statistics
+plan-statistics =
+    📊 &lt;b&gt;Plan Statistics&lt;/b&gt;
 
-# Terms of Service Settings
-msg-dashboard-settings-tos =
-    <b>📋 Соглашение с пользователем</b>
-    
-    <blockquote>
-    • Статус: { $status }
-    • Источник: { $source }
-    </blockquote>
-
-    🔽 Укажите ссылку на документ с правилами.
-
-msg-dashboard-settings-tos-url =
-    <b>🔗 Ссылка на Соглашение</b>
-
-    <blockquote>
-    Введите ссылку (в формате https://telegram.org/tos).
-    </blockquote>
-
-# Community Settings
-msg-dashboard-settings-community =
-    <b>👥 Сообщество</b>
-    
-    <blockquote>
-    • Статус: { $status }
-    • Телеграм группа: { $url_display }
-    </blockquote>
-
-    🔽 Укажите ссылку на Telegram группу.
-
-msg-dashboard-settings-community-url =
-    <b>🔗 Ссылка на Telegram группу</b>
-
-    <blockquote>
-    Введите ссылку (в формате https://t.me/+код или https://t.me/название_группы).
-    </blockquote>
-
-# Finances Settings
-msg-dashboard-settings-finances =
-    <b>💰 Финансы</b>
-    
-    <blockquote>
-    • <b>Валюта по умолчанию:</b> { $default_currency } ({ $default_currency_name })
-    </blockquote>
-
-    <i>ℹ️ При включении синхронизации курс валют автоматически синхронизируются с курсом центрабанка РФ.</i>
-
-# Currency Rates Settings
-msg-dashboard-settings-currency-rates =
-    <b>💱 Курс валют</b>
-
-    Укажите курс обмена относительно рубля.
-    Цены в тарифах будут автоматически пересчитываться.
-
-msg-dashboard-settings-currency-rate-input =
-    <b>💱 Курс { $currency }</b>
-
-    Введите курс { $symbol } к рублю (например: 90.5).
-    1 { $symbol } = X ₽
-
-# Payment Link for Extra Devices
-msg-add-device-payment-link = <b>💳 Ссылка для оплаты</b>
-
-Нажмите на кнопку ниже, чтобы перейти к оплате за дополнительные устройства.
+    { $plan_stats }
