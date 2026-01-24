@@ -2487,3 +2487,68 @@ async def on_finances_accept(
     
     # Навигируем обратно в главное меню настроек
     await dialog_manager.switch_to(DashboardSettings.MAIN)
+
+
+# ==================== Настройки языка ====================
+
+
+@inject
+async def on_language_click(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Открыть меню настройки языка."""
+    await dialog_manager.switch_to(DashboardSettings.LANGUAGE)
+
+
+@inject
+async def on_toggle_language(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+) -> None:
+    """Переключить статус мультиязычности."""
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    
+    settings = await settings_service.get()
+    new_value = not settings.features.language_enabled
+    settings.features.language_enabled = new_value
+    
+    # Если выключили мультиязычность - устанавливаем русский
+    if not new_value:
+        from src.core.enums import Locale
+        settings.bot_locale = Locale.RU
+    
+    await settings_service.update(settings)
+    logger.info(f"{log(user)} Toggle language enabled to {new_value}")
+
+
+@inject
+async def on_language_select(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+) -> None:
+    """Выбрать язык бота."""
+    from src.core.enums import Locale
+    
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    locale_code = widget.widget_id.replace("lang_", "").upper()
+    
+    # Маппинг коротких кодов на Locale
+    locale_map = {
+        "RU": Locale.RU,
+        "UK": Locale.UK,
+        "EN": Locale.EN,
+        "DE": Locale.DE,
+    }
+    
+    if locale_code in locale_map:
+        settings = await settings_service.get()
+        settings.bot_locale = locale_map[locale_code]
+        await settings_service.update(settings)
+        logger.info(f"{log(user)} Changed bot language to {locale_code}")
+        await callback.answer(f"Язык изменён на {locale_code}")

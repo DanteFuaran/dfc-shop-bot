@@ -7,8 +7,9 @@ from fluentogram.storage import FileStorage
 from loguru import logger
 
 from src.core.config import AppConfig
-from src.core.constants import USER_KEY
-from src.infrastructure.database.models.dto import UserDto
+from src.core.constants import USER_KEY, SETTINGS_KEY
+from src.core.enums import Locale
+from src.infrastructure.database.models.dto import UserDto, SettingsDto
 
 
 class I18nProvider(Provider):
@@ -46,13 +47,20 @@ class I18nProvider(Provider):
         middleware_data: AiogramMiddlewareData,
     ) -> TranslatorRunner:
         user: Optional[UserDto] = middleware_data.get(USER_KEY)
+        settings: Optional[SettingsDto] = middleware_data.get(SETTINGS_KEY)
 
-        if user:
-            logger.debug(f"Translator for user '{user.telegram_id}' with locale={user.language}")
-            return hub.get_translator_by_locale(locale=user.language)
-
+        # Определяем локаль
+        if settings and not settings.features.language_enabled:
+            # Мультиязычность выключена - используем bot_locale из настроек
+            locale = settings.bot_locale
+            logger.debug(f"Language disabled, using bot_locale={locale}")
+        elif user:
+            # Мультиязычность включена - используем язык пользователя
+            locale = user.language
+            logger.debug(f"Translator for user '{user.telegram_id}' with locale={locale}")
         else:
-            logger.debug(
-                f"Translator for anonymous user with default locale={config.default_locale}"
-            )
-            return hub.get_translator_by_locale(locale=config.default_locale)
+            # Пользователь не определен - используем дефолтную локаль
+            locale = config.default_locale
+            logger.debug(f"Translator for anonymous user with default locale={locale}")
+
+        return hub.get_translator_by_locale(locale=locale)

@@ -10,7 +10,7 @@ from remnapy.models.users import UpdateUserRequestDto
 
 from src.bot.keyboards import get_user_keyboard
 from src.core.config import AppConfig
-from src.core.constants import CONTAINER_KEY, IS_SUPER_DEV_KEY, USER_KEY
+from src.core.constants import CONTAINER_KEY, IS_SUPER_DEV_KEY, USER_KEY, SETTINGS_KEY
 from src.core.enums import MiddlewareEventType, PlanType, SystemNotificationType
 from src.core.utils.formatters import format_bytes_to_gb
 from src.core.utils.message_payload import MessagePayload
@@ -23,6 +23,7 @@ from src.services.notification import NotificationService
 from src.services.plan import PlanService
 from src.services.referral import ReferralService
 from src.services.remnawave import RemnawaveService
+from src.services.settings import SettingsService
 from src.services.subscription import SubscriptionService
 from src.services.user import UserService
 
@@ -59,6 +60,11 @@ class UserMiddleware(EventTypedMiddleware):
         remnawave_service: RemnawaveService = await container.get(RemnawaveService)
         plan_service: PlanService = await container.get(PlanService)
         subscription_service: SubscriptionService = await container.get(SubscriptionService)
+        settings_service: SettingsService = await container.get(SettingsService)
+
+        # Получаем настройки для определения языка
+        settings = await settings_service.get()
+        data[SETTINGS_KEY] = settings
 
         user: Optional[UserDto] = await user_service.get(telegram_id=aiogram_user.id)
 

@@ -32,6 +32,7 @@ async def settings_main_getter(
         "promocodes_enabled": 1 if features.promocodes_enabled else 0,
         "community_enabled": 1 if features.community_enabled else 0,
         "tos_enabled": 1 if features.tos_enabled else 0,
+        "language_enabled": 1 if features.language_enabled else 0,
     }
 
 
@@ -650,4 +651,37 @@ async def currency_rates_getter(
         "usd_display": f"{format_rate(usd_rate)} ₽ = 1 $",
         "eur_display": f"{format_rate(eur_rate)} ₽ = 1 €",
         "stars_display": f"{format_rate(stars_rate)} ₽ = 1 ★",
+    }
+
+
+@inject
+async def language_settings_getter(
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Геттер для настроек языка."""
+    from src.core.enums import Locale
+    
+    settings = await settings_service.get()
+    features = settings.features
+    
+    # Получаем текущую локаль из настроек
+    current_locale = settings.bot_locale
+    
+    # Названия языков для отображения
+    locale_names = {
+        Locale.RU: "🇷🇺 Русский",
+        Locale.UK: "🇺🇦 Украинский", 
+        Locale.EN: "🇬🇧 English",
+        Locale.DE: "🇩🇪 Deutsch",
+    }
+    
+    return {
+        "enabled": 1 if features.language_enabled else 0,
+        "current_locale": locale_names.get(current_locale, "🇷🇺 Русский"),
+        "is_ru": 1 if current_locale == Locale.RU else 0,
+        "is_uk": 1 if current_locale == Locale.UK else 0,
+        "is_en": 1 if current_locale == Locale.EN else 0,
+        "is_de": 1 if current_locale == Locale.DE else 0,
     }
