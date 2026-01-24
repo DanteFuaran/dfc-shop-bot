@@ -413,14 +413,14 @@ async def devices_getter(
         pass
     
     # Создаём объединённый список слотов устройств
-    # Сначала базовые слоты (из плана), потом купленные
+    # Порядок: базовые (из плана) → бонусные (из админки) → купленные (extra)
     device_slots = []
     slot_hwid_map = {}  # Маппинг slot_index -> hwid для удаления устройств
     slot_purchase_map = {}  # Маппинг slot_index -> purchase_id для удаления пустых extra слотов
     devices_copy = list(formatted_devices)  # Копия для распределения
     slot_index = 0
     
-    # Базовые слоты подписки (бесконечный срок)
+    # 1. Базовые слоты подписки (из плана, срок = срок подписки)
     for i in range(plan_device_limit):
         # Пытаемся занять слот устройством
         if devices_copy:
@@ -446,7 +446,33 @@ async def devices_getter(
         device_slots.append(slot)
         slot_index += 1
     
-    # Слоты из покупок (с ограниченным сроком)
+    # 2. Бонусные слоты (добавленные через админ-панель, срок = срок подписки)
+    for i in range(device_limit_bonus):
+        # Пытаемся занять слот устройством
+        if devices_copy:
+            device = devices_copy.pop(0)
+            slot = {
+                "id": str(slot_index),
+                "slot_type": "bonus",
+                "days_display": "∞",
+                "is_occupied": True,
+                "can_delete": True,  # Можно удалить устройство
+                "device_info": f"{device['platform']} - {device['device_model']}",
+            }
+            slot_hwid_map[str(slot_index)] = device["short_hwid"]
+        else:
+            slot = {
+                "id": str(slot_index),
+                "slot_type": "bonus",
+                "days_display": "∞",
+                "is_occupied": False,
+                "can_delete": False,  # Бонусный пустой слот нельзя удалить
+                "device_info": "Пустой слот",
+            }
+        device_slots.append(slot)
+        slot_index += 1
+    
+    # 3. Слоты из покупок (с ограниченным сроком)
     for p in purchases:
         for j in range(p.device_count):
             # Пытаемся занять слот устройством
@@ -500,6 +526,38 @@ async def devices_getter(
         and not is_referral_subscription
         and not is_import_subscription
     )
+    
+    # Оптимизированная фильтрация слотов:
+    # - Всегда показываем все extra слоты (куплены и имеют срок действия)
+    # - Для базовых и бонусных слотов применяем правило:
+    #   - Если <= 10, показываем все
+    #   - Если > 10, показываем первые 10, потом дополнительно показываем по 1,
+    #     если из видимых >= 8 занято
+    
+    extra_slots = [slot for slot in device_slots if slot["slot_type"] == "extra"]
+    base_bonus_slots = [slot for slot in device_slots if slot["slot_type"] in ["base", "bonus"]]
+    
+    if len(base_bonus_slots) <= 10:
+        # Если базовых и бонусных слотов 10 или меньше, показываем все
+        filtered_slots = base_bonus_slots + extra_slots
+    else:
+        # Если больше 10, применяем правило прогрессивного раскрытия
+        visible_count = 10
+        
+        # Считаем, сколько занято в видимых слотах
+        while visible_count < len(base_bonus_slots):
+            visible_slots = base_bonus_slots[:visible_count]
+            occupied_count = sum(1 for slot in visible_slots if slot["is_occupied"])
+            
+            # Если 8 или больше занято из видимых, показываем еще 1
+            if occupied_count >= 8:
+                visible_count += 1
+            else:
+                break
+        
+        filtered_slots = base_bonus_slots[:visible_count] + extra_slots
+    
+    device_slots = filtered_slots
 
     return {
         "current_count": len(devices),

@@ -620,6 +620,7 @@ ntf-user-subscription-empty = <i>❌ Текущая подписка не най
 ntf-user-plans-empty = <i>❌ Нет доступных планов для выдачи.</i>
 ntf-user-devices-empty = <i>❌ Список устройств пуст.</i>
 ntf-user-invalid-number = <i>❌ Некорректное число.</i>
+ntf-user-device-limit-exceeded = <i>❌ Количество устройств не может быть больше 100.</i>
 ntf-user-allowed-plans-empty = <i>❌ Нет доступных планов для предоставления доступа.</i>
 ntf-user-message-success = <i>✅ Сообщение успешно отправлено.</i>
 ntf-user-message-not-sent = <i>❌ Не удалось отправить сообщение.</i>

@@ -699,7 +699,7 @@ async def on_device_limit_select(
     remnawave_service: FromDishka[RemnawaveService],
 ) -> None:
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
-    logger.info(f"{log(user)} Selected device limit '{selected_device}'")
+    logger.info(f"{log(user)} Selected bonus device count '{selected_device}'")
     target_telegram_id = dialog_manager.dialog_data["target_telegram_id"]
     target_user = await user_service.get(telegram_id=target_telegram_id)
 
@@ -711,7 +711,13 @@ async def on_device_limit_select(
     if not subscription:
         raise ValueError(f"Current subscription for user '{target_telegram_id}' not found")
 
-    subscription.device_limit = selected_device
+    # Вычисляем новый device_limit на основе бонусных устройств
+    # device_limit = plan_device_limit + extra_devices + bonus_devices
+    plan_device_limit = subscription.plan.device_limit if subscription.plan else 0
+    extra_devices = subscription.extra_devices or 0
+    
+    # selected_device - это количество бонусных устройств
+    subscription.device_limit = plan_device_limit + extra_devices + selected_device
     await subscription_service.update(subscription)
 
     await remnawave_service.updated_user(
@@ -721,9 +727,9 @@ async def on_device_limit_select(
     )
 
     logger.info(
-        f"{log(user)} Changed device limit to '{selected_device}' for '{target_telegram_id}'"
+        f"{log(user)} Set bonus devices to '{selected_device}' (total device_limit: {subscription.device_limit}) for '{target_telegram_id}'"
     )
-    await dialog_manager.switch_to(state=DashboardUser.SUBSCRIPTION)
+    await dialog_manager.switch_to(state=DashboardUser.MAIN)
 
 
 @inject
@@ -749,8 +755,8 @@ async def on_device_limit_input(
     if not subscription:
         raise ValueError(f"Current subscription for user '{target_telegram_id}' not found")
 
-    if message.text is None or not (message.text.isdigit() and int(message.text) > 0):
-        logger.warning(f"{log(user)} Invalid device limit input: '{message.text}'")
+    if message.text is None or not (message.text.isdigit() and int(message.text) >= 0):
+        logger.warning(f"{log(user)} Invalid bonus device input: '{message.text}'")
         await notification_service.notify_user(
             user=user,
             payload=MessagePayload(i18n_key="ntf-user-invalid-number"),
@@ -758,7 +764,22 @@ async def on_device_limit_input(
         return
 
     number = int(message.text)
-    subscription.device_limit = number
+    
+    if number > 100:
+        logger.warning(f"{log(user)} Device limit exceeded (>100): '{number}'")
+        await notification_service.notify_user(
+            user=user,
+            payload=MessagePayload(i18n_key="ntf-user-device-limit-exceeded", delete_after=5),
+        )
+        return
+    
+    # Вычисляем новый device_limit на основе бонусных устройств
+    # device_limit = plan_device_limit + extra_devices + bonus_devices
+    plan_device_limit = subscription.plan.device_limit if subscription.plan else 0
+    extra_devices = subscription.extra_devices or 0
+    
+    # number - это количество бонусных устройств
+    subscription.device_limit = plan_device_limit + extra_devices + number
     await subscription_service.update(subscription)
 
     await remnawave_service.updated_user(
@@ -767,8 +788,8 @@ async def on_device_limit_input(
         subscription=subscription,
     )
 
-    logger.info(f"{log(user)} Changed device limit to '{number}' for '{target_telegram_id}'")
-    await dialog_manager.switch_to(state=DashboardUser.SUBSCRIPTION)
+    logger.info(f"{log(user)} Set bonus devices to '{number}' (total device_limit: {subscription.device_limit}) for '{target_telegram_id}'")
+    await dialog_manager.switch_to(state=DashboardUser.MAIN)
 
 
 @inject

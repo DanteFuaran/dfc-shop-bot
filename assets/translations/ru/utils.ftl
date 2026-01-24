@@ -117,15 +117,12 @@ frg-subscription =
     <blockquote>
     • <b>Тариф:</b> { $plan_name }
     • <b>Лимит трафика</b>: { $traffic_limit }
-    • <b>Лимит устройств</b>: { $device_limit_number }{ $purchased_devices ->
+    • <b>Лимит устройств</b>: { $device_limit_number }{ $device_limit_bonus ->
         [0] {""}
-        *[other] +{ $purchased_devices }
-    }{ $device_limit_bonus ->
-        [0] { $extra_devices ->
-            [0] {""}
-            *[other] {" "}(+{ $extra_devices } доп.)
-        }
-        *[other] {" "}(+{ $device_limit_bonus } доп.)
+        *[other] +{ $device_limit_bonus }
+    }{ $extra_devices ->
+        [0] {""}
+        *[other] {" "}(+{ $extra_devices } доп.)
     }
     • <b>Осталось</b>: { $expire_time }
     </blockquote>
@@ -139,15 +136,12 @@ frg-subscription-details =
     • <b>Статус</b>: { subscription-status }
     • <b>Тариф:</b> { $plan_name }
     • <b>Трафик</b>: { $traffic_used } / { $traffic_limit }
-    • <b>Лимит устройств</b>: { $device_limit_number }{ $purchased_devices ->
+    • <b>Лимит устройств</b>: { $device_limit_number }{ $device_limit_bonus ->
         [0] {""}
-        *[other] +{ $purchased_devices }
-    }{ $device_limit_bonus ->
-        [0] { $extra_devices ->
-            [0] {""}
-            *[other] {" "}(+{ $extra_devices } доп.)
-        }
-        *[other] {" "}(+{ $device_limit_bonus } доп.)
+        *[other] +{ $device_limit_bonus }
+    }{ $extra_devices ->
+        [0] {""}
+        *[other] {" "}(+{ $extra_devices } доп.)
     }
     • <b>Осталось</b>: { $expire_time }
     </blockquote>
@@ -234,9 +228,11 @@ role =
 # Units
 unit-device = { $value -> 
     [-1] { unlimited }
+    [0] Отключено
     *[other] { $value } 
 } { $value ->
     [-1] { space }
+    [0] { space }
     [one] устройство
     [few] устройства
     *[other] устройств
