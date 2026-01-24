@@ -155,6 +155,8 @@ from .handlers import (
     on_language_click,
     on_toggle_language,
     on_language_select,
+    on_language_cancel,
+    on_language_apply,
 )
 
 
@@ -1980,7 +1982,7 @@ community_url_manual = Window(
 language_settings = Window(
     Banner(BannerName.DASHBOARD),
     I18nFormat("msg-dashboard-settings-language", enabled=F["enabled"], current_locale=F["current_locale"]),
-    Column(
+    Row(
         Button(
             text=I18nFormat("btn-language-ru", selected=F["is_ru"]),
             id="lang_ru",
@@ -1991,6 +1993,8 @@ language_settings = Window(
             id="lang_uk",
             on_click=on_language_select,
         ),
+    ),
+    Row(
         Button(
             text=I18nFormat("btn-language-en", selected=F["is_en"]),
             id="lang_en",
@@ -2003,10 +2007,15 @@ language_settings = Window(
         ),
     ),
     Row(
-        SwitchTo(
-            text=I18nFormat("btn-back"),
-            id="back",
-            state=DashboardSettings.MAIN,
+        Button(
+            text=I18nFormat("btn-language-cancel"),
+            id="lang_cancel",
+            on_click=on_language_cancel,
+        ),
+        Button(
+            text=I18nFormat("btn-language-apply"),
+            id="lang_apply",
+            on_click=on_language_apply,
         ),
     ),
     IgnoreUpdate(),

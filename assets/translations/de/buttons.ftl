@@ -42,21 +42,23 @@ btn-settings-finances = 💰 Finanzen
 btn-settings-currency-rates = 💱 Wechselkurse
 btn-settings-language = 🌐 Sprache
 btn-language-ru = { $selected ->
-    [1] 🔘 Russisch
-    *[0] ⚪ Russisch
+    [1] ✅ 🇷🇺 Russisch
+    *[0] 🇷🇺 Russisch
     }
 btn-language-uk = { $selected ->
-    [1] 🔘 Ukrainisch
-    *[0] ⚪ Ukrainisch
+    [1] ✅ 🇺🇦 Ukrainisch
+    *[0] 🇺🇦 Ukrainisch
     }
 btn-language-en = { $selected ->
-    [1] 🔘 English
-    *[0] ⚪ English
+    [1] ✅ 🇬🇧 Englisch
+    *[0] 🇬🇧 Englisch
     }
 btn-language-de = { $selected ->
-    [1] 🔘 Deutsch
-    *[0] ⚪ Deutsch
+    [1] ✅ 🇩🇪 Deutsch
+    *[0] 🇩🇪 Deutsch
     }
+btn-language-cancel = Abbrechen
+btn-language-apply = Übernehmen
 btn-finances-sync = { $enabled ->
     [1] 🟢 Kurssynchronisierung
     *[0] 🔴 Kurssynchronisierung
