@@ -31,12 +31,17 @@ async def payments_webhook(
         return Response(status_code=status.HTTP_404_NOT_FOUND)
 
     try:
-        gateway = await payment_gateway_service._get_gateway_instance(gateway_enum)
-
-        if not gateway.data.is_active:
+        # Сначала проверяем, активен ли шлюз, до создания инстанса
+        gateway_data = await payment_gateway_service.get_by_type(gateway_enum)
+        if not gateway_data:
+            logger.warning(f"Webhook received for unknown payment gateway {gateway_enum}")
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        
+        if not gateway_data.is_active:
             logger.warning(f"Webhook received for disabled payment gateway {gateway_enum}")
             return Response(status_code=status.HTTP_404_NOT_FOUND)
-
+        
+        gateway = await payment_gateway_service._get_gateway_instance(gateway_enum)
         payment_id, payment_status = await gateway.handle_webhook(request)
         await handle_payment_transaction_task.kiq(payment_id, payment_status)
         return Response(status_code=status.HTTP_200_OK)

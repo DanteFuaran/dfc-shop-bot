@@ -665,16 +665,20 @@ async def language_settings_getter(
     """Геттер для настроек языка."""
     from src.core.enums import Locale
     
-    user: UserDto = dialog_manager.middleware_data[USER_KEY]
     settings = await settings_service.get()
     features = settings.features
     
-    # Если мультиязычность включена - показываем язык пользователя
-    # Иначе показываем язык бота из настроек
-    if features.language_enabled:
-        current_locale = user.language
-    else:
-        current_locale = settings.bot_locale
+    # Всегда показываем глобальный язык бота
+    current_locale = settings.bot_locale
+    
+    # Названия языков для отображения
+    locale_names = {
+        Locale.RU: "🇷🇺 Русский",
+        Locale.UK: "🇺🇦 Украинский", 
+        Locale.EN: "🇬🇧 English",
+        Locale.DE: "🇩🇪 Deutsch",
+    }
+    
     return {
         "enabled": 1 if features.language_enabled else 0,
         "current_locale": locale_names.get(current_locale, "🇷🇺 Русский"),
