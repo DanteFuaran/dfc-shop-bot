@@ -2646,7 +2646,9 @@ async def on_language_apply(
 ) -> None:
     """Применить выбранный язык."""
     from src.core.enums import Locale
-    from src.core.constants import SETTINGS_KEY
+    from src.core.constants import SETTINGS_KEY, CONTAINER_KEY
+    from fluentogram import TranslatorRunner, TranslatorHub
+    from dishka import AsyncContainer
     
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
@@ -2671,8 +2673,12 @@ async def on_language_apply(
         dialog_manager.dialog_data.pop("pending_locale", None)
         dialog_manager.dialog_data.pop("original_locale", None)
         
-        # Удаляем переопределенный translator - теперь будет использоваться сохраненный язык из БД
-        dialog_manager.middleware_data.pop("translator_runner", None)
+        # НЕ удаляем translator_runner - оставляем его для применения нового языка при переходе
+        # Или пересоздаем его с сохраненным языком для консистентности
+        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+        hub: TranslatorHub = await container.get(TranslatorHub)
+        new_translator: TranslatorRunner = hub.get_translator_by_locale(locale=pending_locale)
+        dialog_manager.middleware_data["translator_runner"] = new_translator
         
         logger.info(f"{log(user)} Changed bot language to {pending_locale}")
         
