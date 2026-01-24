@@ -118,14 +118,11 @@ frg-subscription =
     • <b>Тариф:</b> { $plan_name }
     • <b>Лимит трафика</b>: { $traffic_limit }
     • <b>Лимит устройств</b>: { $device_limit_number }{ $device_limit_bonus ->
-        [0] { $extra_devices ->
-            [0] {""}
-            *[other] {" "}(+{ $extra_devices } доп.)
-        }
-        *[other] +{ $device_limit_bonus }{ $extra_devices ->
-            [0] {""}
-            *[other] {" "}(+{ $extra_devices } доп.)
-        }
+        [0] {""}
+        *[other] +{ $device_limit_bonus }
+    }{ $extra_devices ->
+        [0] {""}
+        *[other] {" "}(+{ $extra_devices } доп.)
     }
     • <b>Осталось</b>: { $expire_time }
     </blockquote>
@@ -140,14 +137,11 @@ frg-subscription-details =
     • <b>Тариф:</b> { $plan_name }
     • <b>Трафик</b>: { $traffic_used } / { $traffic_limit }
     • <b>Лимит устройств</b>: { $device_limit_number }{ $device_limit_bonus ->
-        [0] { $extra_devices ->
-            [0] {""}
-            *[other] {" "}(+{ $extra_devices } доп.)
-        }
-        *[other] +{ $device_limit_bonus }{ $extra_devices ->
-            [0] {""}
-            *[other] {" "}(+{ $extra_devices } доп.)
-        }
+        [0] {""}
+        *[other] +{ $device_limit_bonus }
+    }{ $extra_devices ->
+        [0] {""}
+        *[other] {" "}(+{ $extra_devices } доп.)
     }
     • <b>Осталось</b>: { $expire_time }
     </blockquote>
