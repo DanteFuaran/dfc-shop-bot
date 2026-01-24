@@ -5,7 +5,7 @@ CLONE_DIR=$(mktemp -d)
 echo "📦 Подготовка к установке"
 
 # Клонируем репозиторий
-if ! git clone -b main --depth 1 https://github.com/DanteFuaran/dfc-shop-bot.git "$CLONE_DIR" >/dev/null 2>&1; then
+if ! git clone -b dev2 --depth 1 https://github.com/DanteFuaran/dfc-shop-bot.git "$CLONE_DIR" >/dev/null 2>&1; then
     echo "❌ Ошибка при клонировании репозитория"
     rm -rf "$CLONE_DIR"
     exit 1

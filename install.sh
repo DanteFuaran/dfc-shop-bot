@@ -16,7 +16,7 @@ ENV_FILE="$PROJECT_DIR/.env"
 REPO_DIR="/opt/dfc-shop-bot"
 REMNAWAVE_DIR="/opt/remnawave"
 REPO_URL="https://github.com/DanteFuaran/dfc-shop-bot.git"
-REPO_BRANCH="dev"
+REPO_BRANCH="dev2"
 
 # Статус обновлений
 UPDATE_AVAILABLE=0
