@@ -355,6 +355,26 @@ format-updated = Updated: { $date }
 
 # ===== User Profile Fragments =====
 hdr-user-profile = <b>👤 Your Profile:</b>
+hdr-transfer = <b>💸 Transfer:</b>
+hdr-message = <b>💬 Message:</b>
+hdr-balance-mode = <b>💎 Balance Mode:</b>
+
+# Labels for balance/transfer sections
+lbl-your-balance = • Your balance:
+lbl-commission = • Commission:
+lbl-recipient = • Recipient:
+lbl-transfer-amount = • Transfer amount:
+lbl-status = • Status:
+lbl-min-topup-amount = • Minimum top-up amount:
+lbl-max-topup-amount = • Maximum top-up amount:
+lbl-enabled = ✅ Enabled
+lbl-disabled = 🔴 Disabled
+lbl-balance-mode-combined = • <b>Combined</b> - bonuses are credited to the main balance
+lbl-balance-mode-separate = • <b>Separate</b> - separate bonus balance
+lbl-not-set = Not set
+
+# Messages
+msg-fill-data-and-send = <i>ℹ️ Fill in the data and click the "Send" button.</i>
 
 frg-user =
     <blockquote>
@@ -403,6 +423,16 @@ frg-subscription =
     }
     • <b>Expires</b>: { $expire_time }
     </blockquote>
+
+frg-subscription-conditional =
+    { $has_subscription ->
+    [true]
+    { frg-subscription }
+    *[false]
+    <blockquote>
+    • You don't have an active subscription.
+    </blockquote>
+    }
 
 frg-subscription-status-full =
     { $status ->

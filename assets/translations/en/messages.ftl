@@ -1509,3 +1509,231 @@ msg-menu-devices =
     { frg-subscription }
 
     📱 <b>Device Management:</b>
+# ===== Balance Section =====
+msg-balance-menu =
+    { hdr-user-profile }
+    { frg-user }
+
+    { hdr-subscription }
+    { frg-subscription-status-full }
+
+    <b>💰 Balance Management:</b>
+
+msg-balance-select-gateway =
+    { hdr-user-profile }
+    { frg-user }
+
+    { hdr-subscription }
+    { frg-subscription-conditional }
+
+    <b>💰 Select Payment Method:</b>
+
+msg-balance-select-amount =
+    <b>💰 Top Up Balance</b>
+
+    Payment method: <b>{ $selected_gateway }</b>
+
+    Select top-up amount:
+
+msg-balance-enter-amount =
+    <b>💰 Top Up Balance</b>
+
+    Payment method: <b>{ $selected_gateway }</b>
+
+    Enter top-up amount (from { $min_amount } to { $max_amount } { $currency }):
+
+msg-balance-confirm =
+    <b>💰 Confirm Top Up</b>
+
+    Payment method: <b>{ $selected_gateway }</b>
+    Amount: <b>{ $topup_amount } { $currency }</b>
+
+    Click the button below to pay.
+
+msg-balance-success =
+    <b>✅ Balance successfully topped up!</b>
+    
+    <blockquote>
+    <b>{ $amount }{ $currency }</b> has been credited to your account
+    </blockquote>
+
+msg-balance-transfer =
+    <b>💸 Balance Transfer</b>
+
+    { hdr-user-profile }
+    <blockquote>
+    { lbl-your-balance } <b>{ $balance }</b>
+    { lbl-commission } { $commission_display }
+    </blockquote>
+
+    { hdr-transfer }
+    <blockquote>
+    { lbl-recipient } { $recipient_display }
+    { lbl-transfer-amount } <b>{ $amount_display } ₽</b>
+    { lbl-commission } <b>{ $transfer_commission } ₽</b>
+    </blockquote>
+
+    { hdr-message }
+    <blockquote>
+    { $message_display }
+    </blockquote>
+
+    { msg-fill-data-and-send }
+
+msg-balance-transfer-recipient =
+    <b>💸 Recipient</b>
+
+    <blockquote>
+    Enter the recipient's <b>Telegram ID</b>:
+    </blockquote>
+
+msg-balance-transfer-recipient-history =
+    <b>📜 User History</b>
+
+    Select a recipient from the list of users you have previously sent transfers to:
+
+msg-balance-transfer-no-history = <i>You don't have any transfer history yet.</i>
+
+msg-balance-transfer-amount-value =
+    <b>💸 Transfer Amount</b>
+
+    <blockquote>
+    • Current amount: { $current_display }
+    • Change to: { $selected_display }
+    </blockquote>
+
+    Select amount or enter your own:
+
+msg-balance-transfer-amount-manual =
+    <b>✏️ Manual Input</b>
+
+    <blockquote>
+    Enter transfer amount (from { $min_amount } to { $max_amount } ₽):
+    </blockquote>
+
+msg-balance-transfer-message =
+    <b>💬 Message</b>
+
+    <blockquote>
+    { $message_display }
+    </blockquote>
+
+    <i>Enter a message for the transfer (max 200 characters):</i>
+
+msg-balance-transfer-confirm =
+    <b>💸 Confirm Transfer</b>
+
+    <blockquote>
+    Recipient: <b>{ $recipient_name }</b> (<code>{ $recipient_id }</code>)
+    Transfer amount: <b>{ $amount } ₽</b>
+    Commission: <b>{ $commission } ₽</b>
+    Total to be debited: <b>{ $total } ₽</b>
+    </blockquote>
+
+    ⚠️ <b>Warning:</b> This operation is irreversible!
+
+msg-balance-transfer-success =
+    <b>✅ Transfer completed successfully!</b>
+
+    <blockquote>
+    Recipient: <b>{ $recipient_name }</b>
+    Amount: <b>{ $amount } ₽</b>
+    Commission: <b>{ $commission } ₽</b>
+    </blockquote>
+
+msg-balance-transfer-error =
+    <b>❌ Transfer Error</b>
+
+    { $error }
+
+# ===== Invite Section =====
+msg-menu-invite =
+    <b>👥 Invite Friends</b>
+
+    { hdr-user-profile }
+    { frg-user }
+
+    { hdr-subscription }{ frg-subscription-status-full }
+
+    <b>🏆 Reward:</b>
+    <blockquote>
+    { $ref_reward_type ->
+        [EXTRA_DAYS] • { $ref_reward_level_1_value } days for every 100 ₽ top-up by invitee
+        [MONEY] • { $ref_reward_level_1_value }% of invitee's top-up amount
+        *[OTHER] • { $ref_reward_level_1_value } ₽
+    }{ $ref_max_level ->
+        [2] {""}
+    
+    { $ref_reward_type ->
+        [EXTRA_DAYS] • { $ref_reward_level_2_value } days for every 100 ₽ top-up by invitee's invitees
+        [MONEY] • { $ref_reward_level_2_value }% of top-up amount by invitee's invitees
+        *[OTHER] • { $ref_reward_level_2_value } ₽
+    }
+        *[1] {""}
+    }
+    </blockquote>
+
+    <b>📊 Statistics:</b>
+    <blockquote>
+    👥 Total invited: { $referrals }
+    💳 Payments via your link: { $payments }
+    💳 Total received: { $total_bonus }{ $ref_reward_type ->
+        [EXTRA_DAYS] { " " }days
+        *[OTHER] { " " }₽
+    }
+    </blockquote>
+
+    <i>ℹ️ Rewards are credited when users you invited make payments.</i>
+
+msg-menu-invite-about =
+    <b>🎁 More About Rewards</b>
+
+    <b>✨ How to get rewards:</b>
+    <blockquote>
+    { $accrual_strategy ->
+    [ON_FIRST_PAYMENT] Reward is credited for the first subscription purchase by an invited user.
+    [ON_EACH_PAYMENT] Reward is credited for each purchase or subscription renewal by an invited user.
+    *[OTHER] { $accrual_strategy }
+    }
+    </blockquote>
+
+    <b>💎 What you get:</b>
+
+# ===== Dashboard Settings =====
+msg-dashboard-settings-balance =
+    <b>💰 Balance Settings</b>
+
+    <blockquote>
+    { lbl-status } { $enabled ->
+        [1] { lbl-enabled }
+        *[0] { lbl-disabled }
+    }
+    { lbl-min-topup-amount } { $balance_min_amount }
+    { lbl-max-topup-amount } { $balance_max_amount }
+    </blockquote>
+
+    { hdr-balance-mode }
+    <blockquote>
+    { lbl-balance-mode-combined }
+    { lbl-balance-mode-separate }
+    </blockquote>
+
+msg-dashboard-settings-balance-min-amount =
+    <b>📉 Minimum Balance Top-Up Amount</b>
+
+    <blockquote>
+    • Current minimum amount: { $balance_min_current_display }
+    • Change to: { $balance_min_selected_display }
+    </blockquote>
+
+    Select amount:
+
+msg-dashboard-settings-balance-max-amount =
+    <b>📈 Maximum Balance Top-Up Amount</b>
+
+    <blockquote>
+    • Current maximum amount: { $balance_max_current_display }
+    • Change to: { $balance_max_selected_display }
+    </blockquote>
+
+    Select amount:
