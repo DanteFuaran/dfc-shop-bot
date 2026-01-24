@@ -525,6 +525,14 @@ async def devices_getter(
         and not is_referral_subscription
         and not is_import_subscription
     )
+    
+    # Фильтрация слотов: если больше 10 устройств, показываем только когда свободных меньше 2
+    total_slots = len(device_slots)
+    empty_slots_count = sum(1 for slot in device_slots if not slot["is_occupied"])
+    
+    if total_slots > 10 and empty_slots_count >= 2:
+        # Показываем только занятые слоты
+        device_slots = [slot for slot in device_slots if slot["is_occupied"]]
 
     return {
         "current_count": len(devices),

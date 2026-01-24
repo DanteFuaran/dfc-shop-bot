@@ -765,6 +765,14 @@ async def on_device_limit_input(
 
     number = int(message.text)
     
+    if number > 100:
+        logger.warning(f"{log(user)} Device limit exceeded (>100): '{number}'")
+        await notification_service.notify_user(
+            user=user,
+            payload=MessagePayload(i18n_key="ntf-user-device-limit-exceeded", delete_after=5),
+        )
+        return
+    
     # Вычисляем новый device_limit на основе бонусных устройств
     # device_limit = plan_device_limit + extra_devices + bonus_devices
     plan_device_limit = subscription.plan.device_limit if subscription.plan else 0
