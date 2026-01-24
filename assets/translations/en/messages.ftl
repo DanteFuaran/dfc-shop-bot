@@ -1484,3 +1484,28 @@ plan-statistics =
     📊 &lt;b&gt;Plan Statistics&lt;/b&gt;
 
     { $plan_stats }
+
+
+# ===== Main Menu =====
+msg-main-menu =
+    { hdr-user-profile }
+    { frg-user }
+
+    { hdr-subscription }{ frg-subscription-status-full }
+
+msg-menu-connect =
+    <b>📝 Instructions:</b>
+    <blockquote>
+    • Download and install the app.
+    • Click 🔗 Connect.
+    • Enable it in the app.
+    </blockquote>
+
+msg-menu-devices =
+    { hdr-user-profile }
+    { frg-user }
+
+    { hdr-subscription }
+    { frg-subscription }
+
+    📱 <b>Device Management:</b>

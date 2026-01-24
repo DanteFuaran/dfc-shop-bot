@@ -14,9 +14,6 @@ btn-dashboard-importer = 📥 Імпорт X-UI
 btn-dashboard-db = 🗄 Управління базою
 btn-db-save = 💾 Зберегти
 btn-db-load = 📦 Завантажити
-btn-db-convert = 🔄 Конвертувати
-btn-db-sync = 🔄 Синхронізація
-btn-db-sync-from-bot = 📤 Імпорт з бота в Remnawave
 btn-db-sync-from-panel = 📥 Імпорт Remnawave
 btn-db-sync-remnawave-to-bot = 📥 Імпорт з Remnawave в бота
 btn-db-sync-bot-to-remnawave = 📤 Імпорт з бота в Remnawave
@@ -65,14 +62,6 @@ btn-finances-sync = { $enabled ->
     }
 btn-finances-currency-rates = 💱 Курси валют
 btn-finances-gateways = 🌐 Платіжні системи
-btn-finances-balance-mode-combined = { $selected ->
-    [1] 🔘 Об'єднаний
-    *[0] ⚪ Об'єднаний
-    }
-btn-finances-balance-mode-separate = { $selected ->
-    [1] 🔘 Роздільний
-    *[0] ⚪ Роздільний
-    }
 btn-balance-mode-combined = { $selected ->
     [1] 🔘 Об'єднаний
     *[0] ⚪ Об'єднаний
@@ -384,6 +373,7 @@ btn-extra-device-item = { $device_count } шт. • { $price } ₽/міс • { 
 btn-extra-device-disable-auto-renew = ❌ Вимкнути автопродовження
 btn-extra-device-delete = 🗑 Видалити зараз
 btn-menu-try-free = 🎁 Спробувати безкоштовно
+btn-menu-balance = 💰 Баланс: { $balance }
 btn-menu-subscription = 💳 Підписка
 btn-menu-connect-subscribe = 🔗 Підключитися
 btn-menu-topup = ➕ Поповнити

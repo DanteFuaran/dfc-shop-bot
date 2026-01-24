@@ -104,7 +104,7 @@ menu = Window(
     # [Баланс]
     Row(
         Button(
-            text=Format("💰 Баланс: {balance} ₽"),
+            text=I18nFormat("btn-menu-balance", balance=F["balance"]),
             id="balance",
             on_click=on_balance_click,
         ),

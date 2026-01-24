@@ -14,9 +14,6 @@ btn-dashboard-importer = 📥 X-UI Import
 btn-dashboard-db = 🗄 Datenbankverwaltung
 btn-db-save = 💾 Speichern
 btn-db-load = 📦 Laden
-btn-db-convert = 🔄 Konvertieren
-btn-db-sync = 🔄 Synchronisieren
-btn-db-sync-from-bot = 📤 Import vom Bot zu Remnawave
 btn-db-sync-from-panel = 📥 Remnawave Import
 btn-db-sync-remnawave-to-bot = 📥 Import von Remnawave zum Bot
 btn-db-sync-bot-to-remnawave = 📤 Import vom Bot zu Remnawave
@@ -65,14 +62,6 @@ btn-finances-sync = { $enabled ->
     }
 btn-finances-currency-rates = 💱 Wechselkurse
 btn-finances-gateways = 🌐 Zahlungssysteme
-btn-finances-balance-mode-combined = { $selected ->
-    [1] 🔘 Kombiniert
-    *[0] ⚪ Kombiniert
-    }
-btn-finances-balance-mode-separate = { $selected ->
-    [1] 🔘 Getrennt
-    *[0] ⚪ Getrennt
-    }
 btn-balance-mode-combined = { $selected ->
     [1] 🔘 Kombiniert
     *[0] ⚪ Kombiniert
@@ -384,6 +373,7 @@ btn-extra-device-item = { $device_count } St. • { $price } ₽/Mon. • { $exp
 btn-extra-device-disable-auto-renew = ❌ Automatische Verlängerung deaktivieren
 btn-extra-device-delete = 🗑 Jetzt löschen
 btn-menu-try-free = 🎁 Kostenlos testen
+btn-menu-balance = 💰 Guthaben: { $balance }
 btn-menu-subscription = 💳 Abonnement
 btn-menu-connect-subscribe = 🔗 Verbinden
 btn-menu-topup = ➕ Aufladen

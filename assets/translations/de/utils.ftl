@@ -351,3 +351,76 @@ format-duration = { $days } days
 format-expires = Expires: { $date }
 format-created = Created: { $date }
 format-updated = Updated: { $date }
+
+
+# ===== User Profile Fragments =====
+hdr-user-profile = <b>👤 Ihr Profil:</b>
+
+frg-user =
+    <blockquote>
+    • <b>ID</b>: <code>{ $user_id }</code>
+    • <b>Name</b>: { $user_name }
+    { $is_referral_enable ->
+        [1] • <b>Empfehlungscode</b>: <code>{ $referral_code }</code>
+        *[0] {""}
+    }
+    • <b>Rabatt</b>: { $discount_value }%{ $discount_value ->
+    [0] {""}
+    *[other] { $discount_is_permanent ->
+        [1] {" "}(Dauerhaft)
+        *[0] { $discount_remaining ->
+            [0] {" "}(Einmalig)
+            *[other] {" "}(Noch { $discount_remaining } { $discount_remaining ->
+                [1] Tag
+                *[other] Tage
+            })
+        }
+    }
+    }
+    { $is_balance_enabled ->
+        [1] • <b>Guthaben</b>: { $balance }
+        *[0] {""}
+    }
+    { $is_balance_separate ->
+        [1] { $is_referral_enable ->
+            [1] • <b>Boni</b>: { $referral_balance }
+            *[0] {""}
+        }
+        *[0] {""}
+    }
+    </blockquote>
+
+frg-subscription =
+    <blockquote>
+    • <b>Tarif:</b> { $plan_name }
+    • <b>Traffic-Limit</b>: { $traffic_limit }
+    • <b>Geräte-Limit</b>: { $device_limit_number }{ $device_limit_bonus ->
+        [0] {""}
+        *[other] +{ $device_limit_bonus }
+    }{ $extra_devices ->
+        [0] {""}
+        *[other] {" "}(+{ $extra_devices } extra)
+    }
+    • <b>Läuft ab</b>: { $expire_time }
+    </blockquote>
+
+frg-subscription-status-full =
+    { $status ->
+    [ACTIVE] { frg-subscription }
+    [DISABLED] 
+    <blockquote>
+    • <b>Status:</b> Deaktiviert
+    </blockquote>
+    [EXPIRED] 
+    <blockquote>
+    • <b>Status:</b> Abgelaufen
+    </blockquote>
+    [LIMITED] 
+    <blockquote>
+    • <b>Status:</b> Traffic-Limit erreicht
+    </blockquote>
+    *[NO_SUBSCRIPTION]
+    <blockquote>
+    • <b>Status:</b> Kein Abonnement
+    </blockquote>
+    }

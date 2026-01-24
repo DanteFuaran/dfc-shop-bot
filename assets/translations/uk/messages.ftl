@@ -1484,3 +1484,28 @@ plan-statistics =
     📊 <b>Статистика плану</b>
 
     { $plan_stats }
+
+
+# ===== Main Menu =====
+msg-main-menu =
+    { hdr-user-profile }
+    { frg-user }
+
+    { hdr-subscription }{ frg-subscription-status-full }
+
+msg-menu-connect =
+    <b>📝 Інструкція:</b>
+    <blockquote>
+    • Завантажте та встановіть додаток.
+    • Натисніть 🔗 Підключитися.
+    • Увімкніть у додатку.
+    </blockquote>
+
+msg-menu-devices =
+    { hdr-user-profile }
+    { frg-user }
+
+    { hdr-subscription }
+    { frg-subscription }
+
+    📱 <b>Керування пристроями:</b>

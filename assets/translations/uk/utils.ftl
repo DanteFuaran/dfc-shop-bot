@@ -351,3 +351,79 @@ format-duration = { $days } днів
 format-expires = Закінчується: { $date }
 format-created = Створено: { $date }
 format-updated = Оновлено: { $date }
+
+
+# ===== User Profile Fragments =====
+hdr-user-profile = <b>👤 Ваш профіль:</b>
+
+frg-user =
+    <blockquote>
+    • <b>ID</b>: <code>{ $user_id }</code>
+    • <b>Ім'я</b>: { $user_name }
+    { $is_referral_enable ->
+        [1] • <b>Реферальний код</b>: <code>{ $referral_code }</code>
+        *[0] {""}
+    }
+    • <b>Знижка</b>: { $discount_value }%{ $discount_value ->
+    [0] {""}
+    *[other] { $discount_is_permanent ->
+        [1] {" "}(Постійна)
+        *[0] { $discount_remaining ->
+            [0] {" "}(Одноразова)
+            *[other] {" "}(Залишилось { $discount_remaining } { $discount_remaining ->
+                [1] день
+                [2] дні
+                [3] дні
+                [4] дні
+                *[other] днів
+            })
+        }
+    }
+    }
+    { $is_balance_enabled ->
+        [1] • <b>Баланс</b>: { $balance }
+        *[0] {""}
+    }
+    { $is_balance_separate ->
+        [1] { $is_referral_enable ->
+            [1] • <b>Бонуси</b>: { $referral_balance }
+            *[0] {""}
+        }
+        *[0] {""}
+    }
+    </blockquote>
+
+frg-subscription =
+    <blockquote>
+    • <b>Тариф:</b> { $plan_name }
+    • <b>Ліміт трафіку</b>: { $traffic_limit }
+    • <b>Ліміт пристроїв</b>: { $device_limit_number }{ $device_limit_bonus ->
+        [0] {""}
+        *[other] +{ $device_limit_bonus }
+    }{ $extra_devices ->
+        [0] {""}
+        *[other] {" "}(+{ $extra_devices } дод.)
+    }
+    • <b>Залишилось</b>: { $expire_time }
+    </blockquote>
+
+frg-subscription-status-full =
+    { $status ->
+    [ACTIVE] { frg-subscription }
+    [DISABLED] 
+    <blockquote>
+    • <b>Статус:</b> Вимкнено
+    </blockquote>
+    [EXPIRED] 
+    <blockquote>
+    • <b>Статус:</b> Закінчилась
+    </blockquote>
+    [LIMITED] 
+    <blockquote>
+    • <b>Статус:</b> Ліміт трафіку вичерпано
+    </blockquote>
+    *[NO_SUBSCRIPTION]
+    <blockquote>
+    • <b>Статус:</b> Немає підписки
+    </blockquote>
+    }
