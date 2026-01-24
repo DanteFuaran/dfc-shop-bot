@@ -304,16 +304,25 @@ check_updates_available() {
 
 wait_for_update_check() {
     if [ -n "$CHECK_UPDATE_PID" ]; then
-        wait $CHECK_UPDATE_PID 2>/dev/null || true
+        # Ждём завершения с таймаутом 10 сек
+        timeout 10 wait $CHECK_UPDATE_PID 2>/dev/null || true
     fi
     
-    # Читаем результат из файла (формат: status|version)
-    if [ -n "$UPDATE_STATUS_FILE" ] && [ -f "$UPDATE_STATUS_FILE" ]; then
-        local update_info=$(cat "$UPDATE_STATUS_FILE" 2>/dev/null || echo "0|unknown")
-        UPDATE_AVAILABLE=$(echo "$update_info" | cut -d'|' -f1)
-        AVAILABLE_VERSION=$(echo "$update_info" | cut -d'|' -f2)
-        rm -f "$UPDATE_STATUS_FILE" 2>/dev/null || true
-    fi
+    # Даём файлу немного времени на запись если процесс ещё пишет
+    local retry_count=0
+    while [ $retry_count -lt 20 ]; do
+        if [ -n "$UPDATE_STATUS_FILE" ] && [ -f "$UPDATE_STATUS_FILE" ]; then
+            local update_info=$(cat "$UPDATE_STATUS_FILE" 2>/dev/null || echo "0|unknown")
+            if [ -n "$update_info" ]; then
+                UPDATE_AVAILABLE=$(echo "$update_info" | cut -d'|' -f1)
+                AVAILABLE_VERSION=$(echo "$update_info" | cut -d'|' -f2)
+                rm -f "$UPDATE_STATUS_FILE" 2>/dev/null || true
+                break
+            fi
+        fi
+        sleep 0.1
+        ((retry_count++))
+    done
 }
 
 # Функция для проверки режима (установка или меню)
