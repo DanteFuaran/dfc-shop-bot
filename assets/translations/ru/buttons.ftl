@@ -38,22 +38,10 @@ btn-settings-global-discount = 🏷️ Глобальная скидка
 btn-settings-finances = 💰 Финансы
 btn-settings-currency-rates = 💱 Курс валют
 btn-settings-language = 🌐 Язык
-btn-language-ru = { $selected ->
-    [1] ✅ 🇷🇺 Русский
-    *[0] 🇷🇺 Русский
-    }
-btn-language-uk = { $selected ->
-    [1] ✅ 🇺🇦 Украинский
-    *[0] 🇺🇦 Украинский
-    }
-btn-language-en = { $selected ->
-    [1] ✅ 🇬🇧 English
-    *[0] 🇬🇧 English
-    }
-btn-language-de = { $selected ->
-    [1] ✅ 🇩🇪 Deutsch
-    *[0] 🇩🇪 Deutsch
-    }
+btn-language-ru = 🇷🇺 Русский
+btn-language-uk = 🇺🇦 Українська
+btn-language-en = 🇬🇧 English
+btn-language-de = 🇩🇪 Deutsch
 btn-language-cancel = Отмена
 btn-language-apply = Принять
 btn-finances-sync = { $enabled ->

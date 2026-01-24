@@ -668,25 +668,22 @@ async def language_settings_getter(
     settings = await settings_service.get()
     features = settings.features
     
-    # Получаем текущий язык бота
-    current_locale = settings.bot_locale
+    # Получаем текущий язык бота (сохраненный в БД)
+    saved_locale = settings.bot_locale
     
-    # Получаем pending locale из dialog_data если есть, иначе используем текущий
-    pending_locale = dialog_manager.dialog_data.get("pending_locale", current_locale)
+    # Получаем pending locale из dialog_data если есть, иначе используем сохраненный
+    pending_locale = dialog_manager.dialog_data.get("pending_locale", saved_locale)
     
     # Названия языков для отображения
     locale_names = {
         Locale.RU: "🇷🇺 Русский",
-        Locale.UK: "🇺🇦 Украинский", 
+        Locale.UK: "🇺🇦 Українська", 
         Locale.EN: "🇬🇧 English",
         Locale.DE: "🇩🇪 Deutsch",
     }
     
     return {
         "enabled": 1 if features.language_enabled else 0,
-        "current_locale": locale_names.get(current_locale, "🇷🇺 Русский"),
-        "is_ru": 1 if pending_locale == Locale.RU else 0,
-        "is_uk": 1 if pending_locale == Locale.UK else 0,
-        "is_en": 1 if pending_locale == Locale.EN else 0,
-        "is_de": 1 if pending_locale == Locale.DE else 0,
+        # Показываем pending_locale в шапке (предпросмотр выбора)
+        "current_locale": locale_names.get(pending_locale, "🇷🇺 Русский"),
     }

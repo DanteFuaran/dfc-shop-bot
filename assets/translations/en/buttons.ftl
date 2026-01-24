@@ -38,22 +38,10 @@ btn-settings-global-discount = 🏷️ Global Discount
 btn-settings-finances = 💰 Finances
 btn-settings-currency-rates = 💱 Exchange Rates
 btn-settings-language = 🌐 Language
-btn-language-ru = { $selected ->
-    [1] ✅ 🇷🇺 Russian
-    *[0] 🇷🇺 Russian
-    }
-btn-language-uk = { $selected ->
-    [1] ✅ 🇺🇦 Ukrainian
-    *[0] 🇺🇦 Ukrainian
-    }
-btn-language-en = { $selected ->
-    [1] ✅ 🇬🇧 English
-    *[0] 🇬🇧 English
-    }
-btn-language-de = { $selected ->
-    [1] ✅ 🇩🇪 German
-    *[0] 🇩🇪 German
-    }
+btn-language-ru = 🇷🇺 Russian
+btn-language-uk = 🇺🇦 Ukrainian
+btn-language-en = 🇬🇧 English
+btn-language-de = 🇩🇪 German
 btn-language-cancel = Cancel
 btn-language-apply = Apply
 btn-finances-sync = { $enabled ->
