@@ -2531,8 +2531,9 @@ async def on_language_select(
     widget: Button,
     dialog_manager: DialogManager,
     settings_service: FromDishka[SettingsService],
+    user_service: FromDishka[UserService],
 ) -> None:
-    """Выбрать язык бота."""
+    """Выбрать язык пользователя или бота."""
     from src.core.enums import Locale
     
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
@@ -2547,8 +2548,23 @@ async def on_language_select(
     }
     
     if locale_code in locale_map:
+        selected_locale = locale_map[locale_code]
         settings = await settings_service.get()
-        settings.bot_locale = locale_map[locale_code]
-        await settings_service.update(settings)
-        logger.info(f"{log(user)} Changed bot language to {locale_code}")
-        await callback.answer(f"Язык изменён на {locale_code}")
+        
+        if settings.features.language_enabled:
+            # Мультиязычность включена - меняем язык пользователя
+            user.language = selected_locale
+            await user_service.update(user)
+            await user_service.clear_user_cache(user.telegram_id)
+            
+            # Обновляем user в middleware_data
+            dialog_manager.middleware_data[USER_KEY] = user
+            
+            logger.info(f"{log(user)} Changed personal language to {locale_code}")
+            await callback.answer(f"Язык изменён на {locale_code}")
+        else:
+            # Мультиязычность выключена - меняем язык бота глобально
+            settings.bot_locale = selected_locale
+            await settings_service.update(settings)
+            logger.info(f"{log(user)} Changed bot language to {locale_code}")
+            await callback.answer(f"Язык бота изменён на {locale_code}")
