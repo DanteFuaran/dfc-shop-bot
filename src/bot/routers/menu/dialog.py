@@ -240,9 +240,7 @@ connect = Window(
             when=F["has_subscription"],
         ),
     ),
-    Row(
-        *main_menu_button,
-    ),
+    *get_back_and_main_menu_buttons(MainMenu.MAIN),
     IgnoreUpdate(),
     state=MainMenu.CONNECT,
     getter=connect_getter,
@@ -286,9 +284,7 @@ devices = Window(
             when=F["can_add_extra_device"] == 1,
         ),
     ),
-    Row(
-        *main_menu_button,
-    ),
+    *get_back_and_main_menu_buttons(MainMenu.MAIN),
     IgnoreUpdate(),
     state=MainMenu.DEVICES,
     getter=devices_getter,
@@ -318,9 +314,7 @@ invite = Window(
             copy_text=Format("{referral_link}"),
         ),
     ),
-    Row(
-        *main_menu_button,
-    ),
+    *get_back_and_main_menu_buttons(MainMenu.MAIN),
     IgnoreUpdate(),
     state=MainMenu.INVITE,
     getter=invite_getter,
@@ -408,7 +402,7 @@ balance = Window(
             when=F["has_referral_balance"],  # Показываем только если есть бонусы и режим SEPARATE
         ),
     ),
-    *main_menu_button,
+    *get_back_and_main_menu_buttons(MainMenu.MAIN),
     IgnoreUpdate(),
     state=MainMenu.BALANCE,
     getter=balance_menu_getter,
