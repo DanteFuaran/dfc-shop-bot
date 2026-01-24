@@ -283,7 +283,7 @@ class PaymentGatewayService(BaseService):
 
         pricing = PriceDetailsDto(original_amount=amount)
         plan = PlanSnapshotDto.test()  # Используем test plan как заглушку
-        plan.name = f"Дополнительные устройства (x{device_count})"
+        plan.name = i18n.get("frg-extra-devices-name", count=device_count)
         plan.duration = duration_days
 
         transaction_data = {

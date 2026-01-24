@@ -5,6 +5,7 @@ from aiogram.types import TelegramObject
 from aiogram.types import User as AiogramUser
 from aiogram_dialog.api.internal import FakeUser
 from dishka import AsyncContainer
+from fluentogram import TranslatorHub
 from loguru import logger
 from remnapy.models.users import UpdateUserRequestDto
 
@@ -61,6 +62,7 @@ class UserMiddleware(EventTypedMiddleware):
         plan_service: PlanService = await container.get(PlanService)
         subscription_service: SubscriptionService = await container.get(SubscriptionService)
         settings_service: SettingsService = await container.get(SettingsService)
+        translator_hub: TranslatorHub = await container.get(TranslatorHub)
 
         # Получаем настройки для определения языка
         settings = await settings_service.get()
@@ -166,7 +168,9 @@ class UserMiddleware(EventTypedMiddleware):
                                     import_tag_display = f"IMPORT({existing_tag})"  # Тег для отображения в боте
                                     should_update_remnawave_tag = True
                                 
-                                import_name = "Импорт"  # Название для отображения в профиле
+                                # Получаем переведённое название для профиля
+                                i18n = translator_hub.get_translator_by_locale(locale=user.language)
+                                import_name = i18n.get("frg-import-name")
                                 
                                 logger.warning(
                                     f"No matching plan found for tag '{existing_tag}' "

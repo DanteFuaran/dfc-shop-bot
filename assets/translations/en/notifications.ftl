@@ -619,3 +619,13 @@ ntf-confirm-db-clear-all =
 
 ntf-confirm-db-clear-users =
     ✅ Users cleared!
+
+# Hardcoded strings - UI notifications
+ntf-click-start = Press /start to continue.
+ntf-delete-msg-error = Failed to delete message
+ntf-import-in-dev = Import is under development.
+ntf-convert-in-dev = Conversion feature is not yet implemented.
+ntf-file-not-found = File not found
+ntf-backup-deleted = Backup deleted
+ntf-delete-error = Delete error
+ntf-in-development = Under development...

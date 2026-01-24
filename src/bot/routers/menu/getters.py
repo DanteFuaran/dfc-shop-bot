@@ -221,6 +221,7 @@ async def connect_getter(
 async def devices_getter(
     dialog_manager: DialogManager,
     user: UserDto,
+    i18n: FromDishka[TranslatorRunner],
     remnawave_service: FromDishka[RemnawaveService],
     settings_service: FromDishka[SettingsService],
     referral_service: FromDishka[ReferralService],
@@ -357,7 +358,7 @@ async def devices_getter(
                 "days_display": "∞",
                 "is_occupied": False,
                 "can_delete": False,  # Базовый пустой слот нельзя удалить
-                "device_info": "Пустой слот",
+                "device_info": i18n.get("frg-empty-slot"),
             }
         device_slots.append(slot)
         slot_index += 1
@@ -383,7 +384,7 @@ async def devices_getter(
                 "days_display": "∞",
                 "is_occupied": False,
                 "can_delete": False,  # Бонусный пустой слот нельзя удалить
-                "device_info": "Пустой слот",
+                "device_info": i18n.get("frg-empty-slot"),
             }
         device_slots.append(slot)
         slot_index += 1
@@ -392,10 +393,9 @@ async def devices_getter(
     for p in purchases:
         for j in range(p.device_count):
             # Пытаемся занять слот устройством
+            days_word = i18n.get("frg-day-plural", value=p.days_remaining)
             if devices_copy:
                 device = devices_copy.pop(0)
-                from src.core.utils.formatters import pluralize_days
-                days_word = pluralize_days(p.days_remaining)
                 slot = {
                     "id": str(slot_index),  # Короткий индекс для callback_data
                     "purchase_id": str(p.id),
@@ -407,8 +407,6 @@ async def devices_getter(
                 }
                 slot_hwid_map[str(slot_index)] = device["short_hwid"]
             else:
-                from src.core.utils.formatters import pluralize_days
-                days_word = pluralize_days(p.days_remaining)
                 slot = {
                     "id": str(slot_index),
                     "purchase_id": str(p.id),
@@ -416,7 +414,7 @@ async def devices_getter(
                     "days_display": f"{p.days_remaining} {days_word}",
                     "is_occupied": False,
                     "can_delete": True,  # Пустой extra слот можно удалить
-                    "device_info": "Пустой слот",
+                    "device_info": i18n.get("frg-empty-slot"),
                 }
                 # Сохраняем purchase_id для удаления пустого слота
                 slot_purchase_map[str(slot_index)] = p.id
@@ -1188,6 +1186,7 @@ async def transfer_recipient_history_getter(
 async def transfer_amount_value_getter(
     dialog_manager: DialogManager,
     user: UserDto,
+    i18n: FromDishka[TranslatorRunner],
     settings_service: FromDishka[SettingsService],
     referral_service: FromDishka[ReferralService],
     **kwargs: Any,
@@ -1210,12 +1209,14 @@ async def transfer_amount_value_getter(
     )
     is_balance_combined = await settings_service.is_balance_combined()
     
+    not_assigned = i18n.get("frg-not-assigned")
+    
     # current_display - текущая назначенная сумма
-    current_display = f"{int(current_amount)} ₽" if current_amount else "Не назначено"
+    current_display = f"{int(current_amount)} ₽" if current_amount else not_assigned
     
     # selected_display - выбранная сумма (если есть pending, иначе текущая)
     display_amount = pending_amount if pending_amount is not None else current_amount
-    selected_display = f"{int(display_amount)} ₽" if display_amount else "Не назначено"
+    selected_display = f"{int(display_amount)} ₽" if display_amount else not_assigned
     
     # Создаем selected значения для всех кнопок (подсветка для pending или current)
     result = {

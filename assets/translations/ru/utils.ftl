@@ -532,3 +532,14 @@ language = { $language ->
     [vi] Вьетнамский
     *[OTHER] { $language }
 }
+
+# Hardcoded strings - UI elements
+frg-empty-slot = Пустой слот
+frg-not-assigned = Не назначено
+frg-import-name = Импорт
+frg-extra-devices-name = Дополнительные устройства (x{ $count })
+frg-day-plural = { $value ->
+    [one] день
+    [few] дня
+    *[many] дней
+}

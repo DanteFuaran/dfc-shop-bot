@@ -427,3 +427,14 @@ frg-subscription-status-full =
     • <b>Статус:</b> Немає підписки
     </blockquote>
     }
+
+# Hardcoded strings - UI elements
+frg-empty-slot = Порожній слот
+frg-not-assigned = Не призначено
+frg-import-name = Імпорт
+frg-extra-devices-name = Додаткові пристрої (x{ $count })
+frg-day-plural = { $value ->
+    [one] день
+    [few] дні
+    *[many] днів
+}

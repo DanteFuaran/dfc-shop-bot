@@ -424,3 +424,14 @@ frg-subscription-status-full =
     • <b>Status:</b> Kein Abonnement
     </blockquote>
     }
+
+# Hardcoded strings - UI elements
+frg-empty-slot = Leerer Slot
+frg-not-assigned = Nicht zugewiesen
+frg-import-name = Import
+frg-extra-devices-name = Zusätzliche Geräte (x{ $count })
+frg-day-plural = { $value ->
+    [one] Tag
+    [few] Tage
+    *[many] Tage
+}

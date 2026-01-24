@@ -5,6 +5,7 @@ from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 from aiogram import Bot
 from redis.asyncio import Redis
+from fluentogram import TranslatorRunner
 import asyncio
 import os
 import shutil
@@ -314,12 +315,24 @@ async def on_export_db(
         )
 
 
-async def on_import_db(callback: CallbackQuery, button, manager: DialogManager):
-    await callback.answer("Импорт в разработке.", show_alert=True)
+@inject
+async def on_import_db(
+    callback: CallbackQuery,
+    button,
+    manager: DialogManager,
+    i18n: FromDishka[TranslatorRunner],
+):
+    await callback.answer(i18n.get("ntf-import-in-dev"), show_alert=True)
 
 
-async def on_convert_db(callback: CallbackQuery, button, manager: DialogManager):
-    await callback.answer("Функция конвертации пока не реализована.", show_alert=True)
+@inject
+async def on_convert_db(
+    callback: CallbackQuery,
+    button,
+    manager: DialogManager,
+    i18n: FromDishka[TranslatorRunner],
+):
+    await callback.answer(i18n.get("ntf-convert-in-dev"), show_alert=True)
 
 
 @inject
@@ -870,6 +883,7 @@ async def on_delete_backup(
     widget: Button,
     sub_manager: SubManager,
     notification_service: FromDishka[NotificationService],
+    i18n: FromDishka[TranslatorRunner],
 ):
     """Удаление выбранного файла бэкапа."""
     selected_index = sub_manager.item_id
@@ -883,20 +897,20 @@ async def on_delete_backup(
     
     if not local_path or not os.path.exists(local_path):
         logger.error(f"Backup file not found: {local_path}")
-        await callback.answer("Файл не найден", show_alert=True)
+        await callback.answer(i18n.get("ntf-file-not-found"), show_alert=True)
         return
 
     try:
         os.remove(local_path)
         logger.info(f"Backup file deleted: {local_path}")
-        await callback.answer("Бэкап удален", show_alert=False)
+        await callback.answer(i18n.get("ntf-backup-deleted"), show_alert=False)
         
         # Обновляем окно чтобы отобразить изменения
         from src.bot.states import DashboardDB
         await manager.switch_to(DashboardDB.LOAD)
     except Exception as e:
         logger.exception(f"Failed to delete backup: {e}")
-        await callback.answer("Ошибка удаления", show_alert=True)
+        await callback.answer(i18n.get("ntf-delete-error"), show_alert=True)
 
 
 @inject
@@ -906,6 +920,7 @@ async def on_export_backup_to_db(
     sub_manager: SubManager,
     notification_service: FromDishka[NotificationService],
     bot: FromDishka[Bot],
+    i18n: FromDishka[TranslatorRunner],
 ):
     """Конвертация выбранного бэкапа в SQLite и отправка в Telegram."""
     selected_index = sub_manager.item_id
@@ -919,7 +934,7 @@ async def on_export_backup_to_db(
     
     if not backup_path or not os.path.exists(backup_path):
         logger.error(f"Backup file not found: {backup_path}")
-        await callback.answer("Файл не найден", show_alert=True)
+        await callback.answer(i18n.get("ntf-file-not-found"), show_alert=True)
         return
     
     # Убираем всплывающее уведомление
@@ -1174,13 +1189,14 @@ async def on_sync_manage(
     button,
     manager: DialogManager,
     notification_service: FromDishka[NotificationService],
+    i18n: FromDishka[TranslatorRunner],
 ):
     """
     Placeholder для функции управления синхронизацией.
     """
     await notification_service.notify_user(
         user=callback.from_user,
-        payload=MessagePayload(text="Находится в разработке..."),
+        payload=MessagePayload(text=i18n.get("ntf-in-development")),
     )
 
 
