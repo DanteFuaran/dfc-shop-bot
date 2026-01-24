@@ -276,16 +276,49 @@ traffic_limit = Window(
 device_limit = Window(
     Banner(BannerName.DASHBOARD),
     I18nFormat("msg-user-subscription-device-limit"),
-    Group(
+    # Первая кнопка - ∞
+    Row(
         Select(
             text=I18nFormat("unit-device", value=F["item"]),
-            id="device_limit_select",
+            id="device_limit_infinity",
             item_id_getter=lambda item: item,
-            items="devices_count",
+            items="device_infinity",
             type_factory=int,
             on_click=on_device_limit_select,
         ),
-        width=3,
+    ),
+    # Вторая строка: 1 | 2 | 3 | 4 | 5
+    Row(
+        Select(
+            text=I18nFormat("unit-device", value=F["item"]),
+            id="device_limit_1_5",
+            item_id_getter=lambda item: item,
+            items="device_1_5",
+            type_factory=int,
+            on_click=on_device_limit_select,
+        ),
+    ),
+    # Третья строка: 6 | 7 | 8 | 9 | 10
+    Row(
+        Select(
+            text=I18nFormat("unit-device", value=F["item"]),
+            id="device_limit_6_10",
+            item_id_getter=lambda item: item,
+            items="device_6_10",
+            type_factory=int,
+            on_click=on_device_limit_select,
+        ),
+    ),
+    # Четвертая строка: Отключено (0)
+    Row(
+        Select(
+            text=I18nFormat("unit-device", value=F["item"]),
+            id="device_limit_disabled",
+            item_id_getter=lambda item: item,
+            items="device_disabled",
+            type_factory=int,
+            on_click=on_device_limit_select,
+        ),
     ),
     Row(
         SwitchTo(

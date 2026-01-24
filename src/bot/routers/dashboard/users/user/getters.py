@@ -340,7 +340,13 @@ async def device_limit_getter(
     dialog_manager: DialogManager,
     **kwargs: Any,
 ) -> dict[str, Any]:
-    return {"devices_count": [0, 1, 2, 3, 4, 5, 10, -1]}
+    return {
+        "devices_count": [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0],
+        "device_infinity": [-1],
+        "device_1_5": [1, 2, 3, 4, 5],
+        "device_6_10": [6, 7, 8, 9, 10],
+        "device_disabled": [0],
+    }
 
 
 @inject

@@ -729,7 +729,7 @@ async def on_device_limit_select(
     logger.info(
         f"{log(user)} Set bonus devices to '{selected_device}' (total device_limit: {subscription.device_limit}) for '{target_telegram_id}'"
     )
-    await dialog_manager.switch_to(state=DashboardUser.SUBSCRIPTION)
+    await dialog_manager.switch_to(state=DashboardUser.MAIN)
 
 
 @inject
@@ -781,7 +781,7 @@ async def on_device_limit_input(
     )
 
     logger.info(f"{log(user)} Set bonus devices to '{number}' (total device_limit: {subscription.device_limit}) for '{target_telegram_id}'")
-    await dialog_manager.switch_to(state=DashboardUser.SUBSCRIPTION)
+    await dialog_manager.switch_to(state=DashboardUser.MAIN)
 
 
 @inject

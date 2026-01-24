@@ -228,9 +228,11 @@ role =
 # Units
 unit-device = { $value -> 
     [-1] { unlimited }
+    [0] Отключено
     *[other] { $value } 
 } { $value ->
     [-1] { space }
+    [0] { space }
     [one] устройство
     [few] устройства
     *[other] устройств
