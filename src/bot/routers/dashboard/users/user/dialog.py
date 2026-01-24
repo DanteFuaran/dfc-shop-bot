@@ -90,15 +90,23 @@ user = Window(
     Banner(BannerName.DASHBOARD),
     I18nFormat("msg-user-main"),
     Row(
+        SwitchTo(
+            text=I18nFormat("btn-user-balance"),
+            id="points",
+            state=DashboardUser.POINTS,
+        ),
+    ),
+    Row(
         Button(
             text=I18nFormat("btn-user-subscription"),
             id="subscription",
             on_click=on_current_subscription,
         ),
         SwitchTo(
-            text=I18nFormat("btn-user-balance"),
-            id="points",
-            state=DashboardUser.POINTS,
+            text=I18nFormat("btn-user-subscription-device-limit"),
+            id="device",
+            state=DashboardUser.DEVICE_LIMIT,
+            when=F["has_subscription"] & F["can_edit"],
         ),
     ),
     Row(
@@ -158,11 +166,6 @@ subscription = Window(
             text=I18nFormat("btn-user-subscription-traffic-limit"),
             id="traffic",
             state=DashboardUser.TRAFFIC_LIMIT,
-        ),
-        SwitchTo(
-            text=I18nFormat("btn-user-subscription-device-limit"),
-            id="device",
-            state=DashboardUser.DEVICE_LIMIT,
         ),
         when=F["has_subscription"] & F["can_edit"],
     ),
@@ -288,8 +291,9 @@ device_limit = Window(
         SwitchTo(
             text=I18nFormat("btn-back"),
             id="back",
-            state=DashboardUser.SUBSCRIPTION,
+            state=DashboardUser.MAIN,
         ),
+        *main_menu_button,
     ),
     MessageInput(func=on_device_limit_input),
     IgnoreUpdate(),
