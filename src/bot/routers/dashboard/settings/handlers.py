@@ -2577,6 +2577,7 @@ async def on_language_select(
         await callback.answer()
 
 
+@inject
 async def on_language_cancel(
     callback: CallbackQuery,
     widget: Button,
@@ -2600,7 +2601,7 @@ async def on_language_cancel(
     await dialog_manager.switch_to(DashboardSettings.MAIN)
     await callback.answer()
 
-
+@inject
 async def on_language_apply(
     callback: CallbackQuery,
     widget: Button,

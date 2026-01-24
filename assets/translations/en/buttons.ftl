@@ -42,8 +42,8 @@ btn-language-ru = 🇷🇺 Russian
 btn-language-uk = 🇺🇦 Ukrainian
 btn-language-en = 🇬🇧 English
 btn-language-de = 🇩🇪 German
-btn-language-cancel = Cancel
-btn-language-apply = Apply
+btn-language-cancel = ❌ Cancel
+btn-language-apply = ✅ Apply
 btn-finances-sync = { $enabled ->
     [1] 🟢 Rate Synchronization
     *[0] 🔴 Rate Synchronization

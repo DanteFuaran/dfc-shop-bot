@@ -42,8 +42,8 @@ btn-language-ru = 🇷🇺 Russisch
 btn-language-uk = 🇺🇦 Ukrainisch
 btn-language-en = 🇬🇧 Englisch
 btn-language-de = 🇩🇪 Deutsch
-btn-language-cancel = Abbrechen
-btn-language-apply = Übernehmen
+btn-language-cancel = ❌ Abbrechen
+btn-language-apply = ✅ Übernehmen
 btn-finances-sync = { $enabled ->
     [1] 🟢 Kurssynchronisierung
     *[0] 🔴 Kurssynchronisierung
