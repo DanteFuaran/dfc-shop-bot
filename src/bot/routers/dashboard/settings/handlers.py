@@ -2570,9 +2570,6 @@ async def on_language_select(
         # Сохраняем выбранный язык в dialog_data (временно)
         dialog_manager.dialog_data["pending_locale"] = selected_locale
         
-        # Временно меняем locale в event для переключения интерфейса
-        callback.from_user.language_code = selected_locale.value
-        
         # Обновляем язык в middleware_data для немедленного обновления интерфейса
         settings = await settings_service.get()
         settings.bot_locale = selected_locale
@@ -2601,9 +2598,6 @@ async def on_language_cancel(
     original_locale = dialog_manager.dialog_data.get("original_locale")
     
     if original_locale:
-        # Восстанавливаем исходный язык в event
-        callback.from_user.language_code = original_locale.value
-        
         # Восстанавливаем язык в middleware_data
         settings = await settings_service.get()
         settings.bot_locale = original_locale
