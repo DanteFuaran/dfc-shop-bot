@@ -1077,6 +1077,7 @@ async def bonus_activate_custom_getter(
 async def transfer_menu_getter(
     dialog_manager: DialogManager,
     user: UserDto,
+    i18n: FromDishka[TranslatorRunner],
     settings_service: FromDishka[SettingsService],
     referral_service: FromDishka[ReferralService],
     **kwargs: Any,
@@ -1110,7 +1111,7 @@ async def transfer_menu_getter(
     if recipient_id and recipient_name:
         recipient_display = f"<b>{recipient_name}</b> (<code>{recipient_id}</code>)"
     else:
-        recipient_display = "<i>Не назначено</i>"
+        recipient_display = f"<i>{i18n.get('lbl-not-set')}</i>"
     
     # Для основного текста и кнопки - используем числовое значение
     # 0 означает "не назначено", любое другое число - назначенная сумма
@@ -1131,7 +1132,7 @@ async def transfer_menu_getter(
         escaped_message = html.escape(message)
         message_display = f"<i>{escaped_message}</i>"
     else:
-        message_display = "<i>Не назначено</i>"
+        message_display = f"<i>{i18n.get('lbl-not-set')}</i>"
     
     return {
         "balance": get_display_balance(user.balance, referral_balance, is_balance_combined),
@@ -1253,6 +1254,7 @@ async def transfer_amount_manual_getter(
 @inject
 async def transfer_message_getter(
     dialog_manager: DialogManager,
+    i18n: FromDishka[TranslatorRunner],
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Геттер для окна ввода сообщения."""
@@ -1264,7 +1266,7 @@ async def transfer_message_getter(
         escaped_message = html.escape(message)
         message_display = f"<i>{escaped_message}</i>"
     else:
-        message_display = "<i>Не назначено</i>"
+        message_display = f"<i>{i18n.get('lbl-not-set')}</i>"
     
     return {
         "message_display": message_display,

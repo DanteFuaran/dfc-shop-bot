@@ -197,18 +197,18 @@ msg-dashboard-settings-balance =
     <b>💰 Настройка баланса</b>
 
     <blockquote>
-    • Статус: { $enabled ->
-        [1] ✅ Включено
-        *[0] 🔴 Выключено
+    { lbl-status } { $enabled ->
+        [1] { lbl-enabled }
+        *[0] { lbl-disabled }
     }
-    • Минимальная сумма пополнения: { $balance_min_amount }
-    • Максимальная сумма пополнения: { $balance_max_amount }
+    { lbl-min-topup-amount } { $balance_min_amount }
+    { lbl-max-topup-amount } { $balance_max_amount }
     </blockquote>
 
-    <b>💎 Режим баланса:</b>
+    { hdr-balance-mode }
     <blockquote>
-    • <b>Сумма</b> - бонусы зачисляются на основной баланс
-    • <b>Раздельно</b> - отдельный бонусный баланс
+    { lbl-balance-mode-combined }
+    { lbl-balance-mode-separate }
     </blockquote>
 
 msg-dashboard-settings-balance-min-amount =
@@ -583,25 +583,25 @@ msg-balance-success =
 msg-balance-transfer =
     <b>💸 Перевод баланса</b>
 
-    <b>👤 Ваш профиль:</b>
+    { hdr-user-profile }
     <blockquote>
-    • Ваш баланс: <b>{ $balance }</b>
-    • Комиссия: { $commission_display }
+    { lbl-your-balance } <b>{ $balance }</b>
+    { lbl-commission } { $commission_display }
     </blockquote>
 
-    <b>💸 Перевод:</b>
+    { hdr-transfer }
     <blockquote>
-    • Получатель: { $recipient_display }
-    • Сумма перевода: <b>{ $amount_display } ₽</b>
-    • Комиссия: <b>{ $transfer_commission } ₽</b>
+    { lbl-recipient } { $recipient_display }
+    { lbl-transfer-amount } <b>{ $amount_display } ₽</b>
+    { lbl-commission } <b>{ $transfer_commission } ₽</b>
     </blockquote>
 
-    <b>💬 Сообщение:</b>
+    { hdr-message }
     <blockquote>
     { $message_display }
     </blockquote>
 
-    <i>ℹ️ Заполните данные и нажмите на кнопку "Отправить".</i>
+    { msg-fill-data-and-send }
 
 msg-balance-transfer-recipient =
     <b>💸 Получатель</b>
@@ -672,36 +672,8 @@ msg-balance-transfer-error =
 msg-menu-invite =
     <b>👥 Пригласить друзей</b>
 
-    <b>👤 Ваш профиль:</b>
-    <blockquote>
-    • <b>ID</b>: <code>{ $user_id }</code>
-    • <b>Имя</b>: { $user_name }
-    { $is_referral_enable ->
-        [1] • <b>Реферальный код</b>: <code>{ $referral_code }</code>
-        *[0] {""}
-    }
-    • <b>Скидка</b>: { $discount_value }%{ $discount_value ->
-        [0] {""}
-       *[other] { $discount_is_permanent ->
-            [1] {" "}(Постоянная)
-            *[0] { $discount_remaining ->
-                [0] {" "}(Одноразовая)
-                *[other] {" "}(Осталось { $discount_remaining } { $discount_remaining ->
-                    [1] день
-                    [2] дня
-                    [3] дня
-                    [4] дня
-                    *[other] дней
-                })
-            }
-        }
-    }
-    • <b>Баланс</b>: { $balance }
-    { $is_balance_separate ->
-        [1] • <b>Бонусы</b>: { $referral_balance }
-        *[0] {""}
-    }
-    </blockquote>
+    { hdr-user-profile }
+    { frg-user }
 
     { hdr-subscription }{ frg-subscription-status-full }
 
