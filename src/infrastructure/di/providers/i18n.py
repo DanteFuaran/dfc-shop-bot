@@ -39,7 +39,7 @@ class I18nProvider(Provider):
 
         return TranslatorHub(locales_map, root_locale=config.default_locale, storage=storage)
 
-    @provide(scope=Scope.ACTION)
+    @provide(scope=Scope.REQUEST)
     def get_translator(
         self,
         config: AppConfig,
