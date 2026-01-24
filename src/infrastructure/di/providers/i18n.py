@@ -46,21 +46,15 @@ class I18nProvider(Provider):
         hub: TranslatorHub,
         middleware_data: AiogramMiddlewareData,
     ) -> TranslatorRunner:
-        user: Optional[UserDto] = middleware_data.get(USER_KEY)
         settings: Optional[SettingsDto] = middleware_data.get(SETTINGS_KEY)
 
-        # Определяем локаль
-        if settings and not settings.features.language_enabled:
-            # Мультиязычность выключена - используем bot_locale из настроек
+        # Всегда используем глобальный язык бота из настроек
+        if settings:
             locale = settings.bot_locale
-            logger.debug(f"Language disabled, using bot_locale={locale}")
-        elif user:
-            # Мультиязычность включена - используем язык пользователя
-            locale = user.language
-            logger.debug(f"Translator for user '{user.telegram_id}' with locale={locale}")
+            logger.debug(f"Using bot_locale={locale}")
         else:
-            # Пользователь не определен - используем дефолтную локаль
+            # Настройки не загружены - используем дефолтную локаль
             locale = config.default_locale
-            logger.debug(f"Translator for anonymous user with default locale={locale}")
+            logger.debug(f"Settings not loaded, using default locale={locale}")
 
         return hub.get_translator_by_locale(locale=locale)

@@ -5,6 +5,8 @@ from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 
 from src.core.config import AppConfig
+from src.core.constants import USER_KEY
+from src.infrastructure.database.models.dto import UserDto
 from src.services.settings import SettingsService
 
 
