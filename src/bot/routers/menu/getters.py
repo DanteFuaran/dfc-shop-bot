@@ -526,13 +526,37 @@ async def devices_getter(
         and not is_import_subscription
     )
     
-    # Фильтрация слотов: если больше 10 устройств, показываем только когда свободных меньше 2
-    total_slots = len(device_slots)
-    empty_slots_count = sum(1 for slot in device_slots if not slot["is_occupied"])
+    # Оптимизированная фильтрация слотов:
+    # - Всегда показываем все extra слоты (куплены и имеют срок действия)
+    # - Для базовых и бонусных слотов применяем правило:
+    #   - Если <= 10, показываем все
+    #   - Если > 10, показываем первые 10, потом дополнительно показываем по 1,
+    #     если из видимых >= 8 занято
     
-    if total_slots > 10 and empty_slots_count >= 2:
-        # Показываем только занятые слоты
-        device_slots = [slot for slot in device_slots if slot["is_occupied"]]
+    extra_slots = [slot for slot in device_slots if slot["slot_type"] == "extra"]
+    base_bonus_slots = [slot for slot in device_slots if slot["slot_type"] in ["base", "bonus"]]
+    
+    if len(base_bonus_slots) <= 10:
+        # Если базовых и бонусных слотов 10 или меньше, показываем все
+        filtered_slots = base_bonus_slots + extra_slots
+    else:
+        # Если больше 10, применяем правило прогрессивного раскрытия
+        visible_count = 10
+        
+        # Считаем, сколько занято в видимых слотах
+        while visible_count < len(base_bonus_slots):
+            visible_slots = base_bonus_slots[:visible_count]
+            occupied_count = sum(1 for slot in visible_slots if slot["is_occupied"])
+            
+            # Если 8 или больше занято из видимых, показываем еще 1
+            if occupied_count >= 8:
+                visible_count += 1
+            else:
+                break
+        
+        filtered_slots = base_bonus_slots[:visible_count] + extra_slots
+    
+    device_slots = filtered_slots
 
     return {
         "current_count": len(devices),
