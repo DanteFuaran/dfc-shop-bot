@@ -2510,6 +2510,9 @@ async def on_toggle_language(
     settings_service: FromDishka[SettingsService],
 ) -> None:
     """Переключить статус мультиязычности."""
+    from aiogram_dialog import ShowMode
+    from src.core.constants import SETTINGS_KEY
+    
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
     settings = await settings_service.get()
@@ -2522,6 +2525,14 @@ async def on_toggle_language(
         settings.bot_locale = Locale.RU
     
     await settings_service.update(settings)
+    
+    # Перезагружаем настройки из кеша и обновляем в middleware_data
+    updated_settings = await settings_service.get()
+    dialog_manager.middleware_data[SETTINGS_KEY] = updated_settings
+    
+    # Принудительно обновляем диалог чтобы применить новый язык
+    dialog_manager.show_mode = ShowMode.EDIT
+    
     logger.info(f"{log(user)} Toggle language enabled to {new_value}")
 
 
@@ -2533,7 +2544,9 @@ async def on_language_select(
     settings_service: FromDishka[SettingsService],
 ) -> None:
     """Выбрать глобальный язык бота для всех пользователей."""
+    from aiogram_dialog import ShowMode
     from src.core.enums import Locale
+    from src.core.constants import SETTINGS_KEY
     
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     locale_code = widget.widget_id.replace("lang_", "").upper()
@@ -2553,6 +2566,13 @@ async def on_language_select(
         # Всегда обновляем глобальный язык бота
         settings.bot_locale = selected_locale
         await settings_service.update(settings)
+        
+        # Перезагружаем настройки из кеша и обновляем в middleware_data
+        updated_settings = await settings_service.get()
+        dialog_manager.middleware_data[SETTINGS_KEY] = updated_settings
+        
+        # Принудительно обновляем диалог чтобы применить новый язык
+        dialog_manager.show_mode = ShowMode.EDIT
         
         logger.info(f"{log(user)} Changed bot language to {locale_code}")
         await callback.answer(f"Язык изменён на {locale_code}")
