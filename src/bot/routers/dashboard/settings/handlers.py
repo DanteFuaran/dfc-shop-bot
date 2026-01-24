@@ -2546,7 +2546,9 @@ async def on_language_select(
     """Выбрать язык (временно, до подтверждения)."""
     from aiogram_dialog import ShowMode
     from src.core.enums import Locale
-    from src.core.constants import SETTINGS_KEY
+    from src.core.constants import SETTINGS_KEY, CONTAINER_KEY
+    from fluentogram import TranslatorRunner, TranslatorHub
+    from dishka import AsyncContainer
     
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     locale_code = widget.widget_id.replace("lang_", "").upper()
@@ -2575,6 +2577,15 @@ async def on_language_select(
         settings.bot_locale = selected_locale
         dialog_manager.middleware_data[SETTINGS_KEY] = settings
         
+        # Пересоздаем TranslatorRunner с новой локалью для немедленного применения
+        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+        hub: TranslatorHub = await container.get(TranslatorHub)
+        new_translator: TranslatorRunner = hub.get_translator_by_locale(locale=selected_locale)
+        
+        # Сохраняем новый TranslatorRunner обратно в контейнер
+        # Это заставит I18nFormat использовать новый язык при рендеринге
+        dialog_manager.middleware_data["translator_runner"] = new_translator
+        
         # Принудительно обновляем диалог для применения нового языка
         dialog_manager.show_mode = ShowMode.EDIT
         
@@ -2590,7 +2601,9 @@ async def on_language_cancel(
     settings_service: FromDishka[SettingsService],
 ) -> None:
     """Отменить выбор языка и вернуться назад."""
-    from src.core.constants import SETTINGS_KEY
+    from src.core.constants import SETTINGS_KEY, CONTAINER_KEY
+    from fluentogram import TranslatorRunner, TranslatorHub
+    from dishka import AsyncContainer
     
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
@@ -2602,10 +2615,19 @@ async def on_language_cancel(
         settings = await settings_service.get()
         settings.bot_locale = original_locale
         dialog_manager.middleware_data[SETTINGS_KEY] = settings
+        
+        # Пересоздаем TranslatorRunner с исходной локалью
+        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+        hub: TranslatorHub = await container.get(TranslatorHub)
+        new_translator: TranslatorRunner = hub.get_translator_by_locale(locale=original_locale)
+        dialog_manager.middleware_data["translator_runner"] = new_translator
     else:
         # Если не было изменений, просто перезагружаем из БД
         settings = await settings_service.get()
         dialog_manager.middleware_data[SETTINGS_KEY] = settings
+        
+        # Удаляем переопределенный translator, если он был
+        dialog_manager.middleware_data.pop("translator_runner", None)
     
     # Очищаем временные данные
     dialog_manager.dialog_data.pop("pending_locale", None)
@@ -2648,6 +2670,9 @@ async def on_language_apply(
         # Очищаем временные данные
         dialog_manager.dialog_data.pop("pending_locale", None)
         dialog_manager.dialog_data.pop("original_locale", None)
+        
+        # Удаляем переопределенный translator - теперь будет использоваться сохраненный язык из БД
+        dialog_manager.middleware_data.pop("translator_runner", None)
         
         logger.info(f"{log(user)} Changed bot language to {pending_locale}")
         

@@ -47,8 +47,14 @@ class I18nFormat(Text):
         return {**data, **mapped}
 
     async def _render_text(self, data: dict[str, Any], dialog_manager: DialogManager) -> str:
-        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
-        i18n: TranslatorRunner = await container.get(TranslatorRunner)
+        # Проверяем, есть ли переопределенный translator_runner в middleware_data
+        # (используется для временного переключения языка)
+        i18n: Optional[TranslatorRunner] = dialog_manager.middleware_data.get("translator_runner")
+        
+        if i18n is None:
+            # Если нет переопределения, получаем стандартный из контейнера
+            container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+            i18n = await container.get(TranslatorRunner)
 
         if self.mapping:
             data = await self._transform(data, dialog_manager)
