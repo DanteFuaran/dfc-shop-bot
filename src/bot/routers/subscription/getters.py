@@ -2784,6 +2784,9 @@ async def devices_getter(
     # Докупленные устройства
     extra_devices = getattr(subscription, 'extra_devices', 0) or 0
     
+    # Бонусные устройства (добавленные через админ-панель)
+    device_limit_bonus = max(0, max_count - plan_device_limit - extra_devices) if plan_device_limit > 0 else 0
+    
     # Определяем, является ли подписка пробной или реферальной
     plan_name_lower = subscription.plan.name.lower() if subscription.plan else ""
     is_trial_subscription = subscription.is_trial or "пробн" in plan_name_lower
@@ -2802,14 +2805,14 @@ async def devices_getter(
         pass
     
     # Создаём объединённый список слотов устройств
-    # Сначала базовые слоты (из плана), потом купленные
+    # Порядок: базовые (из плана) → бонусные (из админки) → купленные (extra)
     device_slots = []
     slot_hwid_map = {}  # Маппинг slot_index -> hwid для удаления устройств
     slot_purchase_map = {}  # Маппинг slot_index -> purchase_id для удаления пустых extra слотов
     devices_copy = list(formatted_devices)  # Копия для распределения
     slot_index = 0
     
-    # Базовые слоты подписки (бесконечный срок)
+    # 1. Базовые слоты подписки (из плана, срок = срок подписки)
     for i in range(plan_device_limit):
         # Пытаемся занять слот устройством
         if devices_copy:
@@ -2835,7 +2838,33 @@ async def devices_getter(
         device_slots.append(slot)
         slot_index += 1
     
-    # Слоты из покупок (с ограниченным сроком)
+    # 2. Бонусные слоты (добавленные через админ-панель, срок = срок подписки)
+    for i in range(device_limit_bonus):
+        # Пытаемся занять слот устройством
+        if devices_copy:
+            device = devices_copy.pop(0)
+            slot = {
+                "id": str(slot_index),
+                "slot_type": "bonus",
+                "days_display": "∞",
+                "is_occupied": True,
+                "can_delete": True,  # Можно удалить устройство
+                "device_info": f"{device['platform']} - {device['device_model']}",
+            }
+            slot_hwid_map[str(slot_index)] = device["short_hwid"]
+        else:
+            slot = {
+                "id": str(slot_index),
+                "slot_type": "bonus",
+                "days_display": "∞",
+                "is_occupied": False,
+                "can_delete": False,  # Бонусный пустой слот нельзя удалить
+                "device_info": "Пустой слот (бонус)",
+            }
+        device_slots.append(slot)
+        slot_index += 1
+    
+    # 3. Слоты из покупок (с ограниченным сроком)
     for p in purchases:
         for j in range(p.device_count):
             # Пытаемся занять слот устройством
