@@ -320,6 +320,7 @@ class UserService(BaseService):
             search_query = message.text.strip()
             logger.debug(f"Searching users by query '{search_query}'")
 
+            # Try search by Telegram ID if query is a number
             if search_query.isdigit():
                 target_telegram_id = int(search_query)
                 single_user = await self.get(telegram_id=target_telegram_id)
@@ -332,23 +333,32 @@ class UserService(BaseService):
                         f"Searched by Telegram ID '{target_telegram_id}', user not found"
                     )
 
-            elif search_query.startswith(REMNASHOP_PREFIX):  # TODO: any username from panel
+            # Try search by Remnashop prefix
+            if search_query.startswith(REMNASHOP_PREFIX):
                 try:
                     target_id = int(search_query.split("_", maxsplit=1)[1])
                     single_user = await self.get(telegram_id=target_id)
                     if single_user:
-                        found_users.append(single_user)
+                        # Add only if not already found
+                        if not any(u.telegram_id == single_user.telegram_id for u in found_users):
+                            found_users.append(single_user)
                         logger.info(f"Searched by Remnashop ID '{target_id}', user found")
                     else:
                         logger.warning(f"Searched by Remnashop ID '{target_id}', user not found")
                 except (IndexError, ValueError):
                     logger.warning(f"Failed to parse Remnashop ID from query '{search_query}'")
 
-            else:
-                found_users = await self.get_by_partial_name(query=search_query)
+            # Always try partial name search (for names/usernames)
+            name_matches = await self.get_by_partial_name(query=search_query)
+            for user in name_matches:
+                # Add only if not already found by ID
+                if not any(u.telegram_id == user.telegram_id for u in found_users):
+                    found_users.append(user)
+            
+            if name_matches:
                 logger.info(
                     f"Searched users by partial name '{search_query}', "
-                    f"found '{len(found_users)}' users"
+                    f"found '{len(name_matches)}' additional users"
                 )
 
         return found_users

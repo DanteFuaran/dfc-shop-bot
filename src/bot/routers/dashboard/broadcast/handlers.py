@@ -49,6 +49,8 @@ def _update_payload(dialog_manager: DialogManager, **updates: Any) -> MessagePay
 
     new_payload = MessagePayload(**payload_data)
     dialog_manager.dialog_data["payload"] = new_payload.model_dump()
+    
+    logger.debug(f"Updated payload in dialog_data. Keys: {list(dialog_manager.dialog_data.keys())}")
 
     return new_payload
 
@@ -243,6 +245,7 @@ async def on_button_select(
 
 
 @inject
+@inject
 async def on_preview(
     callback: CallbackQuery,
     widget: Button,
@@ -251,14 +254,19 @@ async def on_preview(
 ) -> None:
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     payload = dialog_manager.dialog_data.get("payload")
+    
+    logger.debug(f"{log(user)} Preview requested. Payload exists: {payload is not None}")
+    logger.debug(f"Dialog data keys: {list(dialog_manager.dialog_data.keys())}")
 
     if not payload:
+        logger.warning(f"{log(user)} Preview requested but no payload found in dialog_data")
         await notification_service.notify_user(
             user=user,
             payload=MessagePayload(i18n_key="ntf-broadcast-empty-content"),
         )
         return
 
+    logger.info(f"{log(user)} Sending preview notification")
     await notification_service.notify_user(
         user=user, payload=MessagePayload.model_validate(payload)
     )
