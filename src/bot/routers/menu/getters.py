@@ -391,6 +391,11 @@ async def devices_getter(
     
     # 3. Слоты из покупок (с ограниченным сроком)
     for p in purchases:
+        # Логируем информацию о покупке для отладки
+        logger.debug(
+            f"Extra device purchase: id={p.id}, expires_at={p.expires_at}, "
+            f"days_remaining={p.days_remaining}, device_count={p.device_count}"
+        )
         for j in range(p.device_count):
             # Пытаемся занять слот устройством
             days_word = i18n.get("frg-day-plural", value=p.days_remaining)
