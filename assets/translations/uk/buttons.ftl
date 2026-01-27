@@ -1507,9 +1507,8 @@ btn-subscription-duration = { $final_amount ->
     }
 
 # Extra device duration buttons
-btn-add-device-duration-full = До кінця підписки ({ $days } д.) | { $price } ₽
-btn-add-device-duration-full-month = Повний місяць (30 д.) | { $price } ₽
-btn-add-device-duration-month = До кінця циклу ({ $days } д.) | { $price } ₽
+btn-add-device-duration-full = Кінець підписки ({ $days } д.) | { $price } ₽
+btn-add-device-duration-month = Кінець періоду ({ $days } д.) | { $price } ₽
 btn-add-device-duration-months-1 = 1 місяць (30 д.) | { $price } ₽
 btn-add-device-duration-months-3 = 3 місяці (90 д.) | { $price } ₽
 btn-add-device-duration-months-6 = 6 місяців (180 д.) | { $price } ₽

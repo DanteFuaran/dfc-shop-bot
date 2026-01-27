@@ -1430,9 +1430,6 @@ async def on_add_device_duration_select(
                 subscription_expire_at=user.current_subscription.expire_at,
                 min_days=min_days,
             )
-        elif duration_type == "full_month":
-            price_per_device = device_price_monthly
-            duration_days = 30
         elif duration_type == "months_1":
             price_per_device = device_price_monthly
             duration_days = 30

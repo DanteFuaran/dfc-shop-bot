@@ -1507,9 +1507,8 @@ btn-subscription-duration = { $final_amount ->
     }
 
 # Extra device duration buttons
-btn-add-device-duration-full = Until End of Subscription ({ $days } d.) | { $price } ₽
-btn-add-device-duration-full-month = Full Month (30 d.) | { $price } ₽
-btn-add-device-duration-month = Until End of Cycle ({ $days } d.) | { $price } ₽
+btn-add-device-duration-full = Ende des Abonnements ({ $days } T.) | { $price } ₽
+btn-add-device-duration-month = Ende der Periode ({ $days } T.) | { $price } ₽
 btn-add-device-duration-months-1 = 1 Month (30 d.) | { $price } ₽
 btn-add-device-duration-months-3 = 3 Months (90 d.) | { $price } ₽
 btn-add-device-duration-months-6 = 6 Months (180 d.) | { $price } ₽
