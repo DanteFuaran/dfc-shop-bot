@@ -1837,6 +1837,12 @@ async def add_device_duration_getter(
     # Показываем месячные варианты (1, 3, 6, 12 месяцев) только для безлимитных подписок
     show_unlimited_options = is_unlimited_subscription
     
+    # Проверяем, совпадают ли варианты "до конца подписки" и "до конца периода"
+    # Если совпадают по количеству дней и цене, показываем только "до конца подписки"
+    show_month_option = show_regular_options and not (
+        days_full == days_month and discounted_price_full == discounted_price_month
+    )
+    
     # Вычисляем данные о скидке пользователя
     discount_info = calculate_user_discount(user)
 
@@ -1905,6 +1911,7 @@ async def add_device_duration_getter(
         "has_discount": 1 if has_discount else 0,
         # Флаги для отображения вариантов
         "show_full_option": 1 if show_full_option else 0,
+        "show_month_option": 1 if show_month_option else 0,
         "show_regular_options": 1 if show_regular_options else 0,
         "show_unlimited_options": 1 if show_unlimited_options else 0,
         # Месячная цена для информации

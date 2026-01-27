@@ -604,7 +604,7 @@ add_device_duration = Window(
             ),
             id="duration_month",
             on_click=on_add_device_duration_select,
-            when=F["show_regular_options"],
+            when=F["show_month_option"],
         ),
     ),
     Row(
