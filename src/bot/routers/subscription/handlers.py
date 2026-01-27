@@ -111,8 +111,8 @@ async def _create_payment_and_get_data(
         if active_extra_devices > 0:
             device_price_monthly = await settings_service.get_extra_device_price()
             extra_devices_monthly_cost = device_price_monthly * active_extra_devices
-            months = duration.days // 30  # Используем целочисленное деление
-            extra_devices_cost_rub = extra_devices_monthly_cost * months
+            # Рассчитываем стоимость доп. устройств за период (пропорционально дням)
+            extra_devices_cost_rub = int((extra_devices_monthly_cost * duration.days) / 30)
             
             # Конвертируем стоимость доп. устройств в валюту шлюза
             if extra_devices_cost_rub > 0:
@@ -527,8 +527,8 @@ async def on_payment_method_select(
             if active_extra_devices > 0:
                 device_price_monthly = await settings_service.get_extra_device_price()
                 extra_devices_monthly_cost = device_price_monthly * active_extra_devices
-                months = duration.days // 30  # Используем целочисленное деление
-                extra_devices_cost = extra_devices_monthly_cost * months
+                # Рассчитываем стоимость доп. устройств за период (пропорционально дням)
+                extra_devices_cost = int((extra_devices_monthly_cost * duration.days) / 30)
         
         # Итоговая цена = базовая подписка + доп. устройства
         total_price = base_price + Decimal(extra_devices_cost)
@@ -672,8 +672,8 @@ async def on_confirm_balance_payment(
         if active_extra_devices > 0:
             device_price_monthly = await settings_service.get_extra_device_price()
             extra_devices_monthly_cost = device_price_monthly * active_extra_devices
-            months = duration.days // 30  # Используем целочисленное деление
-            extra_devices_cost = extra_devices_monthly_cost * months
+            # Рассчитываем стоимость доп. устройств за период (пропорционально дням)
+            extra_devices_cost = int((extra_devices_monthly_cost * duration.days) / 30)
             base_price = base_price + Decimal(extra_devices_cost)
     
     price = pricing_service.calculate(user, base_price, currency, global_discount, context="subscription")

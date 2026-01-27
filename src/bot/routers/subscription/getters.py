@@ -367,9 +367,11 @@ async def duration_getter(
     # Получаем стоимость дополнительных устройств для всех типов покупок
     purchase_type = dialog_manager.dialog_data.get("purchase_type")
     extra_devices_monthly_cost = 0
+    is_extra_devices_one_time = await settings_service.is_extra_devices_one_time()
     
     # Для NEW, RENEW и CHANGE проверяем наличие активных доп. устройств
-    if user.current_subscription:
+    # Только если они не оплачиваются единоразово
+    if user.current_subscription and not is_extra_devices_one_time:
         # Получаем количество активных дополнительных устройств
         active_extra_devices = await extra_device_service.get_total_active_devices(
             user.current_subscription.id
@@ -388,9 +390,8 @@ async def duration_getter(
         
         # Добавляем стоимость доп. устройств пропорционально периоду
         if extra_devices_monthly_cost > 0:
-            # Рассчитываем стоимость доп. устройств за период (целые месяцы)
-            months = duration.days // 30  # Используем целочисленное деление
-            extra_devices_cost = extra_devices_monthly_cost * months
+            # Рассчитываем стоимость доп. устройств за период (пропорционально дням)
+            extra_devices_cost = int((extra_devices_monthly_cost * duration.days) / 30)
             total_price = base_price + extra_devices_cost
         else:
             total_price = base_price
@@ -571,9 +572,8 @@ async def payment_method_getter(
             device_price_monthly = await settings_service.get_extra_device_price()
             extra_devices_monthly_cost = device_price_monthly * active_extra_devices
     
-    # Рассчитываем стоимость доп. устройств за период (целые месяцы)
-    months = duration.days // 30  # Используем целочисленное деление
-    extra_devices_cost = extra_devices_monthly_cost * months if extra_devices_monthly_cost > 0 else 0
+    # Рассчитываем стоимость доп. устройств за период (пропорционально дням)
+    extra_devices_cost = int((extra_devices_monthly_cost * duration.days) / 30) if extra_devices_monthly_cost > 0 else 0
 
     # Вычисляем данные о скидке пользователя
     discount_info = calculate_user_discount(user)
