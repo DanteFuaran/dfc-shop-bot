@@ -46,6 +46,14 @@ class I18nProvider(Provider):
         hub: TranslatorHub,
         middleware_data: AiogramMiddlewareData,
     ) -> TranslatorRunner:
+        from fluentogram import TranslatorRunner
+        
+        # Сначала проверяем, есть ли переопределенный translator_runner 
+        # (используется для временного переключения языка в настройках)
+        override_translator: Optional[TranslatorRunner] = middleware_data.get("translator_runner")
+        if override_translator is not None:
+            return override_translator
+        
         settings: Optional[SettingsDto] = middleware_data.get(SETTINGS_KEY)
 
         # Всегда используем глобальный язык бота из настроек
