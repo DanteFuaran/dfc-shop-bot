@@ -2574,8 +2574,10 @@ async def on_language_select(
         
         # Обновляем язык в middleware_data для немедленного обновления интерфейса
         settings = await settings_service.get()
-        settings.bot_locale = selected_locale
-        dialog_manager.middleware_data[SETTINGS_KEY] = settings
+        # Создаем копию settings с новой локалью, чтобы не менять frozen объект
+        settings_copy = settings.model_copy()
+        settings_copy.bot_locale = selected_locale
+        dialog_manager.middleware_data[SETTINGS_KEY] = settings_copy
         
         # Пересоздаем TranslatorRunner с новой локалью для немедленного применения
         container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
@@ -2613,8 +2615,10 @@ async def on_language_cancel(
     if original_locale:
         # Восстанавливаем язык в middleware_data
         settings = await settings_service.get()
-        settings.bot_locale = original_locale
-        dialog_manager.middleware_data[SETTINGS_KEY] = settings
+        # Создаем копию settings с исходной локалью, чтобы не менять frozen объект
+        settings_copy = settings.model_copy()
+        settings_copy.bot_locale = original_locale
+        dialog_manager.middleware_data[SETTINGS_KEY] = settings_copy
         
         # Пересоздаем TranslatorRunner с исходной локалью
         container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
@@ -2661,9 +2665,10 @@ async def on_language_apply(
         
         logger.info(f"{log(user)} Applying language change from {old_locale} to {pending_locale}")
         
-        # Сохраняем в БД
-        settings.bot_locale = pending_locale
-        await settings_service.update(settings)
+        # Сохраняем в БД - создаем копию для изменения
+        settings_copy = settings.model_copy()
+        settings_copy.bot_locale = pending_locale
+        await settings_service.update(settings_copy)
         
         # Обновляем в middleware_data
         updated_settings = await settings_service.get()
