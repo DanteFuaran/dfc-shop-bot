@@ -70,6 +70,10 @@ class SettingsService(BaseService):
         # Проверяем вложенные объекты в features
         if settings.features.currency_rates.changed_data:
             settings.features = settings.features
+        
+        # Проверяем изменения в настройках языка (language_enabled, previous_locale)
+        if settings.features.changed_data:
+            settings.features = settings.features
 
         changed_data = settings.prepare_changed_data()
         db_updated_settings = await self.uow.repository.settings.update(**changed_data)

@@ -2524,18 +2524,35 @@ async def on_toggle_language(
         if settings.features.previous_locale is not None:
             settings.bot_locale = settings.features.previous_locale
             settings.features.previous_locale = None
+            # Триггерим отслеживание изменений для bot_locale
+            settings.bot_locale = settings.bot_locale
     else:
         # Выключили мультиязычность - сохраняем текущий язык и устанавливаем русский
         from src.core.enums import Locale
         if settings.bot_locale != Locale.RU:
             settings.features.previous_locale = settings.bot_locale
+            # Триггерим отслеживание изменений для previous_locale
+            settings.features.previous_locale = settings.features.previous_locale
         settings.bot_locale = Locale.RU
+    
+    # Триггерим отслеживание изменений для features
+    settings.features = settings.features
     
     await settings_service.update(settings)
     
     # Перезагружаем настройки из кеша и обновляем в middleware_data
     updated_settings = await settings_service.get()
     dialog_manager.middleware_data[SETTINGS_KEY] = updated_settings
+    
+    # Пересоздаем TranslatorRunner с новой локалью для немедленного применения
+    from src.core.constants import CONTAINER_KEY
+    from fluentogram import TranslatorRunner, TranslatorHub
+    from dishka import AsyncContainer
+    
+    container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+    hub: TranslatorHub = await container.get(TranslatorHub)
+    new_translator: TranslatorRunner = hub.get_translator_by_locale(locale=updated_settings.bot_locale)
+    dialog_manager.middleware_data["translator_runner"] = new_translator
     
     # Принудительно обновляем диалог чтобы применить новый язык
     dialog_manager.show_mode = ShowMode.EDIT
