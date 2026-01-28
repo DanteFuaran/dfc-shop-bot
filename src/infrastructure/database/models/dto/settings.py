@@ -146,6 +146,7 @@ class FeatureSettingsDto(TrackableDto):
     global_discount: GlobalDiscountSettingsDto = GlobalDiscountSettingsDto()  # Глобальная скидка
     currency_rates: CurrencyRatesDto = CurrencyRatesDto()  # Курсы валют
     language_enabled: bool = False  # Выбор языка бота (по умолчанию выключён - русский)
+    previous_locale: Optional[Locale] = None  # Предыдущий язык перед отключением мультиязычности (для восстановления)
 
 
 class SettingsDto(TrackableDto):

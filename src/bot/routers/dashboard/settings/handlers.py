@@ -2519,9 +2519,16 @@ async def on_toggle_language(
     new_value = not settings.features.language_enabled
     settings.features.language_enabled = new_value
     
-    # Если выключили мультиязычность - устанавливаем русский
-    if not new_value:
+    if new_value:
+        # Включили мультиязычность - восстанавливаем предыдущий язык
+        if settings.features.previous_locale is not None:
+            settings.bot_locale = settings.features.previous_locale
+            settings.features.previous_locale = None
+    else:
+        # Выключили мультиязычность - сохраняем текущий язык и устанавливаем русский
         from src.core.enums import Locale
+        if settings.bot_locale != Locale.RU:
+            settings.features.previous_locale = settings.bot_locale
         settings.bot_locale = Locale.RU
     
     await settings_service.update(settings)
