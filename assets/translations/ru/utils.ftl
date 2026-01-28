@@ -35,14 +35,32 @@ referral-invite-message =
 # Headers
 hdr-user = <b>👤 Пользователь:</b>
 hdr-user-profile = <b>👤 Ваш профиль:</b>
-
-hdr-subscription = <b>📋 Ваша подписка:</b>
-
+hdr-subscription = <b>� Подписка</b>
 hdr-plan = <b>📦 План:</b>
 hdr-payment = <b>💰 Платеж:</b>
 hdr-error = <b>⚠️ Ошибка:</b>
 hdr-node = <b>🖥 Нода:</b>
 hdr-hwid = <b>📱 Устройство:</b>
+hdr-transfer = <b>💸 Перевод:</b>
+hdr-message = <b>💬 Сообщение:</b>
+hdr-balance-mode = <b>💎 Режим баланса:</b>
+
+# Labels
+lbl-your-balance = • Ваш баланс:
+lbl-commission = • Комиссия:
+lbl-recipient = • Получатель:
+lbl-transfer-amount = • Сумма перевода:
+lbl-status = • Статус:
+lbl-min-topup-amount = • Минимальная сумма пополнения:
+lbl-max-topup-amount = • Максимальная сумма пополнения:
+lbl-enabled = ✅ Включено
+lbl-disabled = 🔴 Выключено
+lbl-balance-mode-combined = • <b>Сумма</b> - бонусы зачисляются на основной баланс
+lbl-balance-mode-separate = • <b>Раздельно</b> - отдельный бонусный баланс
+lbl-not-set = Не назначено
+
+# Messages
+msg-fill-data-and-send = <i>ℹ️ Заполните данные и нажмите на кнопку "Отправить".</i>
 
 # Fragments
 frg-user =
@@ -531,4 +549,15 @@ language = { $language ->
     [uz] Узбекский
     [vi] Вьетнамский
     *[OTHER] { $language }
+}
+
+# Hardcoded strings - UI elements
+frg-empty-slot = Пустой слот
+frg-not-assigned = Не назначено
+frg-import-name = Импорт
+frg-extra-devices-name = Дополнительные устройства (x{ $count })
+frg-day-plural = { $value ->
+    [one] день
+    [few] дня
+    *[many] дней
 }

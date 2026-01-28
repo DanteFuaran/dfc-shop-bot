@@ -6,7 +6,6 @@ from aiogram_dialog.widgets.common import WhenCondition
 from aiogram_dialog.widgets.text import Text
 from dishka import AsyncContainer
 from fluentogram import TranslatorRunner
-from loguru import logger
 from magic_filter import MagicFilter
 
 from src.core.constants import CONTAINER_KEY
@@ -45,15 +44,21 @@ class I18nFormat(Text):
             else:
                 mapped[key] = transformer
 
-        logger.debug(f"Key '{self.key}' transformed mapping: {mapped}")
         return {**data, **mapped}
 
     async def _render_text(self, data: dict[str, Any], dialog_manager: DialogManager) -> str:
-        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
-        i18n: TranslatorRunner = await container.get(TranslatorRunner)
+        # Проверяем, есть ли переопределенный translator_runner в middleware_data
+        # (используется для временного переключения языка)
+        i18n: Optional[TranslatorRunner] = dialog_manager.middleware_data.get("translator_runner")
+        
+        if i18n is None:
+            # Если нет переопределения, получаем стандартный из контейнера
+            container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+            i18n = await container.get(TranslatorRunner)
 
         if self.mapping:
             data = await self._transform(data, dialog_manager)
 
         data = get_translated_kwargs(i18n, data)
-        return i18n_postprocess_text(text=i18n.get(self.key.format_map(data), **data))
+        translated_text = i18n.get(self.key.format_map(data), **data)
+        return i18n_postprocess_text(text=translated_text)

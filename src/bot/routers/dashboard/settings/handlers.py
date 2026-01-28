@@ -2487,3 +2487,209 @@ async def on_finances_accept(
     
     # Навигируем обратно в главное меню настроек
     await dialog_manager.switch_to(DashboardSettings.MAIN)
+
+
+# ==================== Настройки языка ====================
+
+
+@inject
+async def on_language_click(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    """Открыть меню настройки языка."""
+    await dialog_manager.switch_to(DashboardSettings.LANGUAGE)
+
+
+@inject
+async def on_toggle_language(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+) -> None:
+    """Переключить статус мультиязычности."""
+    from aiogram_dialog import ShowMode
+    from src.core.constants import SETTINGS_KEY
+    
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    
+    settings = await settings_service.get()
+    new_value = not settings.features.language_enabled
+    settings.features.language_enabled = new_value
+    
+    # Если выключили мультиязычность - устанавливаем русский
+    if not new_value:
+        from src.core.enums import Locale
+        settings.bot_locale = Locale.RU
+    
+    await settings_service.update(settings)
+    
+    # Перезагружаем настройки из кеша и обновляем в middleware_data
+    updated_settings = await settings_service.get()
+    dialog_manager.middleware_data[SETTINGS_KEY] = updated_settings
+    
+    # Принудительно обновляем диалог чтобы применить новый язык
+    dialog_manager.show_mode = ShowMode.EDIT
+    
+    logger.info(f"{log(user)} Toggle language enabled to {new_value}")
+
+
+@inject
+async def on_language_select(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+) -> None:
+    """Выбрать язык (временно, до подтверждения)."""
+    from aiogram_dialog import ShowMode
+    from src.core.enums import Locale
+    from src.core.constants import SETTINGS_KEY, CONTAINER_KEY
+    from fluentogram import TranslatorRunner, TranslatorHub
+    from dishka import AsyncContainer
+    
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    locale_code = widget.widget_id.replace("lang_", "").upper()
+    
+    # Маппинг коротких кодов на Locale
+    locale_map = {
+        "RU": Locale.RU,
+        "UK": Locale.UK,
+        "EN": Locale.EN,
+        "DE": Locale.DE,
+    }
+    
+    if locale_code in locale_map:
+        selected_locale = locale_map[locale_code]
+        
+        # Сохраняем ИСХОДНЫЙ язык при первом выборе (для отмены)
+        if "original_locale" not in dialog_manager.dialog_data:
+            current_settings = await settings_service.get()
+            dialog_manager.dialog_data["original_locale"] = current_settings.bot_locale
+        
+        # Сохраняем выбранный язык в dialog_data (временно)
+        dialog_manager.dialog_data["pending_locale"] = selected_locale
+        
+        # Обновляем язык в middleware_data для немедленного обновления интерфейса
+        settings = await settings_service.get()
+        settings.bot_locale = selected_locale
+        dialog_manager.middleware_data[SETTINGS_KEY] = settings
+        
+        # Пересоздаем TranslatorRunner с новой локалью для немедленного применения
+        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+        hub: TranslatorHub = await container.get(TranslatorHub)
+        new_translator: TranslatorRunner = hub.get_translator_by_locale(locale=selected_locale)
+        
+        # Сохраняем новый TranslatorRunner обратно в контейнер
+        # Это заставит I18nFormat использовать новый язык при рендеринге
+        dialog_manager.middleware_data["translator_runner"] = new_translator
+        
+        # Принудительно обновляем диалог для применения нового языка
+        dialog_manager.show_mode = ShowMode.EDIT
+        
+        logger.info(f"{log(user)} Selected language: {locale_code} (pending confirmation)")
+        await callback.answer()
+
+
+@inject
+async def on_language_cancel(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+) -> None:
+    """Отменить выбор языка и вернуться назад."""
+    from src.core.constants import SETTINGS_KEY, CONTAINER_KEY
+    from fluentogram import TranslatorRunner, TranslatorHub
+    from dishka import AsyncContainer
+    
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    
+    # Восстанавливаем исходный язык из dialog_data
+    original_locale = dialog_manager.dialog_data.get("original_locale")
+    
+    if original_locale:
+        # Восстанавливаем язык в middleware_data
+        settings = await settings_service.get()
+        settings.bot_locale = original_locale
+        dialog_manager.middleware_data[SETTINGS_KEY] = settings
+        
+        # Пересоздаем TranslatorRunner с исходной локалью
+        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+        hub: TranslatorHub = await container.get(TranslatorHub)
+        new_translator: TranslatorRunner = hub.get_translator_by_locale(locale=original_locale)
+        dialog_manager.middleware_data["translator_runner"] = new_translator
+    else:
+        # Если не было изменений, просто перезагружаем из БД
+        settings = await settings_service.get()
+        dialog_manager.middleware_data[SETTINGS_KEY] = settings
+        
+        # Удаляем переопределенный translator, если он был
+        dialog_manager.middleware_data.pop("translator_runner", None)
+    
+    # Очищаем временные данные
+    dialog_manager.dialog_data.pop("pending_locale", None)
+    dialog_manager.dialog_data.pop("original_locale", None)
+    
+    logger.info(f"{log(user)} Cancelled language selection")
+    await dialog_manager.switch_to(DashboardSettings.MAIN)
+    await callback.answer()
+
+@inject
+async def on_language_apply(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+) -> None:
+    """Применить выбранный язык."""
+    from src.core.enums import Locale
+    from src.core.constants import SETTINGS_KEY, CONTAINER_KEY
+    from fluentogram import TranslatorRunner, TranslatorHub
+    from dishka import AsyncContainer
+    
+    user: UserDto = dialog_manager.middleware_data[USER_KEY]
+    
+    # Получаем pending locale
+    pending_locale = dialog_manager.dialog_data.get("pending_locale")
+    
+    if pending_locale:
+        settings = await settings_service.get()
+        old_locale = settings.bot_locale
+        
+        logger.info(f"{log(user)} Applying language change from {old_locale} to {pending_locale}")
+        
+        # Сохраняем в БД
+        settings.bot_locale = pending_locale
+        await settings_service.update(settings)
+        
+        # Обновляем в middleware_data
+        updated_settings = await settings_service.get()
+        dialog_manager.middleware_data[SETTINGS_KEY] = updated_settings
+        
+        # Очищаем временные данные
+        dialog_manager.dialog_data.pop("pending_locale", None)
+        dialog_manager.dialog_data.pop("original_locale", None)
+        
+        # НЕ удаляем translator_runner - оставляем его для применения нового языка при переходе
+        # Или пересоздаем его с сохраненным языком для консистентности
+        container: AsyncContainer = dialog_manager.middleware_data[CONTAINER_KEY]
+        hub: TranslatorHub = await container.get(TranslatorHub)
+        new_translator: TranslatorRunner = hub.get_translator_by_locale(locale=pending_locale)
+        dialog_manager.middleware_data["translator_runner"] = new_translator
+        
+        logger.info(f"{log(user)} Changed bot language to {pending_locale}")
+        
+        # Получаем название языка для уведомления
+        locale_names = {
+            Locale.RU: "Русский",
+            Locale.UK: "Українська",
+            Locale.EN: "English",
+            Locale.DE: "Deutsch",
+        }
+        locale_name = locale_names.get(pending_locale, str(pending_locale))
+        await callback.answer(f"✅ {locale_name}")
+    
+    await dialog_manager.switch_to(DashboardSettings.MAIN)

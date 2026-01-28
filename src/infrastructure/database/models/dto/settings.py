@@ -7,6 +7,7 @@ from src.core.enums import (
     AccessMode,
     BalanceMode,
     Currency,
+    Locale,
     ReferralAccrualStrategy,
     ReferralLevel,
     ReferralRewardStrategy,
@@ -144,6 +145,7 @@ class FeatureSettingsDto(TrackableDto):
     inactive_notifications: InactiveUserNotificationDto = InactiveUserNotificationDto()  # Уведомления о неподключенных
     global_discount: GlobalDiscountSettingsDto = GlobalDiscountSettingsDto()  # Глобальная скидка
     currency_rates: CurrencyRatesDto = CurrencyRatesDto()  # Курсы валют
+    language_enabled: bool = False  # Выбор языка бота (по умолчанию выключён - русский)
 
 
 class SettingsDto(TrackableDto):
@@ -161,6 +163,7 @@ class SettingsDto(TrackableDto):
     registration_allowed: bool = True
 
     default_currency: Currency = Currency.XTR
+    bot_locale: Locale = Locale.RU  # Язык бота по умолчанию
 
     user_notifications: UserNotificationDto = UserNotificationDto()
     system_notifications: SystemNotificationDto = SystemNotificationDto()

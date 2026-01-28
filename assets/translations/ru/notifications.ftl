@@ -836,4 +836,15 @@ ntf-bonus-activate-failed = <i>❌ Ошибка при активации бон
 ntf-bonus-invalid-amount = <i>❌ Сумма должна быть больше нуля.</i>
 ntf-bonus-amount-exceeds = <i>❌ Сумма не может быть больше доступного баланса ({ $available } ₽).</i>
 ntf-bonus-invalid-format = <i>❌ Пожалуйста, введите корректное число.</i>
-ntf-extra-device-expired-no-balance = <i>⚠️ Недостаточно средств для продления { $device_count } доп. устройств (нужно { $price } ₽). Устройства деактивированы.</i>ntf-bonus-activate-no-selection = <i>⚠️ Выберите сумму для активации.</i>
+ntf-extra-device-expired-no-balance = <i>⚠️ Недостаточно средств для продления { $device_count } доп. устройств (нужно { $price } ₽). Устройства деактивированы.</i>
+ntf-bonus-activate-no-selection = <i>⚠️ Выберите сумму для активации.</i>
+
+# Hardcoded strings - UI notifications
+ntf-click-start = Нажмите /start для продолжения.
+ntf-delete-msg-error = Не удалось удалить сообщение
+ntf-import-in-dev = Импорт в разработке.
+ntf-convert-in-dev = Функция конвертации пока не реализована.
+ntf-file-not-found = Файл не найден
+ntf-backup-deleted = Бэкап удален
+ntf-delete-error = Ошибка удаления
+ntf-in-development = Находится в разработке...

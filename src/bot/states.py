@@ -167,6 +167,9 @@ class DashboardSettings(StatesGroup):
     CURRENCY_RATE_USD = State()
     CURRENCY_RATE_EUR = State()
     CURRENCY_RATE_STARS = State()
+    
+    # Язык бота
+    LANGUAGE = State()
 
 
 class DashboardUsers(StatesGroup):

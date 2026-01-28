@@ -5,6 +5,8 @@ from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 
 from src.core.config import AppConfig
+from src.core.constants import USER_KEY
+from src.infrastructure.database.models.dto import UserDto
 from src.services.settings import SettingsService
 
 
@@ -32,6 +34,7 @@ async def settings_main_getter(
         "promocodes_enabled": 1 if features.promocodes_enabled else 0,
         "community_enabled": 1 if features.community_enabled else 0,
         "tos_enabled": 1 if features.tos_enabled else 0,
+        "language_enabled": 1 if features.language_enabled else 0,
     }
 
 
@@ -650,4 +653,37 @@ async def currency_rates_getter(
         "usd_display": f"{format_rate(usd_rate)} ₽ = 1 $",
         "eur_display": f"{format_rate(eur_rate)} ₽ = 1 €",
         "stars_display": f"{format_rate(stars_rate)} ₽ = 1 ★",
+    }
+
+
+@inject
+async def language_settings_getter(
+    dialog_manager: DialogManager,
+    settings_service: FromDishka[SettingsService],
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Геттер для настроек языка."""
+    from src.core.enums import Locale
+    
+    settings = await settings_service.get()
+    features = settings.features
+    
+    # Получаем текущий язык бота (сохраненный в БД)
+    saved_locale = settings.bot_locale
+    
+    # Получаем pending locale из dialog_data если есть, иначе используем сохраненный
+    pending_locale = dialog_manager.dialog_data.get("pending_locale", saved_locale)
+    
+    # Названия языков для отображения
+    locale_names = {
+        Locale.RU: "🇷🇺 Русский",
+        Locale.UK: "🇺🇦 Українська", 
+        Locale.EN: "🇬🇧 English",
+        Locale.DE: "🇩🇪 Deutsch",
+    }
+    
+    return {
+        "enabled": 1 if features.language_enabled else 0,
+        # Показываем pending_locale в шапке (предпросмотр выбора)
+        "current_locale": locale_names.get(pending_locale, "🇷🇺 Русский"),
     }

@@ -16,10 +16,11 @@ ENV_FILE="$PROJECT_DIR/.env"
 REPO_DIR="/opt/dfc-shop-bot"
 REMNAWAVE_DIR="/opt/remnawave"
 REPO_URL="https://github.com/DanteFuaran/dfc-shop-bot.git"
-REPO_BRANCH="dev"
+REPO_BRANCH="dev2"
 
 # Статус обновлений
 UPDATE_AVAILABLE=0
+AVAILABLE_VERSION="unknown"
 CHECK_UPDATE_PID=""
 UPDATE_STATUS_FILE=""
 
@@ -213,11 +214,11 @@ restore_env_vars() {
     fi
 }
 
-# Функция для получения версии из __version__.py
+# Функция для получения версии из assets/update/.version файла
 get_version_from_file() {
     local version_file="$1"
     if [ -f "$version_file" ]; then
-        grep -oP '__version__ = "\K[^"]+' "$version_file" 2>/dev/null || echo ""
+        cat "$version_file" 2>/dev/null | tr -d '\n' || echo ""
     else
         echo ""
     fi
@@ -262,16 +263,20 @@ check_updates_available() {
         
         # Клонируем только последний коммит нужной ветки (быстро, ~500kb)
         if git clone -b "$REPO_BRANCH" --depth 1 --single-branch "$REPO_URL" "$TEMP_CHECK_DIR" >/dev/null 2>&1; then
-            # Получаем удаленную версию из клонированного репозитория
-            REMOTE_VERSION=$(grep -oP '__version__ = "\K[^"]+' "$TEMP_CHECK_DIR/src/__version__.py" 2>/dev/null || echo "")
+            # Получаем удаленную версию из клонированного репозитория (файл .version)
+            REMOTE_VERSION=$(cat "$TEMP_CHECK_DIR/assets/update/.version" 2>/dev/null | tr -d '\n' || echo "")
             
             # Удаляем временную папку
             rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
             
-            # Сравниваем версии
+            # Сравниваем версии (inline без вызова функции, т.к. подоболочка не наследует функции)
             if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
+                # Преобразуем версии в числа для сравнения
+                local_num=$(echo "$LOCAL_VERSION" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+                remote_num=$(echo "$REMOTE_VERSION" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+                
                 # Показываем обновление только если локальная версия НИЖЕ удаленной
-                if version_less_than "$LOCAL_VERSION" "$REMOTE_VERSION"; then
+                if [ "$local_num" -lt "$remote_num" ]; then
                     echo "1|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
                 else
                     echo "0|$REMOTE_VERSION" > "$UPDATE_STATUS_FILE"
@@ -284,8 +289,8 @@ check_updates_available() {
             rm -rf "$TEMP_CHECK_DIR" 2>/dev/null || true
             
             GITHUB_RAW_URL=$(echo "$REPO_URL" | sed 's|github.com|raw.githubusercontent.com|; s|\.git$||')
-            REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/src/__version__.py"
-            REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | grep -oP '__version__ = "\K[^"]+' || echo "")
+            REMOTE_VERSION_URL="${GITHUB_RAW_URL}/${REPO_BRANCH}/assets/update/.version"
+            REMOTE_VERSION=$(curl -s "$REMOTE_VERSION_URL" 2>/dev/null | tr -d '\n' || echo "")
             
             if [ -n "$REMOTE_VERSION" ] && [ -n "$LOCAL_VERSION" ]; then
                 # Показываем обновление только если локальная версия НИЖЕ удаленной
@@ -669,8 +674,8 @@ manage_update_bot() {
     kill $SPINNER_PID 2>/dev/null || true
     wait $SPINNER_PID 2>/dev/null || true
     
-    # Получаем версии
-    REMOTE_VERSION=$(get_version_from_file "$TEMP_REPO/src/__version__.py")
+    # Получаем версии (из .version файла)
+    REMOTE_VERSION=$(cat "$TEMP_REPO/assets/update/.version" 2>/dev/null | tr -d '\n' || echo "")
     LOCAL_VERSION=$(get_local_version)
     
     UPDATE_NEEDED=1
@@ -775,11 +780,10 @@ manage_update_bot() {
                     fi
                 done
                 
-                # Сохраняем версию в assets/update/.version файл для корректной проверки версий
+                # Копируем файл версии из временного репозитория
                 mkdir -p "$PROJECT_DIR/assets/update" 2>/dev/null || true
-                local new_version=$(grep -oP '__version__ = "\K[^"]+' "src/__version__.py" 2>/dev/null || echo "")
-                if [ -n "$new_version" ]; then
-                    echo "$new_version" > "$PROJECT_DIR/assets/update/.version"
+                if [ -f "assets/update/.version" ]; then
+                    cp -f "assets/update/.version" "$PROJECT_DIR/assets/update/.version"
                 fi
                 
                 # Копируем install.sh в папку assets/update
@@ -1764,11 +1768,7 @@ if [ "$COPY_FILES" = true ]; then
       cp "$SOURCE_DIR/install.sh" "$PROJECT_DIR/assets/update/install.sh"
       chmod +x "$PROJECT_DIR/assets/update/install.sh"
       
-      # Сохраняем версию в .version файл
-      version=$(grep -oP '__version__ = "\K[^"]+' "$SOURCE_DIR/src/__version__.py" 2>/dev/null || echo "")
-      if [ -n "$version" ]; then
-          echo "$version" > "$PROJECT_DIR/assets/update/.version"
-      fi
+      # Файл .version уже скопирован из assets/update, ничего делать не надо
     )
     wait  # Ждем завершения копирования без спиннера
 fi
@@ -1979,7 +1979,7 @@ show_spinner "Очистка старых данных БД"
       --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
       --build-arg BUILD_BRANCH="$REPO_BRANCH" \
       --build-arg BUILD_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')" \
-      --build-arg BUILD_TAG="$(cat src/__version__.py 2>/dev/null | grep -oP '(?<=")[^"]*(?=")' || echo 'unknown')" \
+      --build-arg BUILD_TAG="$(cat assets/update/.version 2>/dev/null | tr -d '\n' || echo 'unknown')" \
       . >/dev/null 2>&1
   fi
 ) &

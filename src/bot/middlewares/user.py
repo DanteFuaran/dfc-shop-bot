@@ -5,12 +5,13 @@ from aiogram.types import TelegramObject
 from aiogram.types import User as AiogramUser
 from aiogram_dialog.api.internal import FakeUser
 from dishka import AsyncContainer
+from fluentogram import TranslatorHub
 from loguru import logger
 from remnapy.models.users import UpdateUserRequestDto
 
 from src.bot.keyboards import get_user_keyboard
 from src.core.config import AppConfig
-from src.core.constants import CONTAINER_KEY, IS_SUPER_DEV_KEY, USER_KEY
+from src.core.constants import CONTAINER_KEY, IS_SUPER_DEV_KEY, USER_KEY, SETTINGS_KEY
 from src.core.enums import MiddlewareEventType, PlanType, SystemNotificationType
 from src.core.utils.formatters import format_bytes_to_gb
 from src.core.utils.message_payload import MessagePayload
@@ -23,6 +24,7 @@ from src.services.notification import NotificationService
 from src.services.plan import PlanService
 from src.services.referral import ReferralService
 from src.services.remnawave import RemnawaveService
+from src.services.settings import SettingsService
 from src.services.subscription import SubscriptionService
 from src.services.user import UserService
 
@@ -59,6 +61,12 @@ class UserMiddleware(EventTypedMiddleware):
         remnawave_service: RemnawaveService = await container.get(RemnawaveService)
         plan_service: PlanService = await container.get(PlanService)
         subscription_service: SubscriptionService = await container.get(SubscriptionService)
+        settings_service: SettingsService = await container.get(SettingsService)
+        translator_hub: TranslatorHub = await container.get(TranslatorHub)
+
+        # Получаем настройки для определения языка
+        settings = await settings_service.get()
+        data[SETTINGS_KEY] = settings
 
         user: Optional[UserDto] = await user_service.get(telegram_id=aiogram_user.id)
 
@@ -160,7 +168,9 @@ class UserMiddleware(EventTypedMiddleware):
                                     import_tag_display = f"IMPORT({existing_tag})"  # Тег для отображения в боте
                                     should_update_remnawave_tag = True
                                 
-                                import_name = "Импорт"  # Название для отображения в профиле
+                                # Получаем переведённое название для профиля
+                                i18n = translator_hub.get_translator_by_locale(locale=user.language)
+                                import_name = i18n.get("frg-import-name")
                                 
                                 logger.warning(
                                     f"No matching plan found for tag '{existing_tag}' "

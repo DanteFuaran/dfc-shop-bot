@@ -34,6 +34,7 @@ MIDDLEWARE_DATA_KEY: Final[str] = "middleware_data"
 CONTAINER_KEY: Final[str] = "dishka_container"
 CONFIG_KEY: Final[str] = "config"
 USER_KEY: Final[str] = "user"
+SETTINGS_KEY: Final[str] = "settings"
 IS_SUPER_DEV_KEY: Final[str] = "is_super_dev"
 
 TIME_1M: Final[int] = 60

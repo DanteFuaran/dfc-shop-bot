@@ -15,6 +15,8 @@ from src.core.utils.formatters import (
     i18n_format_expire_time,
     i18n_format_traffic_limit,
 )
+from src.core.utils.balance import get_display_balance
+from src.core.utils.discount import calculate_user_discount
 from src.infrastructure.database.models.dto import UserDto
 from src.services.balance_transfer import BalanceTransferService
 from src.services.payment_gateway import PaymentGatewayService
@@ -23,18 +25,6 @@ from src.services.referral import ReferralService
 from src.services.remnawave import RemnawaveService
 from src.services.settings import SettingsService
 from src.services.subscription import SubscriptionService
-
-
-def get_display_balance(user_balance: int, referral_balance: int, is_combined: bool) -> int:
-    """
-    Вычисляет отображаемый баланс в зависимости от режима.
-    
-    В режиме COMBINED возвращает сумму основного и бонусного баланса.
-    В режиме SEPARATE возвращает только основной баланс.
-    """
-    return user_balance + referral_balance if is_combined else user_balance
-
-
 from src.services.extra_device import ExtraDeviceService
 
 
@@ -89,48 +79,8 @@ async def menu_getter(
             ReferralRewardType.MONEY,
         )
 
-        # Вычисляем максимальную скидку для отображения
-        from datetime import datetime, timezone
-        
-        purchase_disc = user.purchase_discount if user.purchase_discount is not None else 0
-        personal_disc = user.personal_discount if user.personal_discount is not None else 0
-        discount_remaining = 0  # Оставшееся время в днях
-        is_temporary_discount = False  # Временная скидка (одноразовая с истечением)
-        is_permanent_discount = False  # Постоянная скидка (персональная)
-        
-        # Проверяем срок действия одноразовой скидки
-        if purchase_disc > 0 and user.purchase_discount_expires_at is not None:
-            now = datetime.now(timezone.utc)
-            if user.purchase_discount_expires_at <= now:
-                # Скидка истекла - обнуляем её
-                purchase_disc = 0
-            else:
-                # Вычисляем оставшееся время в днях
-                remaining = user.purchase_discount_expires_at - now
-                discount_remaining = remaining.days + (1 if remaining.seconds > 0 else 0)
-                is_temporary_discount = True
-        
-        # Определяем какую скидку показывать (большую)
-        if purchase_disc > 0 or personal_disc > 0:
-            if purchase_disc > personal_disc:
-                # Одноразовая скидка больше - показываем её
-                discount_value = purchase_disc
-                # Если это одноразовая скидка, устанавливаем is_temporary_discount
-                # (даже если нет срока истечения)
-                if not is_temporary_discount:
-                    is_temporary_discount = True
-            elif personal_disc > 0:
-                # Постоянная скидка больше или равна и она есть - показываем постоянную
-                discount_value = personal_disc
-                is_temporary_discount = False
-                is_permanent_discount = True
-                discount_remaining = 0
-            else:
-                # Только одноразовая без срока (purchase_disc > 0, personal_disc = 0)
-                discount_value = purchase_disc
-                is_temporary_discount = True
-        else:
-            discount_value = 0
+        # Вычисляем данные о скидке пользователя
+        discount_info = calculate_user_discount(user)
 
         # Проверяем режим баланса
         is_balance_combined = await settings_service.is_balance_combined()
@@ -147,10 +97,10 @@ async def menu_getter(
         base_data = {
             "user_id": str(user.telegram_id),
             "user_name": user.name,
-            "discount_value": discount_value,
-            "discount_is_temporary": 1 if is_temporary_discount else 0,
-            "discount_is_permanent": 1 if is_permanent_discount else 0,
-            "discount_remaining": discount_remaining,
+            "discount_value": discount_info.value,
+            "discount_is_temporary": 1 if discount_info.is_temporary else 0,
+            "discount_is_permanent": 1 if discount_info.is_permanent else 0,
+            "discount_remaining": discount_info.remaining_days,
             "balance": display_balance,
             "referral_balance": referral_balance,
             "referral_code": user.referral_code,
@@ -271,6 +221,7 @@ async def connect_getter(
 async def devices_getter(
     dialog_manager: DialogManager,
     user: UserDto,
+    i18n: FromDishka[TranslatorRunner],
     remnawave_service: FromDishka[RemnawaveService],
     settings_service: FromDishka[SettingsService],
     referral_service: FromDishka[ReferralService],
@@ -296,41 +247,8 @@ async def devices_getter(
     )
     display_balance = get_display_balance(user.balance, referral_balance, is_balance_combined)
 
-    # Обрабатываем скидки для frg-user
-    from datetime import datetime, timezone
-    
-    purchase_disc = user.purchase_discount if user.purchase_discount is not None else 0
-    personal_disc = user.personal_discount if user.personal_discount is not None else 0
-    discount_remaining = 0
-    is_temporary_discount = False
-    is_permanent_discount = False
-    
-    # Проверяем срок действия одноразовой скидки
-    if purchase_disc > 0 and user.purchase_discount_expires_at is not None:
-        now = datetime.now(timezone.utc)
-        if user.purchase_discount_expires_at <= now:
-            purchase_disc = 0
-        else:
-            remaining = user.purchase_discount_expires_at - now
-            discount_remaining = remaining.days + (1 if remaining.seconds > 0 else 0)
-            is_temporary_discount = True
-    
-    # Определяем какую скидку показывать
-    if purchase_disc > 0 or personal_disc > 0:
-        if purchase_disc > personal_disc:
-            discount_value = purchase_disc
-            if not is_temporary_discount:
-                is_temporary_discount = True
-        elif personal_disc > 0:
-            discount_value = personal_disc
-            is_temporary_discount = False
-            is_permanent_discount = True
-            discount_remaining = 0
-        else:
-            discount_value = purchase_disc
-            is_temporary_discount = True
-    else:
-        discount_value = 0
+    # Вычисляем данные о скидке пользователя
+    discount_info = calculate_user_discount(user)
     
     # Если нет подписки - показываем пустой список устройств
     if not subscription:
@@ -359,10 +277,10 @@ async def devices_getter(
             # Данные профиля для frg-user
             "user_id": str(user.telegram_id),
             "user_name": user.name,
-            "discount_value": discount_value,
-            "discount_is_temporary": 1 if is_temporary_discount else 0,
-            "discount_is_permanent": 1 if is_permanent_discount else 0,
-            "discount_remaining": discount_remaining,
+            "discount_value": discount_info.value,
+            "discount_is_temporary": 1 if discount_info.is_temporary else 0,
+            "discount_is_permanent": 1 if discount_info.is_permanent else 0,
+            "discount_remaining": discount_info.remaining_days,
             "balance": display_balance,
             "referral_balance": referral_balance,
             "referral_code": user.referral_code,
@@ -440,7 +358,7 @@ async def devices_getter(
                 "days_display": "∞",
                 "is_occupied": False,
                 "can_delete": False,  # Базовый пустой слот нельзя удалить
-                "device_info": "Пустой слот",
+                "device_info": i18n.get("frg-empty-slot"),
             }
         device_slots.append(slot)
         slot_index += 1
@@ -466,19 +384,23 @@ async def devices_getter(
                 "days_display": "∞",
                 "is_occupied": False,
                 "can_delete": False,  # Бонусный пустой слот нельзя удалить
-                "device_info": "Пустой слот",
+                "device_info": i18n.get("frg-empty-slot"),
             }
         device_slots.append(slot)
         slot_index += 1
     
     # 3. Слоты из покупок (с ограниченным сроком)
     for p in purchases:
+        # Логируем информацию о покупке для отладки
+        logger.debug(
+            f"Extra device purchase: id={p.id}, expires_at={p.expires_at}, "
+            f"days_remaining={p.days_remaining}, device_count={p.device_count}"
+        )
         for j in range(p.device_count):
             # Пытаемся занять слот устройством
+            days_word = i18n.get("frg-day-plural", value=p.days_remaining)
             if devices_copy:
                 device = devices_copy.pop(0)
-                from src.core.utils.formatters import pluralize_days
-                days_word = pluralize_days(p.days_remaining)
                 slot = {
                     "id": str(slot_index),  # Короткий индекс для callback_data
                     "purchase_id": str(p.id),
@@ -490,8 +412,6 @@ async def devices_getter(
                 }
                 slot_hwid_map[str(slot_index)] = device["short_hwid"]
             else:
-                from src.core.utils.formatters import pluralize_days
-                days_word = pluralize_days(p.days_remaining)
                 slot = {
                     "id": str(slot_index),
                     "purchase_id": str(p.id),
@@ -499,7 +419,7 @@ async def devices_getter(
                     "days_display": f"{p.days_remaining} {days_word}",
                     "is_occupied": False,
                     "can_delete": True,  # Пустой extra слот можно удалить
-                    "device_info": "Пустой слот",
+                    "device_info": i18n.get("frg-empty-slot"),
                 }
                 # Сохраняем purchase_id для удаления пустого слота
                 slot_purchase_map[str(slot_index)] = p.id
@@ -585,10 +505,10 @@ async def devices_getter(
         # Данные профиля для frg-user
         "user_id": str(user.telegram_id),
         "user_name": user.name,
-        "discount_value": discount_value,
-        "discount_is_temporary": 1 if is_temporary_discount else 0,
-        "discount_is_permanent": 1 if is_permanent_discount else 0,
-        "discount_remaining": discount_remaining,
+        "discount_value": discount_info.value,
+        "discount_is_temporary": 1 if discount_info.is_temporary else 0,
+        "discount_is_permanent": 1 if discount_info.is_permanent else 0,
+        "discount_remaining": discount_info.remaining_days,
         "balance": display_balance,
         "referral_balance": referral_balance,
         "referral_code": user.referral_code,
@@ -637,36 +557,8 @@ async def invite_getter(
         ReferralRewardType.MONEY,
     )
     
-    # Вычисляем максимальную скидку для отображения
-    purchase_disc = user.purchase_discount if user.purchase_discount is not None else 0
-    personal_disc = user.personal_discount if user.personal_discount is not None else 0
-    discount_remaining = 0
-    is_temporary_discount = False
-    is_permanent_discount = False
-    
-    # Проверяем срок действия одноразовой скидки
-    if purchase_disc > 0 and user.purchase_discount_expires_at is not None:
-        now = datetime.now(timezone.utc)
-        if user.purchase_discount_expires_at <= now:
-            purchase_disc = 0
-        else:
-            remaining = user.purchase_discount_expires_at - now
-            discount_remaining = remaining.days + (1 if remaining.seconds > 0 else 0)
-            is_temporary_discount = True
-    
-    # Определяем какую скидку показывать (большую)
-    if purchase_disc > 0 or personal_disc > 0:
-        if purchase_disc > personal_disc:
-            discount_value = purchase_disc
-        elif personal_disc > 0:
-            discount_value = personal_disc
-            is_temporary_discount = False
-            is_permanent_discount = True
-            discount_remaining = 0
-        else:
-            discount_value = purchase_disc
-    else:
-        discount_value = 0
+    # Вычисляем данные о скидке пользователя
+    discount_info = calculate_user_discount(user)
     
     # Prepare subscription data
     subscription = user.current_subscription
@@ -720,22 +612,26 @@ async def invite_getter(
     reward_level_1_value = reward_config.get(ReferralLevel.FIRST, 0)
     reward_level_2_value = reward_config.get(ReferralLevel.SECOND, 0)
 
+    # Проверяем, включен ли функционал баланса
+    is_balance_enabled = await settings_service.is_balance_enabled()
+    
     return {
         "user_id": str(user.telegram_id),
         "user_name": user.name,
         "referral_code": user.referral_code,
         "balance": get_display_balance(user.balance, referral_balance, is_balance_combined),
         "referral_balance": referral_balance if is_balance_separate else 0,  # Скрываем в режиме COMBINED
-        "discount_value": discount_value,
-        "discount_is_temporary": 1 if is_temporary_discount else 0,
-        "discount_is_permanent": 1 if is_permanent_discount else 0,
-        "discount_remaining": discount_remaining,
+        "discount_value": discount_info.value,
+        "discount_is_temporary": 1 if discount_info.is_temporary else 0,
+        "discount_is_permanent": 1 if discount_info.is_permanent else 0,
+        "discount_remaining": discount_info.remaining_days,
         "total_bonus": total_bonus,
         "reward_type": settings.reward.type,
         "referrals": referrals,
         "payments": payments,
         "is_points_reward": settings.reward.is_money,
         "has_balance": (referral_balance > 0) and is_balance_separate,  # Показываем только в режиме SEPARATE
+        "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,  # Флаг раздельного режима баланса
         "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
         "referral_link": ref_link,
@@ -810,34 +706,8 @@ async def balance_menu_getter(
         ReferralRewardType.MONEY,
     )
 
-    # Вычисляем скидку пользователя
-    purchase_disc = user.purchase_discount if user.purchase_discount is not None else 0
-    personal_disc = user.personal_discount if user.personal_discount is not None else 0
-    discount_remaining = 0
-    is_temporary_discount = False
-    is_permanent_discount = False
-
-    if purchase_disc > 0 and user.purchase_discount_expires_at is not None:
-        now = datetime.now(timezone.utc)
-        if user.purchase_discount_expires_at <= now:
-            purchase_disc = 0
-        else:
-            remaining = user.purchase_discount_expires_at - now
-            discount_remaining = remaining.days + (1 if remaining.seconds > 0 else 0)
-            is_temporary_discount = True
-
-    if purchase_disc > 0 or personal_disc > 0:
-        if purchase_disc > personal_disc:
-            discount_value = purchase_disc
-        elif personal_disc > 0:
-            discount_value = personal_disc
-            is_temporary_discount = False
-            is_permanent_discount = True
-            discount_remaining = 0
-        else:
-            discount_value = purchase_disc
-    else:
-        discount_value = 0
+    # Вычисляем данные о скидке пользователя
+    discount_info = calculate_user_discount(user)
 
     # Проверяем, включен ли функционал баланса
     is_balance_enabled = await settings_service.is_balance_enabled()
@@ -851,15 +721,15 @@ async def balance_menu_getter(
     is_transfers_enabled = feature_settings.transfers.enabled
     
     # В режиме COMBINED показываем сумму основного и бонусного баланса
-    display_balance = user.balance + referral_balance if is_balance_combined else user.balance
+    display_balance = get_display_balance(user.balance, referral_balance, is_balance_combined)
     
     base_data = {
         "user_id": str(user.telegram_id),
         "user_name": user.name,
-        "discount_value": discount_value,
-        "discount_is_temporary": 1 if is_temporary_discount else 0,
-        "discount_is_permanent": 1 if is_permanent_discount else 0,
-        "discount_remaining": discount_remaining,
+        "discount_value": discount_info.value,
+        "discount_is_temporary": 1 if discount_info.is_temporary else 0,
+        "discount_is_permanent": 1 if discount_info.is_permanent else 0,
+        "discount_remaining": discount_info.remaining_days,
         "balance": display_balance,  # В COMBINED режиме - сумма, в SEPARATE - только основной
         "referral_balance": referral_balance,
         "referral_code": user.referral_code,
@@ -938,35 +808,8 @@ async def balance_gateways_getter(
         reward_type=ReferralRewardType.MONEY,
     )
     
-    # Вычисляем скидку пользователя
-    from datetime import datetime, timezone
-    purchase_disc = user.purchase_discount if user.purchase_discount is not None else 0
-    personal_disc = user.personal_discount if user.personal_discount is not None else 0
-    discount_remaining = 0
-    is_temporary_discount = False
-    is_permanent_discount = False
-
-    if purchase_disc > 0 and user.purchase_discount_expires_at is not None:
-        now = datetime.now(timezone.utc)
-        if user.purchase_discount_expires_at <= now:
-            purchase_disc = 0
-        else:
-            remaining = user.purchase_discount_expires_at - now
-            discount_remaining = remaining.days + (1 if remaining.seconds > 0 else 0)
-            is_temporary_discount = True
-
-    if purchase_disc > 0 or personal_disc > 0:
-        if purchase_disc > personal_disc:
-            discount_value = purchase_disc
-        elif personal_disc > 0:
-            discount_value = personal_disc
-            is_temporary_discount = False
-            is_permanent_discount = True
-            discount_remaining = 0
-        else:
-            discount_value = purchase_disc
-    else:
-        discount_value = 0
+    # Вычисляем данные о скидке пользователя
+    discount_info = calculate_user_discount(user)
     
     # Проверяем, включен ли функционал баланса
     is_balance_enabled = await settings_service.is_balance_enabled()
@@ -981,10 +824,10 @@ async def balance_gateways_getter(
         "balance": get_display_balance(user.balance, referral_balance, is_balance_combined),
         "referral_balance": referral_balance,
         "referral_code": user.referral_code,
-        "discount_value": discount_value,
-        "discount_is_temporary": 1 if is_temporary_discount else 0,
-        "discount_is_permanent": 1 if is_permanent_discount else 0,
-        "discount_remaining": discount_remaining,
+        "discount_value": discount_info.value,
+        "discount_is_temporary": 1 if discount_info.is_temporary else 0,
+        "discount_is_permanent": 1 if discount_info.is_permanent else 0,
+        "discount_remaining": discount_info.remaining_days,
         "is_balance_enabled": 1 if is_balance_enabled else 0,
         "is_balance_separate": 1 if is_balance_separate else 0,
         "is_referral_enable": 1 if await settings_service.is_referral_enable() else 0,
@@ -1243,6 +1086,7 @@ async def bonus_activate_custom_getter(
 async def transfer_menu_getter(
     dialog_manager: DialogManager,
     user: UserDto,
+    i18n: FromDishka[TranslatorRunner],
     settings_service: FromDishka[SettingsService],
     referral_service: FromDishka[ReferralService],
     **kwargs: Any,
@@ -1276,7 +1120,7 @@ async def transfer_menu_getter(
     if recipient_id and recipient_name:
         recipient_display = f"<b>{recipient_name}</b> (<code>{recipient_id}</code>)"
     else:
-        recipient_display = "<i>Не назначено</i>"
+        recipient_display = f"<i>{i18n.get('lbl-not-set')}</i>"
     
     # Для основного текста и кнопки - используем числовое значение
     # 0 означает "не назначено", любое другое число - назначенная сумма
@@ -1297,7 +1141,7 @@ async def transfer_menu_getter(
         escaped_message = html.escape(message)
         message_display = f"<i>{escaped_message}</i>"
     else:
-        message_display = "<i>Не назначено</i>"
+        message_display = f"<i>{i18n.get('lbl-not-set')}</i>"
     
     return {
         "balance": get_display_balance(user.balance, referral_balance, is_balance_combined),
@@ -1352,6 +1196,7 @@ async def transfer_recipient_history_getter(
 async def transfer_amount_value_getter(
     dialog_manager: DialogManager,
     user: UserDto,
+    i18n: FromDishka[TranslatorRunner],
     settings_service: FromDishka[SettingsService],
     referral_service: FromDishka[ReferralService],
     **kwargs: Any,
@@ -1374,12 +1219,14 @@ async def transfer_amount_value_getter(
     )
     is_balance_combined = await settings_service.is_balance_combined()
     
+    not_assigned = i18n.get("frg-not-assigned")
+    
     # current_display - текущая назначенная сумма
-    current_display = f"{int(current_amount)} ₽" if current_amount else "Не назначено"
+    current_display = f"{int(current_amount)} ₽" if current_amount else not_assigned
     
     # selected_display - выбранная сумма (если есть pending, иначе текущая)
     display_amount = pending_amount if pending_amount is not None else current_amount
-    selected_display = f"{int(display_amount)} ₽" if display_amount else "Не назначено"
+    selected_display = f"{int(display_amount)} ₽" if display_amount else not_assigned
     
     # Создаем selected значения для всех кнопок (подсветка для pending или current)
     result = {
@@ -1416,6 +1263,7 @@ async def transfer_amount_manual_getter(
 @inject
 async def transfer_message_getter(
     dialog_manager: DialogManager,
+    i18n: FromDishka[TranslatorRunner],
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Геттер для окна ввода сообщения."""
@@ -1427,7 +1275,7 @@ async def transfer_message_getter(
         escaped_message = html.escape(message)
         message_display = f"<i>{escaped_message}</i>"
     else:
-        message_display = "<i>Не назначено</i>"
+        message_display = f"<i>{i18n.get('lbl-not-set')}</i>"
     
     return {
         "message_display": message_display,

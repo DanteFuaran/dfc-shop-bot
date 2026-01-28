@@ -3,6 +3,9 @@ from typing import cast
 
 from aiogram import F, Router
 from aiogram.types import CallbackQuery, Message
+from dishka import FromDishka
+from dishka.integrations.aiogram import inject
+from fluentogram import TranslatorRunner
 from loguru import logger
 
 from src.core.utils.formatters import format_user_log as log
@@ -12,7 +15,12 @@ router = Router(name=__name__)
 
 
 @router.callback_query(F.data == "close_preview")
-async def on_close_preview(callback: CallbackQuery, user: UserDto) -> None:
+@inject
+async def on_close_preview(
+    callback: CallbackQuery,
+    user: UserDto,
+    i18n: FromDishka[TranslatorRunner],
+) -> None:
     """Закрытие сообщения с предпросмотром приглашения."""
     message: Message = cast(Message, callback.message)
     message_id = message.message_id
@@ -26,6 +34,6 @@ async def on_close_preview(callback: CallbackQuery, user: UserDto) -> None:
     except Exception as exception:
         logger.error(f"Failed to delete preview message '{message_id}'. Exception: {exception}")
         try:
-            await callback.answer("Не удалось удалить сообщение")
+            await callback.answer(i18n.get("ntf-delete-msg-error"))
         except Exception:
             pass

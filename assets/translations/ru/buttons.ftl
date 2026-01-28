@@ -14,9 +14,6 @@ btn-dashboard-importer = 📥 X-UI Импорт
 btn-dashboard-db = 🗄 Управление БД
 btn-db-save = 💾 Сохранить
 btn-db-load = 📦 Загрузить
-btn-db-convert = 🔄 Конвертировать
-btn-db-sync = 🔄 Синхронизация
-btn-db-sync-from-bot = 📤 Импорт из Бота в Remnawave
 btn-db-sync-from-panel = 📥 Remnawave Импорт
 btn-db-sync-remnawave-to-bot = 📥 Импорт из Remnawave в Бота
 btn-db-sync-bot-to-remnawave = 📤 Импорт из Бота в Remnawave
@@ -40,20 +37,19 @@ btn-tos-set-url = Назначить источник
 btn-settings-global-discount = 🏷️ Глобальная скидка
 btn-settings-finances = 💰 Финансы
 btn-settings-currency-rates = 💱 Курс валют
+btn-settings-language = 🌐 Язык
+btn-language-ru = 🇷🇺 Русский
+btn-language-uk = 🇺🇦 Українська
+btn-language-en = 🇬🇧 English
+btn-language-de = 🇩🇪 Deutsch
+btn-language-cancel = ❌ Отмена
+btn-language-apply = ✅ Принять
 btn-finances-sync = { $enabled ->
     [1] 🟢 Синхронизация курса
     *[0] 🔴 Синхронизация курса
     }
 btn-finances-currency-rates = 💱 Курс валют
 btn-finances-gateways = 🌐 Платежные системы
-btn-finances-balance-mode-combined = { $selected ->
-    [1] 🔘 Сумма
-    *[0] ⚪ Сумма
-    }
-btn-finances-balance-mode-separate = { $selected ->
-    [1] 🔘 Раздельно
-    *[0] ⚪ Раздельно
-    }
 btn-balance-mode-combined = { $selected ->
     [1] 🔘 Сумма
     *[0] ⚪ Сумма
@@ -365,6 +361,7 @@ btn-extra-device-item = { $device_count } шт. • { $price } ₽/мес • { 
 btn-extra-device-disable-auto-renew = ❌ Отключить автопродление
 btn-extra-device-delete = 🗑 Удалить сейчас
 btn-menu-try-free = 🎁 Попробовать бесплатно
+btn-menu-balance = 💰 Баланс: { $balance }
 btn-menu-subscription = 💳 Подписка
 btn-menu-connect-subscribe = 🔗 Подключиться
 btn-menu-topup = ➕ Пополнить
@@ -1510,9 +1507,8 @@ btn-subscription-duration = { $final_amount ->
     }
 
 # Extra device duration buttons
-btn-add-device-duration-full = До конца подписки ({ $days } д.) | { $price } ₽
-btn-add-device-duration-full-month = Полный месяц (30 д.) | { $price } ₽
-btn-add-device-duration-month = До конца цикла ({ $days } д.) | { $price } ₽
+btn-add-device-duration-full = Конец подписки ({ $days } д.) | { $price } ₽
+btn-add-device-duration-month = Конец периода ({ $days } д.) | { $price } ₽
 btn-add-device-duration-months-1 = 1 месяц (30 д.) | { $price } ₽
 btn-add-device-duration-months-3 = 3 месяца (90 д.) | { $price } ₽
 btn-add-device-duration-months-6 = 6 месяцев (180 д.) | { $price } ₽

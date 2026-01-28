@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import JSON, BigInteger, Boolean, Enum, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.core.enums import AccessMode, Currency
+from src.core.enums import AccessMode, Currency, Locale
 from src.infrastructure.database.models.dto import (
     FeatureSettingsDto,
     ReferralSettingsDto,
@@ -46,6 +46,17 @@ class Settings(BaseSql):
             validate_strings=True,
         ),
         nullable=False,
+    )
+
+    bot_locale: Mapped[Locale] = mapped_column(
+        Enum(
+            Locale,
+            name="locale",
+            create_constraint=True,
+            validate_strings=True,
+        ),
+        nullable=False,
+        default=Locale.RU,
     )
 
     user_notifications: Mapped[UserNotificationDto] = mapped_column(

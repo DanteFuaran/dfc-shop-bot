@@ -4,6 +4,7 @@ from aiogram import Bot
 from aiogram.types import CallbackQuery, ErrorEvent
 from aiogram_dialog import BgManagerFactory, ShowMode, StartMode
 from dishka import FromDishka
+from fluentogram import TranslatorHub
 from loguru import logger
 
 from src.bot.states import MainMenu
@@ -18,6 +19,7 @@ async def on_lost_context(
     user: UserDto,
     bot: FromDishka[Bot],
     bg_manager_factory: FromDishka[BgManagerFactory],
+    translator_hub: FromDishka[TranslatorHub],
 ) -> None:
     """
     Обработчик устаревших/потерянных контекстов диалога.
@@ -83,9 +85,10 @@ async def on_lost_context(
         
         # Последний fallback: простое сообщение
         try:
+            i18n = translator_hub.get_translator_by_locale(locale=user.language)
             await bot.send_message(
                 chat_id=user.telegram_id,
-                text="Нажмите /start для продолжения."
+                text=i18n.get("ntf-click-start")
             )
         except Exception:
             pass  # Если и это не сработало, пользователь сам нажмет /start
