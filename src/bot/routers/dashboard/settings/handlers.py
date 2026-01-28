@@ -2589,7 +2589,11 @@ async def on_language_select(
         dialog_manager.middleware_data["translator_runner"] = new_translator
         
         # Принудительно обновляем диалог для применения нового языка
-        dialog_manager.show_mode = ShowMode.EDIT
+        # Используем SEND для полного перерендеринга окна с новым языком
+        dialog_manager.show_mode = ShowMode.SEND
+        
+        # Принудительно вызываем обновление окна
+        await dialog_manager.show()
         
         logger.info(f"{log(user)} Selected language: {locale_code} (pending confirmation)")
         await callback.answer()
@@ -2638,7 +2642,10 @@ async def on_language_cancel(
     dialog_manager.dialog_data.pop("original_locale", None)
     
     logger.info(f"{log(user)} Cancelled language selection")
+    # Переключаемся на главную страницу настроек с принудительным обновлением
     await dialog_manager.switch_to(DashboardSettings.MAIN)
+    # Принудительно обновляем окно для применения языка
+    await dialog_manager.show()
     await callback.answer()
 
 @inject
@@ -2697,4 +2704,7 @@ async def on_language_apply(
         locale_name = locale_names.get(pending_locale, str(pending_locale))
         await callback.answer(f"✅ {locale_name}")
     
+    # Переключаемся на главную страницу настроек с принудительным обновлением
     await dialog_manager.switch_to(DashboardSettings.MAIN)
+    # Принудительно обновляем окно для применения языка
+    await dialog_manager.show()
