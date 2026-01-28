@@ -2588,6 +2588,10 @@ async def on_language_select(
         # Это заставит I18nFormat использовать новый язык при рендеринге
         dialog_manager.middleware_data["translator_runner"] = new_translator
         
+        # Принудительно обновляем диалог для применения нового языка
+        # Используем EDIT mode для редактирования текущего сообщения
+        dialog_manager.show_mode = ShowMode.EDIT
+        
         logger.info(f"{log(user)} Selected language: {locale_code} (pending confirmation)")
         await callback.answer()
 
