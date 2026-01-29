@@ -561,3 +561,13 @@ frg-day-plural = { $value ->
     [few] дня
     *[many] дней
 }
+
+# ===== Web Connect Page =====
+msg-connect-page-title = Подключение...
+msg-connect-loading = Открываем приложение...
+msg-connect-success-title = Подписка была успешно добавлена
+msg-connect-success-desc = Страница закроется автоматически...
+
+# ===== Invite Message =====
+msg-invite-welcome = Добро пожаловать!
+msg-invite-connect = Подключиться
