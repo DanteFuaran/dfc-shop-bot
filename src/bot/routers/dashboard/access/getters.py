@@ -37,7 +37,7 @@ async def access_getter(
     return {
         "purchases_allowed": current_purchases,
         "registration_allowed": current_registration,
-        "access_mode": current_mode,
+        "mode": current_mode,
         "modes": modes,
     }
 

@@ -249,7 +249,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                 try:
                     i18n = translator_hub.get_translator_by_locale(locale=dev.language)
                     kwargs = get_translated_kwargs(i18n, {
-                        "access_mode": settings.access_mode,
+                        "mode": settings.access_mode,
                         "purchases_allowed": settings.purchases_allowed,
                         "registration_allowed": settings.registration_allowed,
                     })
