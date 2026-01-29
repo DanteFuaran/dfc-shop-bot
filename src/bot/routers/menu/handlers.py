@@ -67,6 +67,17 @@ async def close_success_transfer(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
+@router.callback_query(F.data == "close_subscription_key")
+async def close_subscription_key(callback: CallbackQuery) -> None:
+    """Удаление сообщения с ключом подписки по нажатию кнопки 'Закрыть'."""
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+    
+    await callback.answer()
+
+
 @inject
 @router.message(F.text, StateFilter(MainMenu.BALANCE_AMOUNT))
 async def validate_balance_amount_input(
@@ -629,8 +640,8 @@ async def on_show_key(
     widget: Button,
     dialog_manager: DialogManager,
     notification_service: FromDishka[NotificationService],
+    i18n: FromDishka[TranslatorRunner],
 ) -> None:
-    import asyncio
     user: UserDto = dialog_manager.middleware_data[USER_KEY]
     
     subscription = user.current_subscription
@@ -641,40 +652,27 @@ async def on_show_key(
     if not subscription_url:
         return
     
-    # Create message text with instruction and countdown
-    def create_message_text(seconds_left: int) -> str:
-        return (
-            f"<b>Ключ подписки:</b>\n"
-            f"<pre>{subscription_url}</pre>\n"
-            f"<i>⏱ Сообщение закроется через {seconds_left}с</i>"
-        )
+    # Create message text using i18n
+    message_text = (
+        f"{i18n.get('msg-subscription-key-title')}\n"
+        f"<pre>{subscription_url}</pre>"
+    )
     
-    # Send subscription URL message
+    # Create close button
+    close_button = InlineKeyboardButton(
+        text=i18n.get("btn-subscription-key-close"),
+        callback_data="close_subscription_key",
+    )
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[[close_button]])
+    
+    # Send subscription URL message with close button
     try:
-        key_msg = await callback.bot.send_message(
+        await callback.bot.send_message(
             chat_id=callback.from_user.id,
-            text=create_message_text(10),
+            text=message_text,
             parse_mode="HTML",
+            reply_markup=keyboard,
         )
-        
-        # Update message with countdown every second
-        for seconds_left in range(9, -1, -1):
-            await asyncio.sleep(1)
-            try:
-                await callback.bot.edit_message_text(
-                    chat_id=callback.from_user.id,
-                    message_id=key_msg.message_id,
-                    text=create_message_text(seconds_left),
-                    parse_mode="HTML",
-                )
-            except Exception:
-                pass
-        
-        # Delete message when countdown reaches 0
-        try:
-            await key_msg.delete()
-        except Exception:
-            pass
     except Exception:
         pass
 

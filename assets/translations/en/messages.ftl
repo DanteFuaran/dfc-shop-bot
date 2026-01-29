@@ -1509,6 +1509,9 @@ msg-menu-devices =
     { frg-subscription }
 
     📱 <b>Device Management:</b>
+
+# Subscription Key Message
+msg-subscription-key-title = <b>🔑 Subscription Key:</b>
 # ===== Balance Section =====
 msg-balance-menu =
     { hdr-user-profile }

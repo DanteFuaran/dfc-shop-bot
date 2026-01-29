@@ -873,6 +873,7 @@ async def balance_gateways_getter(
 async def balance_amounts_getter(
     dialog_manager: DialogManager,
     payment_gateway_service: FromDishka[PaymentGatewayService],
+    i18n: FromDishka[TranslatorRunner],
     **kwargs: Any,
 ) -> dict[str, Any]:
     from src.core.enums import PaymentGatewayType
@@ -888,13 +889,13 @@ async def balance_amounts_getter(
     else:
         gateway_type_enum = None
     
-    # Форматируем название способа оплаты
+    # Форматируем название способа оплаты через i18n
     if gateway_type_enum == PaymentGatewayType.YOOMONEY:
-        gateway_type_formatted = "💳 Банковская карта"
+        gateway_type_formatted = i18n.get("lbl-payment-yoomoney")
     elif gateway_type_enum == PaymentGatewayType.CRYPTOMUS:
-        gateway_type_formatted = "₿ Cryptomus"
+        gateway_type_formatted = i18n.get("lbl-payment-cryptomus")
     elif gateway_type_enum == PaymentGatewayType.TELEGRAM_STARS:
-        gateway_type_formatted = "⭐ Телеграм"
+        gateway_type_formatted = i18n.get("lbl-payment-telegram-stars")
     else:
         gateway_type_formatted = gateway_type_enum.value if gateway_type_enum else "N/A"
     
@@ -914,6 +915,7 @@ async def balance_amount_getter(
     dialog_manager: DialogManager,
     payment_gateway_service: FromDishka[PaymentGatewayService],
     settings_service: FromDishka[SettingsService],
+    i18n: FromDishka[TranslatorRunner],
     **kwargs: Any,
 ) -> dict[str, Any]:
     from src.core.enums import PaymentGatewayType
@@ -929,13 +931,13 @@ async def balance_amount_getter(
     else:
         gateway_type_enum = None
     
-    # Форматируем название способа оплаты
+    # Форматируем название способа оплаты через i18n
     if gateway_type_enum == PaymentGatewayType.YOOMONEY:
-        gateway_type_formatted = "💳 Банковская карта"
+        gateway_type_formatted = i18n.get("lbl-payment-yoomoney")
     elif gateway_type_enum == PaymentGatewayType.CRYPTOMUS:
-        gateway_type_formatted = "₿ Cryptomus"
+        gateway_type_formatted = i18n.get("lbl-payment-cryptomus")
     elif gateway_type_enum == PaymentGatewayType.TELEGRAM_STARS:
-        gateway_type_formatted = "⭐ Телеграм"
+        gateway_type_formatted = i18n.get("lbl-payment-telegram-stars")
     else:
         gateway_type_formatted = gateway_type_enum.value if gateway_type_enum else "N/A"
     
@@ -960,6 +962,7 @@ async def balance_amount_getter(
 @inject
 async def balance_confirm_getter(
     dialog_manager: DialogManager,
+    i18n: FromDishka[TranslatorRunner],
     **kwargs: Any,
 ) -> dict[str, Any]:
     from src.core.enums import PaymentGatewayType
@@ -977,13 +980,13 @@ async def balance_confirm_getter(
     else:
         gateway_type_enum = None
     
-    # Форматируем название способа оплаты
+    # Форматируем название способа оплаты через i18n
     if gateway_type_enum == PaymentGatewayType.YOOMONEY:
-        gateway_type_formatted = "💳 Банковская карта"
+        gateway_type_formatted = i18n.get("lbl-payment-yoomoney")
     elif gateway_type_enum == PaymentGatewayType.CRYPTOMUS:
-        gateway_type_formatted = "₿ Cryptomus"
+        gateway_type_formatted = i18n.get("lbl-payment-cryptomus")
     elif gateway_type_enum == PaymentGatewayType.TELEGRAM_STARS:
-        gateway_type_formatted = "⭐ Телеграм"
+        gateway_type_formatted = i18n.get("lbl-payment-telegram-stars")
     else:
         gateway_type_formatted = gateway_type_enum.value if gateway_type_enum else "N/A"
     

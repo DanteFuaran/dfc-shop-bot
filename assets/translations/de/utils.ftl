@@ -1,5 +1,10 @@
 # Headers
 hdr-dashboard = 🛠 Control Panel
+
+# Payment Labels
+lbl-payment-yoomoney = 💳 Bankkarte
+lbl-payment-cryptomus = ₿ Cryptomus
+lbl-payment-telegram-stars = ⭐ Telegram
 hdr-settings = ⚙️ Settings
 hdr-users = 👥 Users
 hdr-user = 👤 User

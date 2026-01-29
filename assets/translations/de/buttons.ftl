@@ -391,6 +391,9 @@ btn-balance-gateway =
     [TELEGRAM_STARS] ⭐ Telegram
     *[OTHER] 💳 { $gateway_type }
     }
+
+# Subscription Key
+btn-subscription-key-close = ❌ Schließen
 btn-balance-custom-amount = ✏️ Eigener Betrag
 btn-balance-pay = ✅ Bezahlen
 btn-balance-transfer-recipient = 👤 Empfänger

@@ -1509,3 +1509,6 @@ msg-menu-devices =
     { frg-subscription }
 
     📱 <b>Geräteverwaltung:</b>
+
+# Subscription Key Message
+msg-subscription-key-title = <b>🔑 Abonnement-Schlüssel:</b>
