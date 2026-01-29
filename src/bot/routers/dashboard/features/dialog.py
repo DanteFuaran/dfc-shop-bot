@@ -25,7 +25,7 @@ features_main = Window(
         Button(
             text=I18nFormat(
                 "btn-feature-toggle",
-                name="Сообщество",
+                name=I18nFormat("feature-community"),
                 enabled=F["community_enabled"],
             ),
             id="toggle_community",
@@ -34,7 +34,7 @@ features_main = Window(
         Button(
             text=I18nFormat(
                 "btn-feature-toggle",
-                name="Соглашение",
+                name=I18nFormat("feature-tos"),
                 enabled=F["tos_enabled"],
             ),
             id="toggle_tos",
@@ -43,7 +43,7 @@ features_main = Window(
         Button(
             text=I18nFormat(
                 "btn-feature-toggle",
-                name="Баланс",
+                name=I18nFormat("feature-balance"),
                 enabled=F["balance_enabled"],
             ),
             id="toggle_balance",
@@ -52,7 +52,7 @@ features_main = Window(
         Button(
             text=I18nFormat(
                 "btn-feature-toggle",
-                name="Доп. устройства",
+                name=I18nFormat("feature-extra-devices"),
                 enabled=F["extra_devices_enabled"],
             ),
             id="toggle_extra_devices",
@@ -61,7 +61,7 @@ features_main = Window(
         Button(
             text=I18nFormat(
                 "btn-feature-toggle",
-                name="Переводы",
+                name=I18nFormat("feature-transfers"),
                 enabled=F["transfers_enabled"],
             ),
             id="toggle_transfers",

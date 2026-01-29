@@ -349,11 +349,11 @@ gateway-type = { $gateway_type ->
     *[OTHER] { $gateway_type }
 }
 
-access-mode = { $access_mode ->
+access-mode = { $mode ->
     [PUBLIC] 🟢 Разрешен для всех
     [INVITED] 🟡 Разрешен для приглашенных
     [RESTRICTED] 🔴 Запрещен для всех
-    *[OTHER] { $access_mode }
+    *[OTHER] { $mode }
 }
 
 audience-type = { $audience_type ->

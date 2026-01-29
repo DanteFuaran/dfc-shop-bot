@@ -1027,6 +1027,13 @@ btn-access-condition-toggle = { $enabled ->
     *[0] ⚪ Вимкнено
     }
 
+# Features
+feature-community = Спільнота
+feature-tos = Угода
+feature-balance = Баланс
+feature-extra-devices = Додаткові пристрої
+feature-transfers = Перекази
+
 
 # RemnaShop
 btn-remnashop-admins = 👮‍♂️ Адміністратори

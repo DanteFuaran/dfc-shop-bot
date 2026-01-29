@@ -44,7 +44,7 @@ access = Window(
     ),
     Column(
         Select(
-            text=I18nFormat("btn-access-mode", access_mode=F["item"]),
+            text=I18nFormat("btn-access-mode", mode=F["item"]),
             id="mode",
             item_id_getter=lambda item: item.value,
             items="modes",

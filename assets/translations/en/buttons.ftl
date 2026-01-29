@@ -1027,6 +1027,13 @@ btn-access-condition-toggle = { $enabled ->
     *[0] ⚪ Disabled
     }
 
+# Features
+feature-community = Community
+feature-tos = Agreement
+feature-balance = Balance
+feature-extra-devices = Extra Devices
+feature-transfers = Transfers
+
 
 # RemnaShop
 btn-remnashop-admins = 👮‍♂️ Administrators
