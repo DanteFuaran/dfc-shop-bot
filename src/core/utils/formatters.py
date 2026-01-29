@@ -227,13 +227,13 @@ def i18n_format_seconds(
 
 
 def pluralize_days(count: int) -> str:
-    """Склонение слова 'день' в зависимости от числа."""
-    if count % 10 == 1 and count % 100 != 11:
-        return "день"
-    elif count % 10 in [2, 3, 4] and count % 100 not in [12, 13, 14]:
-        return "дня"
-    else:
-        return "дней"
+    """Returns the plural form key for days.
+    
+    Note: This function returns i18n keys instead of hardcoded Russian strings.
+    The actual translation should be done via i18n.get() with proper pluralization.
+    """
+    # Return the key for unit-day which handles pluralization in FTL files
+    return "unit-day"
 
 
 def i18n_format_days(value: int) -> tuple[str, dict[str, int]]:

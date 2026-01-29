@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 from aiogram import Bot
+from fluentogram import TranslatorHub
 from src.core.config import AppConfig
+from src.services.user import UserService
 
 router = APIRouter(prefix="/api/v1", tags=["connect"])
 
@@ -224,13 +226,23 @@ async def connect_to_happ(subscription_url: str, request: Request):
     bot_url = f"https://t.me/{bot_username}" if bot_username else ""
     support_url = f"https://t.me/{support_username}"
     
+    # Get user's language for translations
+    user_service = await container.get(UserService)
+    user = await user_service.get_by_subscription_url(subscription_url)
+    
+    # Get translator for user's language or default
+    translator_hub = await container.get(TranslatorHub)
+    from src.core.enums import Locale
+    locale = user.language if user else Locale.RU
+    i18n = translator_hub.get_translator_by_locale(locale=locale)
+    
     html_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Подключение...</title>
+        <title>{i18n.get("msg-connect-page-title")}</title>
         <style>
             * {{
                 box-sizing: border-box;
@@ -290,7 +302,7 @@ async def connect_to_happ(subscription_url: str, request: Request):
     <body>
         <div class="container" id="content">
             <div class="spinner"></div>
-            <p class="loading-text">Открываем приложение...</p>
+            <p class="loading-text">{i18n.get("msg-connect-loading")}</p>
         </div>
         
         <script>
@@ -304,8 +316,8 @@ async def connect_to_happ(subscription_url: str, request: Request):
             setTimeout(function() {{
                 document.getElementById('content').innerHTML = `
                     <div class="result-icon">✅</div>
-                    <h1 class="result-title">Подписка была успешно добавлена</h1>
-                    <p class="result-description">Страница закроется автоматически...</p>
+                    <h1 class="result-title">{i18n.get("msg-connect-success-title")}</h1>
+                    <p class="result-description">{i18n.get("msg-connect-success-desc")}</p>
                 `;
                 
                 // Через 5 секунд закрываем страницу

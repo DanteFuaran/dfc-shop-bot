@@ -438,3 +438,10 @@ frg-day-plural = { $value ->
     [few] дні
     *[many] днів
 }
+
+
+# ===== Web Connect Page =====
+msg-connect-page-title = Підключення...
+msg-connect-loading = Відкриваємо додаток...
+msg-connect-success-title = Підписка була успішно додана
+msg-connect-success-desc = Сторінка закриється автоматично...
